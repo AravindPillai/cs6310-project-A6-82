@@ -1,21 +1,33 @@
 package com.gatech.streamingwars.configurations.model.main;
 
-public class Event {
+import com.gatech.streamingwars.configurations.model.AuditEntity;
+import lombok.Data;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "Event", schema = "main")
+@Data
+public class Event extends AuditEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    String id;
     public static enum EventTypes {movie,ppv};
     private String name;
     private int year;
     private int duration;
     private EventTypes eventType;
-    private  Studio studio;
+    //private  Studio studio;
     private Integer eventLicensingFee;
 
+    public Event() {    }
     public Event(String eventType,String name,int year,int duration,Studio studio,Integer eventLicenseFees)
     {
         this.eventType = EventTypes.valueOf(eventType);
         this.name = name;
         this.year = year;
         this.duration = duration;
-        this.studio = studio;
+        //this.studio = studio;
         this.eventLicensingFee =eventLicenseFees;
     }
 
@@ -43,13 +55,13 @@ public class Event {
         this.year = year;
     }
 
-    public Studio getStudio() {
-        return studio;
-    }
-
-    public void setStudio(Studio studio) {
-        this.studio = studio;
-    }
+//    public Studio getStudio() {
+//        return studio;
+//    }
+//
+//    public void setStudio(Studio studio) {
+//        this.studio = studio;
+//    }
 
     public EventTypes getEventType() {
         return eventType;

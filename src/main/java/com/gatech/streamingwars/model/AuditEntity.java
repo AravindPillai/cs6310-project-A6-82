@@ -1,7 +1,6 @@
-package com.gatech.streamingwars.configurations.model;
+package com.gatech.streamingwars.model;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 

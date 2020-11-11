@@ -1,6 +1,6 @@
-package com.gatech.streamingwars.configurations.model.main;
+package com.gatech.streamingwars.model.main;
 
-import com.gatech.streamingwars.configurations.model.AuditEntity;
+import com.gatech.streamingwars.model.AuditEntity;
 import lombok.Data;
 
 import javax.persistence.*;

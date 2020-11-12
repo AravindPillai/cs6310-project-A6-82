@@ -3,11 +3,27 @@
 <head>
     <meta charset="UTF-8"></meta>
     <link rel="icon" href="../static/favicon/favicon.ico"/>
-    <title>Title</title>
+    <title>Streaming Wards</title>
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
     <link href="../static/css/streamingwars.css" rel="stylesheet" th:href="@{/css/streamingwars.css}"/>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <link href="../static/js/bootstrap.bundle.js" rel="script" th:href="@{/js/bootstrap.bundle.js}"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"  crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+    <script>
+        $( document ).ready(function() {
+            $("#datepicker").datepicker({
+                format: "mm-yyyy",
+                viewMode: "months",
+                minViewMode: "months",
+                setDate: new Date(),
+                autoclose: true
+            });
+            $( "#datepicker" ).datepicker( "setDate", new Date());
+        });
+    </script>
 </head>
 <body class="d-flex flex-column">
 
@@ -26,21 +42,37 @@
         <div class="card-body">
             <form action="#" th:action="@{/createdemo}" th:object="${group}" method="post">
                 <div class="form-group">
-                    <label for="shortname">Short Name</label>
-                    <input type="text" class="form-control" id="shortname" aria-describedby="shortNameHelp" th:field="${group.shortName}" th:value="${group.shortName}" />
+                    <label for="shortname">Short Name:</label>
+                    <input type="text" class="form-control" id="shortname" aria-describedby="shortNameHelp" th:field="${group.shortName}" th:value="${group.shortName}" required="required"/>
                     <small id="shortNameHelp" class="form-text text-muted">Enter Demographic ShortName</small>
+                    <div class="invalid-feedback">Short Name Cannot be Empty</div>
                 </div>
                 <div class="form-group">
-                    <label for="shortname">Long Name</label>
-                    <input type="text" class="form-control" id="longname" aria-describedby="longNameHelp" th:field="${group.longName}" th:value="${group.longName}" />
+                    <label for="shortname">Long Name:</label>
+                    <input type="text" class="form-control" id="longname" aria-describedby="longNameHelp" th:field="${group.longName}" th:value="${group.longName}" required="required"/>
                     <small id="longNameHelp" class="form-text text-muted">Enter Demographic Long Name</small>
+                    <div class="invalid-feedback">Long Name Cannot be Empty</div>
                 </div>
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" id="description" aria-describedby="descriptionHelp" th:field="${group.description}" th:value="${group.description}"/>
+                    <label for="description">Description:</label>
+                    <input type="text" class="form-control" id="description" aria-describedby="descriptionHelp" th:field="${group.description}" th:value="${group.description}" required="required"/>
                     <small id="descriptionHelp" class="form-text text-muted">Enter Demographic Description</small>
+                    <div class="invalid-feedback">Description cannot be Empty</div>
+                </div>
+                <div class="form-group">
+                    <label for="datepicker">Creation Date:</label>
+                    <div class="input-group">
+                       <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" required="required"/>
+                        <label class="input-group-btn" for="datepicker">
+                            <span class="btn btn-default">
+                            <span class="fa fa-calendar open-datetimepicker"></span>
+                             </span>
+                        </label>
+                    </div>
+                    <small id="creationDateHelp" class="form-text text-muted">Defaulted to Current Month</small>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" th:onclick="|window.location.href='/'|" class="btn btn-outline-secondary">Cancel</button>
             </form>
         </div>
     </div>

@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Account", schema = "main")
+@Table(name = "account", schema = "main")
 @Data
 public class Account extends AuditEntity {
     @Id

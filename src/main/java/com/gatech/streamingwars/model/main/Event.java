@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Event", schema = "main")
+@Table(name = "event", schema = "main")
 @Data
 public class Event extends AuditEntity {
     @Id

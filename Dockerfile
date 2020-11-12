@@ -18,6 +18,7 @@ ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
 COPY src /usr/src/a4/src
 COPY pom.xml /usr/src/a4/
 WORKDIR /usr/src/a4
+RUN mvn dependency:go-offline
 RUN mvn clean install -DskipTests
 
 #Second container to run the file. The file that is created above is copied into this container.
@@ -26,4 +27,4 @@ RUN addgroup -S A82 && adduser -S spring -G A82
 USER spring:A82
 ARG JAR_FILE=target/*.jar
 COPY --from=builder /usr/src/a4/target/*.jar app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+ENTRYPOINT ["java","-Dspring.profiles.active=prod","-jar","/app.jar"]

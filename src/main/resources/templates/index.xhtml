@@ -22,13 +22,19 @@
     </div>
 </nav>
 <div class="container-fluid page-content">
+    <div class="alert alert-success mx-auto my-1" role="alert" th:if="${successmessage}">
+       <span th:text="${successmessage}"></span>
+    </div>
+    <div class="alert alert-danger mx-auto my-1" role="alert" th:if="${errormessage}">
+        <span th:text="${errormessage}"></span>
+    </div>
     <div class="card mx-auto my-xl-5" style="width: 28rem;">
         <div class="card-body">
             <div class="list-group">
                 <a href="#" class="list-group-item list-group-item-action active">
                     <span style="font-size: larger">Select An Action:</span>
                 </a>
-                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-users fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 10px">Create Demo</span> </a>
+                <a href="#" th:onclick="|window.location.href='/createdemo'|" class="list-group-item list-group-item-action"> <i class="fas fa-users fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 10px">Create Demo</span> </a>
                 <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-video fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 10px">Create Studio</span></a>
                 <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-calendar-alt fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 17px">Create Event</span></a>
                 <a href="#" class="list-group-item list-group-item-action"><i class="fas fa-film fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 13px">Create Stream</span></a>

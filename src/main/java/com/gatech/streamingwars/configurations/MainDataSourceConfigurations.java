@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "com.gatech.streamingwars.model.main",
+@EnableJpaRepositories(basePackages = "com.gatech.streamingwars",
         entityManagerFactoryRef = "mainEntityManagerFactory",
         transactionManagerRef= "mainTransactionManager"
 )

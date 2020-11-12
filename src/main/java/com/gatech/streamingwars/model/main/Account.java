@@ -12,19 +12,18 @@ import java.util.UUID;
 public class Account extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    String id;
+    Long id;
     String name;
 
     public Account(){
-        id = UUID.randomUUID().toString();
+
     }
 
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

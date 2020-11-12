@@ -18,8 +18,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "com.gatech.streamingwars.model.archive",
-        entityManagerFactoryRef = "archiveEntityManagerFactory",
+@EnableJpaRepositories(entityManagerFactoryRef = "archiveEntityManagerFactory",
         transactionManagerRef= "archiveTransactionManager"
 )
 public class ArchiveDataSourceConfigurations {

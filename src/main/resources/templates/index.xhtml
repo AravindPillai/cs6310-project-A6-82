@@ -2,42 +2,49 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"></meta>
-    <link rel="icon" href="../../favicon.ico"/>
+    <link rel="icon" href="../static/favicon/favicon.ico"/>
     <title>Title</title>
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
-<!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
+    <link href="../static/css/streamingwars.css" rel="stylesheet" th:href="@{/css/streamingwars.css}"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"  crossorigin="anonymous"/>
 </head>
-<body>
-<div class="container">
-    <!-- Static navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Navbar</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+<body class="d-flex flex-column">
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link disabled" href="#">Disabled</a>
-            </li>
+<!-- Static navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#"><i class="fab fa-jedi-order fa-2x"></i> <span style="padding-left: 8px;font-size: larger">StreamingWars</span></a>
+        <ul class="nav navbar-nav navbar-right">
+            <li class="white"><a class="white" href="#"><span class="glyphicon glyphicon-user white"></span> Sign Up</a></li>
+            <li  style="padding-left: 15px;"><a class="white" href="#"><span class="glyphicon glyphicon-log-in white"></span> Login</a></li>
         </ul>
     </div>
-    </nav>
-</div>
-
-
-
-<div>
-    <h1>Streaming Wars</h1>
-</div>
+</nav>
+<div class="container-fluid page-content">
+    <div class="card mx-auto my-xl-5" style="width: 28rem;">
+        <div class="card-body">
+            <div class="list-group">
+                <a href="#" class="list-group-item list-group-item-action active">
+                    <span style="font-size: larger">Select An Action:</span>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-users fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 10px">Create Demo</span> </a>
+                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-video fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 10px">Create Studio</span></a>
+                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-calendar-alt fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 17px">Create Event</span></a>
+                <a href="#" class="list-group-item list-group-item-action"><i class="fas fa-film fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 13px">Create Stream</span></a>
+                <a href="#" class="list-group-item list-group-item-action"><i class="fas fa-tv fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 6px">Watch Event</span></a> <!-- disabled to the class will disable-->
+                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-users-cog fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 10px">Display Demo</span> </a>
+                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-ticket-alt fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 10px">Display Event</span></a>
+                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-file-video fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 17px">Display Studio</span></a>
+                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-piggy-bank fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 13px">Display Offers</span></a>
+            </div>
+        </div>
+    </div>
+ </div>
+<footer id="sticky-footer" class="py-2 bg-secondary text-white-50">
+    <div class="container text-center">
+        <small>Copyright CS6310 Group A82 &copy; Streaming Wars. All rights reserved.</small>
+    </div>
+</footer>
 </body>
 </html>

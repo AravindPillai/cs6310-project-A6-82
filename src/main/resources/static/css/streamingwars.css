@@ -1,0 +1,15 @@
+html,
+body {
+    height: 100%;
+}
+
+.white, .white a {
+    color: #fff;
+}
+
+.page-content {
+    flex: 1 0 auto;
+}
+
+
+

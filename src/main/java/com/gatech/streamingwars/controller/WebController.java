@@ -26,7 +26,7 @@ public class WebController {
     {
         Account account = new Account();
         account.setName("Aravind");
-        repository.save(account);
+        //repository.save(account);
 
         return "index.xhtml";
     }

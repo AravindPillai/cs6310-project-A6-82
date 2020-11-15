@@ -1,13 +1,14 @@
 package com.gatech.streamingwars.controller;
 
-import com.gatech.streamingwars.model.main.*;
-import com.gatech.streamingwars.repository.AccountRepository;
-import com.gatech.streamingwars.repository.DemographicRepository;
-import com.gatech.streamingwars.repository.EventRepository;
-import com.gatech.streamingwars.repository.StudioRepository;
+import com.gatech.streamingwars.maindb.model.DemographicGroup;
+import com.gatech.streamingwars.maindb.model.Event;
+import com.gatech.streamingwars.maindb.model.Studio;
+import com.gatech.streamingwars.maindb.model.User;
+import com.gatech.streamingwars.maindb.repository.AccountRepository;
+import com.gatech.streamingwars.maindb.repository.EventRepository;
+import com.gatech.streamingwars.maindb.repository.StudioRepository;
 import com.gatech.streamingwars.service.MainDBService;
 import com.gatech.streamingwars.service.UserService;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
@@ -18,11 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -54,7 +51,7 @@ public class WebController {
     public  String index(Model model) { return "index.xhtml";}
 
     @RequestMapping("/login")
-    public  String login(Model model,@RequestParam Boolean error) {
+    public  String login(Model model,@RequestParam(required = false) Boolean error) {
         if(error!=null && error)
         {
             model.addAttribute("errormessage", "Login Failed. Check the Credentials and Try Again.");
@@ -150,11 +147,13 @@ public class WebController {
 
     @PostMapping("/createdemo")
     public String creatingDemo(@ModelAttribute DemographicGroup group, Model model) {
-        DemographicGroup saved = null;
+        List<DemographicGroup> saved = null;
         try {
              group.setArchived(false);
              //group.setCreatedAt(getCreateDate(group.getCurrentMonthYear()));
-             saved =  mainDBService.saveDemographicGroup(group);
+             List<DemographicGroup> groups = new ArrayList<DemographicGroup>();
+             groups.add(group);
+             saved =  mainDBService.saveDemographicGroup(groups);
         }catch (SQLIntegrityConstraintViolationException|DataIntegrityViolationException exception)
         {
             exception.printStackTrace();
@@ -163,7 +162,7 @@ public class WebController {
             model.addAttribute("group",group);
             return "createdemo.xhtml";
         }
-        if(saved!=null) {
+        if(saved!=null && saved.size()>0) {
             model.addAttribute("successmessage", "Demographic Group Saved Successfully!");
             return "index.xhtml";
         }

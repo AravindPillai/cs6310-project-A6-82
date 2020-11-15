@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(entityManagerFactoryRef = "archiveEntityManagerFactory",
+@EnableJpaRepositories(basePackages = "com.gatech.streamingwars.archivedb.repository",entityManagerFactoryRef = "archiveEntityManagerFactory",
         transactionManagerRef= "archiveTransactionManager"
 )
 public class ArchiveDataSourceConfigurations {
@@ -32,22 +32,22 @@ public class ArchiveDataSourceConfigurations {
 
     @Bean("archiveDS")
     @ConfigurationProperties("spring.datasource.archive.configuration")
-    public DataSource mainDataSource(@Qualifier("archiveDSProperties") DataSourceProperties archiveDSProperties) {
+    public DataSource archiveDataSource(@Qualifier("archiveDSProperties") DataSourceProperties archiveDSProperties) {
         return archiveDSProperties.initializeDataSourceBuilder()
                 .type(HikariDataSource.class).build();
 
     }
 
     @Bean(name = "archiveEntityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory( EntityManagerFactoryBuilder builder, @Qualifier("archiveDS") DataSource archiveDS) {
+    public LocalContainerEntityManagerFactoryBean archiveEntityManagerFactory( EntityManagerFactoryBuilder builder, @Qualifier("archiveDS") DataSource archiveDS) {
         return builder.dataSource(archiveDS)
-                .packages("com.gatech.streamingwars.model.archive")
+                .packages("com.gatech.streamingwars.archivedb.model")
                 .persistenceUnit("archive")
                 .build();
     }
 
     @Bean(name = "archiveTransactionManager")
-    public PlatformTransactionManager transactionManager(
+    public PlatformTransactionManager archiveTransactionManager(
             @Qualifier("archiveEntityManagerFactory") EntityManagerFactory archiveEntityManagerFactory) {
         return new JpaTransactionManager(archiveEntityManagerFactory);
     }

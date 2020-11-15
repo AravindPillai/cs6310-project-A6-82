@@ -1,6 +1,7 @@
-package com.gatech.streamingwars.model.archive;
+package com.gatech.streamingwars.archivedb.model;
 
-import com.gatech.streamingwars.model.AuditEntity;
+import com.gatech.streamingwars.common.AuditEntity;
+import com.gatech.streamingwars.maindb.model.DemographicGroup;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -14,12 +15,21 @@ public class ArchivedDemographicGroup extends AuditEntity {
     private String shortName;
     private String longName;
     private String description;
-    private String currentMonthYear;
     private boolean isArchived;
 
     public ArchivedDemographicGroup()
     {
 
+    }
+
+    public ArchivedDemographicGroup(DemographicGroup group)
+    {
+        this.id = group.getId();
+        this.shortName = group.getShortName();
+        this.longName = group.getLongName();
+        this.description = group.getDescription();
+        this.setCurrentMonthYear(group.getCurrentMonthYear());
+        this.isArchived = group.isArchived();
     }
 
     public ArchivedDemographicGroup(Long id,String shortName, String longName,String description) {
@@ -51,14 +61,6 @@ public class ArchivedDemographicGroup extends AuditEntity {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getCurrentMonthYear() {
-        return currentMonthYear;
-    }
-
-    public void setCurrentMonthYear(String currentMonthYear) {
-        this.currentMonthYear = currentMonthYear;
     }
 
     public boolean isArchived() {

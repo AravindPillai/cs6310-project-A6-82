@@ -1,4 +1,4 @@
-package com.gatech.streamingwars.model;
+package com.gatech.streamingwars.common;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -19,7 +19,6 @@ public abstract class AuditEntity {
     //@CreationTimestamp
     private LocalDateTime createdAt;
 
-    @Transient
     private String currentMonthYear;
 
     @LastModifiedDate
@@ -36,7 +35,7 @@ public abstract class AuditEntity {
 
     @PrePersist
     public void prePersist() {
-       this.createdAt = this.getCreateDate(this.currentMonthYear);
+     setCreatedAt(this.getCreateDate(this.getCurrentMonthYear()));
     }
 
     private LocalDateTime getCreateDate(String currentMonthYear)
@@ -63,4 +62,6 @@ public abstract class AuditEntity {
     public void setCurrentMonthYear(String currentMonthYear) {
         this.currentMonthYear = currentMonthYear;
     }
+
+
 }

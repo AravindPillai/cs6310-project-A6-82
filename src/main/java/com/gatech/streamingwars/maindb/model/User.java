@@ -1,9 +1,12 @@
-package com.gatech.streamingwars.model.main;
+package com.gatech.streamingwars.maindb.model;
+
+import lombok.Data;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", schema = "main")
+@Data
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

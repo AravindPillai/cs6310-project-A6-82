@@ -1,5 +1,6 @@
 package com.gatech.streamingwars.model.main;
 
+import com.gatech.streamingwars.model.AuditEntity;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -11,10 +12,11 @@ import java.util.Map;
 @Entity
 @Table(name = "demographicgroup", schema = "main")
 @Data
-public class DemographicGroup {
+public class DemographicGroup extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
+    @Column(unique=true)
     private String shortName;
     private String longName;
     private String description;

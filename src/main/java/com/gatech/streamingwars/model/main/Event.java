@@ -11,24 +11,24 @@ import javax.persistence.*;
 public class Event extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    String id;
-    public static enum EventTypes {movie,ppv};
+    Long id;
+
     private String name;
     private int year;
     private int duration;
-    private EventTypes eventType;
-    //private  Studio studio;
+    private String eventType;
+    private String studioShortName;
     private Integer eventLicensingFee;
 
     public Event() {    }
-    public Event(String eventType,String name,int year,int duration,Studio studio,Integer eventLicenseFees)
+    public Event(String eventType,String name,int year,int duration,String studioShortName,Integer eventLicenseFees)
     {
-        this.eventType = EventTypes.valueOf(eventType);
+        this.eventType = eventType;
         this.name = name;
         this.year = year;
         this.duration = duration;
-        //this.studio = studio;
-        this.eventLicensingFee =eventLicenseFees;
+        this.studioShortName = studioShortName;
+        this.eventLicensingFee = eventLicenseFees;
     }
 
     public String getName() {
@@ -55,19 +55,21 @@ public class Event extends AuditEntity {
         this.year = year;
     }
 
-//    public Studio getStudio() {
-//        return studio;
-//    }
-//
-//    public void setStudio(Studio studio) {
-//        this.studio = studio;
-//    }
+    public String getStudioShortName() {
+        return studioShortName;
+    }
 
-    public EventTypes getEventType() {
+    public void setStudioShortName(String studioShortName) {
+        this.studioShortName = studioShortName;
+    }
+
+
+    public String getEventType(){
         return eventType;
     }
 
-    public void setEventType(EventTypes eventType) {
+
+    public void setEventType(String eventType) {
         this.eventType = eventType;
     }
 

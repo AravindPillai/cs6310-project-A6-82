@@ -34,45 +34,33 @@ public class Event extends AuditEntity {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public int getDuration() {
         return duration;
     }
-
     public void setDuration(int duration) {
         this.duration = duration;
     }
-
     public int getYear() {
         return year;
     }
-
     public void setYear(int year) {
         this.year = year;
     }
-
     public String getStudioShortName() {
         return studioShortName;
     }
-
     public void setStudioShortName(String studioShortName) {
         this.studioShortName = studioShortName;
     }
-
-
     public String getEventType(){
         return eventType;
     }
-
-
     public void setEventType(String eventType) {
         this.eventType = eventType;
     }
-
     public Integer getEventLicensingFee() {
         return eventLicensingFee;
     }

@@ -5,8 +5,11 @@ import com.gatech.streamingwars.repository.AccountRepository;
 import com.gatech.streamingwars.repository.DemographicRepository;
 import com.gatech.streamingwars.repository.EventRepository;
 import com.gatech.streamingwars.repository.StudioRepository;
+import com.gatech.streamingwars.service.MainDBService;
 import com.gatech.streamingwars.service.UserService;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -14,6 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -24,7 +33,7 @@ public class WebController {
     AccountRepository repository;
 
     @Autowired
-    DemographicRepository demographicRepository;
+    MainDBService mainDBService;
 
     @Autowired
     UserService userService;
@@ -140,8 +149,20 @@ public class WebController {
     }
 
     @PostMapping("/createdemo")
-    public String greetingSubmit(@ModelAttribute DemographicGroup group, Model model) {
-        DemographicGroup saved = demographicRepository.save(group);
+    public String creatingDemo(@ModelAttribute DemographicGroup group, Model model) {
+        DemographicGroup saved = null;
+        try {
+             group.setArchived(false);
+             //group.setCreatedAt(getCreateDate(group.getCurrentMonthYear()));
+             saved =  mainDBService.saveDemographicGroup(group);
+        }catch (SQLIntegrityConstraintViolationException|DataIntegrityViolationException exception)
+        {
+            exception.printStackTrace();
+            System.out.println("Exception Occured during Saving "+exception.getMessage());
+            model.addAttribute("errormessage", "Demographic Group Creation Failed,Entry With Same Name Possible Exist.Please Verify and try again");
+            model.addAttribute("group",group);
+            return "createdemo.xhtml";
+        }
         if(saved!=null) {
             model.addAttribute("successmessage", "Demographic Group Saved Successfully!");
             return "index.xhtml";
@@ -151,7 +172,6 @@ public class WebController {
             model.addAttribute("group",group);
             return "createdemo.xhtml";
         }
-
     }
 
     @RequestMapping("/createstudio")
@@ -239,7 +259,7 @@ public class WebController {
 
     private DemographicGroup lookupDemographicGroupByShortName(String demographicGroupShortName){
         // looks up demographic group via the short name
-        List<DemographicGroup> demographicGroupList = this.demographicRepository.findAll();
+        List<DemographicGroup> demographicGroupList = mainDBService.findAllDemographicGroup();
         DemographicGroup demographicGroupToSearchFor = null;
         for (DemographicGroup demographicGroup: demographicGroupList){
             if (demographicGroup.getShortName().equalsIgnoreCase(demographicGroupShortName)){
@@ -261,7 +281,6 @@ public class WebController {
         }
         return null;
     }
-
 
     private void clearModelAttributes(Model model)
     {

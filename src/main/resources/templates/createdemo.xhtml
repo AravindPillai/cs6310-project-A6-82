@@ -38,6 +38,12 @@
     </div>
 </nav>
 <div class="container-fluid page-content">
+    <div class="alert alert-success mx-auto my-1" role="alert" th:if="${successmessage}">
+        <span th:text="${successmessage}"></span>
+    </div>
+    <div class="alert alert-danger mx-auto my-1" role="alert" th:if="${errormessage}">
+        <span th:text="${errormessage}"></span>
+    </div>
     <div class="card mx-auto my-xl-5" style="width: 28rem;">
         <div class="card-body">
             <form action="#" th:action="@{/createdemo}" th:object="${group}" method="post">
@@ -62,7 +68,7 @@
                 <div class="form-group">
                     <label for="datepicker">Creation Date:</label>
                     <div class="input-group">
-                       <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" required="required"/>
+                       <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" th:field="${group.currentMonthYear}" th:value="${group.currentMonthYear}" required="required"/>
                         <label class="input-group-btn" for="datepicker">
                             <span class="btn btn-default">
                             <span class="fa fa-calendar open-datetimepicker"></span>

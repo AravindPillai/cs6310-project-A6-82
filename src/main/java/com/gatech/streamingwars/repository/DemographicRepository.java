@@ -4,5 +4,8 @@ import com.gatech.streamingwars.model.main.Account;
 import com.gatech.streamingwars.model.main.DemographicGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface DemographicRepository extends JpaRepository<DemographicGroup,Long> {
+
 }

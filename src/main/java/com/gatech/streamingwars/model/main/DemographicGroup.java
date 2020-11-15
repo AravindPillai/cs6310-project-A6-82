@@ -4,10 +4,7 @@ import com.gatech.streamingwars.model.AuditEntity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "demographicgroup", schema = "main")
@@ -20,6 +17,7 @@ public class DemographicGroup extends AuditEntity {
     private String shortName;
     private String longName;
     private String description;
+    private boolean isArchived;
 
     public DemographicGroup()
     {
@@ -54,4 +52,13 @@ public class DemographicGroup extends AuditEntity {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    public void setArchived(boolean archived) {
+        isArchived = archived;
+    }
+
 }

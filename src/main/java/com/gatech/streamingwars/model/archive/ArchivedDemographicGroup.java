@@ -14,6 +14,8 @@ public class ArchivedDemographicGroup extends AuditEntity {
     private String shortName;
     private String longName;
     private String description;
+    private String currentMonthYear;
+    private boolean isArchived;
 
     public ArchivedDemographicGroup()
     {
@@ -51,4 +53,19 @@ public class ArchivedDemographicGroup extends AuditEntity {
         this.description = description;
     }
 
+    public String getCurrentMonthYear() {
+        return currentMonthYear;
+    }
+
+    public void setCurrentMonthYear(String currentMonthYear) {
+        this.currentMonthYear = currentMonthYear;
+    }
+
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    public void setArchived(boolean archived) {
+        isArchived = archived;
+    }
 }

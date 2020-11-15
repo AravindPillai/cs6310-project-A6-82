@@ -21,14 +21,14 @@ public class Event extends AuditEntity {
     private Integer eventLicensingFee;
 
     public Event() {    }
-    public Event(String eventType,String name,int year,int duration,String studioShortName,Integer eventLicenseFees)
+    public Event(String eventType,String name,int year,int duration,String studioShortName,Integer eventLicensingFee)
     {
         this.eventType = eventType;
         this.name = name;
         this.year = year;
         this.duration = duration;
         this.studioShortName = studioShortName;
-        this.eventLicensingFee = eventLicenseFees;
+        this.eventLicensingFee = eventLicensingFee;
     }
 
     public String getName() {

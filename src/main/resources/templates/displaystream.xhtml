@@ -38,33 +38,21 @@
     </div>
 </nav>
 <div class="container-fluid page-content">
-
-    <div class="alert alert-success mx-auto my-1" role="alert" th:if="${successmessage}">
-        <span th:text="${successmessage}"></span>
-    </div>
-    <div class="alert alert-danger mx-auto my-1" role="alert" th:if="${errormessage}">
-        <span th:text="${errormessage}"></span>
-    </div>
-
     <div class="card mx-auto my-xl-5" style="width: 28rem;">
-        <div class="card-body">
-            <form action="#" th:action="@{/displaydemo}" th:object="${demo}" method="post">
+        <div class="card-body" >
+            <form action="#" th:action="@{/displaystream}" th:object="${stream}" method="post">
                 <div class="form-group">
                     <label for="shortname">Short Name:</label>
-                    <input type="text" class="form-control" id="shortname" aria-describedby="shortNameHelp" th:field="${demo.shortName}" th:value="${demo.shortName}" required="required"/>
-                    <small id="shortNameHelp" class="form-text text-muted">Enter Demogroup ShortName</small>
+                    <input type="text" class="form-control" id="shortname" aria-describedby="shortNameHelp" th:field="${stream.shortName}" th:value="${stream.shortName}" required="required"/>
+                    <small id="shortNameHelp" class="form-text text-muted">Enter Stream ShortName</small>
                     <div class="invalid-feedback">Short Name Cannot be Empty</div>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
                 <button type="submit" th:onclick="|window.location.href='/'|" class="btn btn-outline-secondary">Cancel</button>
             </form>
-        </div>
-        <div class="card-body">
-            <form action="#" th:action="@{/displaydemo}" th:object="${demo}" method="get">
-                <span th:text ="${demo.shortName} ?: ''"></span>
-                <span th:text ="${demo.longName} ?: ''"></span>
-                <span th:text ="${demo.numberOfAccounts} ?: ''"></span>
-            </form>
+            <span th:text ="${stream.shortName}"></span>
+            <span th:text ="${stream.longName}"></span>
+            <span th:text ="${stream.subscriptionPrice}"></span>
         </div>
     </div>
  </div>

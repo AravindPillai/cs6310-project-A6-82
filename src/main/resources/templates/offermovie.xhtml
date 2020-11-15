@@ -48,22 +48,34 @@
 
     <div class="card mx-auto my-xl-5" style="width: 28rem;">
         <div class="card-body">
-            <form action="#" th:action="@{/displaydemo}" th:object="${demo}" method="post">
+            <form action="#" th:action="@{/offermovie}" th:object="${transaction}" method="post">
                 <div class="form-group">
-                    <label for="shortname">Short Name:</label>
-                    <input type="text" class="form-control" id="shortname" aria-describedby="shortNameHelp" th:field="${demo.shortName}" th:value="${demo.shortName}" required="required"/>
-                    <small id="shortNameHelp" class="form-text text-muted">Enter Demogroup ShortName</small>
+                    <label for="stream">Streaming Service:</label>
+                    <input type="text" class="form-control" id="stream" aria-describedby="streamHelp" th:field="${transaction.buyer}" th:value="${transaction.buyer}" required="required"/>
+                    <small id="shortNameHelp" class="form-text text-muted">Enter Streaming Service Short Name</small>
                     <div class="invalid-feedback">Short Name Cannot be Empty</div>
+                </div>
+                <div class="form-group">
+                    <label for="eventname">Event Name:</label>
+                    <input type="text" class="form-control" id="eventname" aria-describedby="eventnameHelp" th:field="${transaction.eventName}" th:value="${transaction.eventName}" required="required"/>
+                    <small id="eventnameHelp" class="form-text text-muted">Enter Event Name</small>
+                    <div class="invalid-feedback">Event Name Cannot be Empty</div>
+                </div>
+                <div class="form-group">
+                    <label for="eventyear">Event Year:</label>
+                    <input type="text" class="form-control" id="eventyear" aria-describedby="eventyearHelp" th:field="${transaction.eventYear}" th:value="${transaction.eventYear}" required="required"/>
+                    <small id="eventyearHelp" class="form-text text-muted">Enter Event Year</small>
+                    <div class="invalid-feedback">Event Year Cannot be Empty</div>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
                 <button type="submit" th:onclick="|window.location.href='/'|" class="btn btn-outline-secondary">Cancel</button>
             </form>
         </div>
         <div class="card-body">
-            <form action="#" th:action="@{/displaydemo}" th:object="${demo}" method="get">
-                <span th:text ="${demo.shortName} ?: ''"></span>
-                <span th:text ="${demo.longName} ?: ''"></span>
-                <span th:text ="${demo.numberOfAccounts} ?: ''"></span>
+            <form action="#" th:action="@{/offermovie}" th:object="${transaction}" method="get">
+                <span th:text ="${transaction.buyer} ?: ''"></span>
+                <span th:text ="${transaction.eventName} ?: ''"></span>
+                <span th:text ="${transaction.eventYear} ?: ''"></span>
             </form>
         </div>
     </div>

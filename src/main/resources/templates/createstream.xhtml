@@ -38,32 +38,41 @@
     </div>
 </nav>
 <div class="container-fluid page-content">
-
-    <div class="alert alert-success mx-auto my-1" role="alert" th:if="${successmessage}">
-        <span th:text="${successmessage}"></span>
-    </div>
-    <div class="alert alert-danger mx-auto my-1" role="alert" th:if="${errormessage}">
-        <span th:text="${errormessage}"></span>
-    </div>
-
     <div class="card mx-auto my-xl-5" style="width: 28rem;">
         <div class="card-body">
-            <form action="#" th:action="@{/displaydemo}" th:object="${demo}" method="post">
+            <form action="#" th:action="@{/createstream}" th:object="${streamingService}" method="post">
                 <div class="form-group">
                     <label for="shortname">Short Name:</label>
-                    <input type="text" class="form-control" id="shortname" aria-describedby="shortNameHelp" th:field="${demo.shortName}" th:value="${demo.shortName}" required="required"/>
-                    <small id="shortNameHelp" class="form-text text-muted">Enter Demogroup ShortName</small>
+                    <input type="text" class="form-control" id="shortname" aria-describedby="shortNameHelp" th:field="${streamingService.shortName}" th:value="${streamingService.shortName}" required="required"/>
+                    <small id="shortNameHelp" class="form-text text-muted">Enter Streaming Service ShortName</small>
                     <div class="invalid-feedback">Short Name Cannot be Empty</div>
+                </div>
+                <div class="form-group">
+                    <label for="longname">Long Name:</label>
+                    <input type="text" class="form-control" id="longname" aria-describedby="longNameHelp" th:field="${streamingService.longName}" th:value="${streamingService.longName}" required="required"/>
+                    <small id="longNameHelp" class="form-text text-muted">Enter Streaming Service Long Name</small>
+                    <div class="invalid-feedback">Long Name Cannot be Empty</div>
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionPrice">Subscription Price:</label>
+                    <input type="text" class="form-control" id="subscriptionPrice" aria-describedby="longNameHelp" th:field="${streamingService.subscriptionPrice}" th:value="${streamingService.subscriptionPrice}" required="required"/>
+                    <small id="subscriptionPriceHelp" class="form-text text-muted">Enter Streaming Service Subscription Price</small>
+                    <div class="invalid-feedback">Subscription Price Cannot be Empty</div>
+                </div>
+                <div class="form-group">
+                    <label for="datepicker">Creation Date:</label>
+                    <div class="input-group">
+                       <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" required="required"/>
+                        <label class="input-group-btn" for="datepicker">
+                            <span class="btn btn-default">
+                            <span class="fa fa-calendar open-datetimepicker"></span>
+                             </span>
+                        </label>
+                    </div>
+                    <small id="creationDateHelp" class="form-text text-muted">Defaulted to Current Month</small>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
                 <button type="submit" th:onclick="|window.location.href='/'|" class="btn btn-outline-secondary">Cancel</button>
-            </form>
-        </div>
-        <div class="card-body">
-            <form action="#" th:action="@{/displaydemo}" th:object="${demo}" method="get">
-                <span th:text ="${demo.shortName} ?: ''"></span>
-                <span th:text ="${demo.longName} ?: ''"></span>
-                <span th:text ="${demo.numberOfAccounts} ?: ''"></span>
             </form>
         </div>
     </div>

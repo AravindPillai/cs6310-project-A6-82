@@ -72,11 +72,20 @@
                     <small id="studioShortNameHelp" class="form-text text-muted">Enter StudioShortName</small>
                     <div class="invalid-feedback">StudioShortName cannot be Empty</div>
                 </div>
+
                 <div class="form-group">
                     <label for="duration">Duration:</label>
                     <input type="text" class="form-control" id="duration" aria-describedby="durationHelp" th:field="${event.duration}" th:value="${event.duration}" required="required"/>
                     <small id="durationHelp" class="form-text text-muted">Enter Duration</small>
                     <div class="invalid-feedback">Duration cannot be Empty</div>
+                </div>
+
+
+                <div class="form-group">
+                    <label for="duration">Licensing Fee:</label>
+                    <input type="text" class="form-control" id="eventLicensingFee" aria-describedby="eventLicensingFeeHelp" th:field="${event.eventLicensingFee}" th:value="${event.eventLicensingFee}" required="required"/>
+                    <small id="durationHelp" class="form-text text-muted">Enter Event Licensing Fee</small>
+                    <div class="invalid-feedback">Event Licensing Fee cannot be Empty</div>
                 </div>
                 <div class="form-group">
                     <label for="datepicker">Creation Date:</label>

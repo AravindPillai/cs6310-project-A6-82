@@ -20,6 +20,10 @@ public class DemographicGroup extends AuditEntity {
     private String shortName;
     private String longName;
     private String description;
+<<<<<<< Updated upstream:src/main/java/com/gatech/streamingwars/model/main/DemographicGroup.java
+=======
+    private boolean isArchived;
+>>>>>>> Stashed changes:src/main/java/com/gatech/streamingwars/maindb/model/DemographicGroup.java
     private int numberOfAccounts;
 
     public DemographicGroup()
@@ -30,7 +34,10 @@ public class DemographicGroup extends AuditEntity {
     public DemographicGroup(String shortName, String longName, String description, int numberOfAccounts) {
         this.shortName = shortName;
         this.longName = longName;
+<<<<<<< Updated upstream:src/main/java/com/gatech/streamingwars/model/main/DemographicGroup.java
         this.description = description;
+=======
+>>>>>>> Stashed changes:src/main/java/com/gatech/streamingwars/maindb/model/DemographicGroup.java
         this.numberOfAccounts = numberOfAccounts;
     }
 
@@ -65,4 +72,15 @@ public class DemographicGroup extends AuditEntity {
     public void setNumberOfAccounts(int numberOfAccounts) {
         this.numberOfAccounts = numberOfAccounts;
     }
+<<<<<<< Updated upstream:src/main/java/com/gatech/streamingwars/model/main/DemographicGroup.java
+=======
+
+    public int getNumberOfAccounts() {
+        return numberOfAccounts;
+    }
+
+    public void setNumberOfAccounts(int numberOfAccounts) {
+        this.numberOfAccounts = numberOfAccounts;
+    }
+>>>>>>> Stashed changes:src/main/java/com/gatech/streamingwars/maindb/model/DemographicGroup.java
 }

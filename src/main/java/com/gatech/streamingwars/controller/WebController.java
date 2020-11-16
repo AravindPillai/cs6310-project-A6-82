@@ -1,8 +1,15 @@
 package com.gatech.streamingwars.controller;
 
+<<<<<<< Updated upstream
 import com.gatech.streamingwars.model.AuditEntity;
 import com.gatech.streamingwars.model.main.*;
 import com.gatech.streamingwars.repository.*;
+=======
+import com.gatech.streamingwars.maindb.model.*;
+import com.gatech.streamingwars.maindb.repository.*;
+import com.gatech.streamingwars.service.MainDBService;
+import com.gatech.streamingwars.service.UserService;
+>>>>>>> Stashed changes
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +37,12 @@ public class WebController {
     EventRepository eventRepository;
 
     @Autowired
+<<<<<<< Updated upstream
+=======
+    DemographicRepository demographicRepository;
+
+    @Autowired
+>>>>>>> Stashed changes
     StreamingServiceRepository streamingServiceRepository;
 
     @Autowired
@@ -47,6 +60,191 @@ public class WebController {
        return "index.xhtml";
     }
 
+    @RequestMapping("/displayevents")
+    public String displayEvents(Model model){
+        clearModelAttributes(model);
+        List<Event> listOfEvents = this.eventRepository.findAll();
+        model.addAttribute("events", listOfEvents);
+        return "displayevents.xhtml";
+    }
+
+    @RequestMapping("/displayoffers")
+    public String displayOffers(Model model){
+        clearModelAttributes(model);
+        List<Transaction> listOfOffers = getAllOffers();
+        model.addAttribute("transactions", listOfOffers);
+        return "displayoffers.xhtml";
+    }
+
+    @RequestMapping("/offerppv")
+    public  String createPpvOffer(Model model)
+    {
+        clearModelAttributes(model);
+        Transaction transaction = new Transaction();
+        model.addAttribute("transaction",transaction);
+        return "offerppv.xhtml";
+    }
+
+    @PostMapping("/offerppv")
+    public String createPpvOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
+
+        // Most important thing for this is that we need to be validate that the ppv itself exists before
+        // committing the transaction
+
+        Boolean isValid = true;
+        String reasonForFailure = "";
+        Event event = lookupEventByNameAndYear(transaction.getEventName(), transaction.getEventYear());
+
+        if (event == null){
+            isValid = false;
+            reasonForFailure += "Event not found";
+        } else if (event != null) {
+            String eventType = event.getEventType();
+            if (!(eventType.equalsIgnoreCase("ppv"))) {
+                isValid = false;
+                reasonForFailure += "Event type is not ppv";
+            }
+        }
+
+        Transaction saved = null;
+        if (isValid) {
+            System.out.println("Event passed validation steps");
+            // Get the studio from the event and then commit the transaction
+            String studioShortName = event.getStudioShortName();
+
+            transaction.setVendor(studioShortName);
+            transaction.setTransactionCost(event.getEventLicensingFee());
+            transaction.setEventType("ppv");
+
+            //transaction ppv cost is passed in via the offerppv.xhtml post
+
+            // this is an "offer" type
+            transaction.setTransactionType("offer");
+
+            saved = transactionRepository.save(transaction);
+        }
+
+        if(saved!=null) {
+            model.addAttribute("successmessage", "Event Saved Successfully!");
+            return "index.xhtml";
+        }
+        else {
+            model.addAttribute("errormessage", String.format("Offering save Failed for the following reasons: %s, Please try again", reasonForFailure));
+            model.addAttribute("transaction",transaction);
+            return "offerppv.xhtml";
+        }
+    }
+
+    @RequestMapping("/watchevent")
+    public  String createWatchEvent(Model model)
+    {
+        clearModelAttributes(model);
+        Transaction transaction = new Transaction();
+        model.addAttribute("transaction",transaction);
+        return "watchevent.xhtml";
+    }
+
+    @PostMapping("/watchevent")
+    public String createWatchEventSubmit(@ModelAttribute Transaction transaction, Model model) {
+
+        Boolean isValid = true;
+        String reasonForFailure = "";
+
+        //validate demo group
+        DemographicGroup demographicGroupLookup = null;
+        demographicGroupLookup = lookupDemographicGroupByShortName(transaction.getBuyer());
+        if (demographicGroupLookup == null){
+            isValid = false;
+            reasonForFailure += "Demo Group Not not found";
+        }
+
+        // validate streaming service
+        StreamingService streamingServiceLookup = null;
+        streamingServiceLookup = lookupStreamByShortName(transaction.getVendor());
+        if (streamingServiceLookup == null){
+            isValid = false;
+            reasonForFailure += "Streaming Service not found";
+        }
+
+        //validate eventname x year
+        Event eventLookup = lookupEventByNameAndYear(transaction.getEventName(), transaction.getEventYear());
+        if (eventLookup == null){
+            isValid = false;
+            reasonForFailure += "Event not found";
+        }
+
+        // validate that the streaming service is actually offering the event
+        Transaction offerLookup = null;
+        offerLookup = checkToSeeIfStreamingIsOfferingEvent(transaction.getVendor(), transaction.getEventName(), transaction.getEventYear());
+        if (offerLookup == null){
+            isValid = false;
+            reasonForFailure += "Offering for streaming service and movie not found";
+        }
+
+        Transaction saved = null;
+        if (isValid) {
+            System.out.println("Passed all validation steps, proceeding with logic based on ppv or movie type");
+            // Get the studio from the event and then commit the transaction
+
+            String eventType = offerLookup.getEventType();
+
+            if (eventType.equalsIgnoreCase("ppv")){
+                System.out.println("proceeding with ppv transaction");
+
+                int sizeOfDemogroup = demographicGroupLookup.getNumberOfAccounts();
+                int ppvCost = offerLookup.getPpvCost();
+                int totalCostOfTransaction = sizeOfDemogroup * ppvCost * transaction.getPercentage();
+                int totalCostOfTransactionDiv100 = totalCostOfTransaction/100;
+                transaction.setTransactionCost(totalCostOfTransactionDiv100);
+
+            } else if (eventType.equalsIgnoreCase("movie")){
+
+                //check to see if theres a subscription already
+                Transaction existingSubscriptionWithGreatestPercentage = returnSubscriptionBetweenStreamAndDemoWithLargestPercentage(streamingServiceLookup.getShortName(), demographicGroupLookup.getShortName());
+
+                int percentageForTransaction = transaction.getPercentage();
+
+                if (existingSubscriptionWithGreatestPercentage != null){
+                    percentageForTransaction -= existingSubscriptionWithGreatestPercentage.getPercentage();
+                }
+
+                if (percentageForTransaction < 0){
+                    percentageForTransaction = 0;
+                }
+
+                int transactionCost = percentageForTransaction * streamingServiceLookup.getSubscriptionPrice() * demographicGroupLookup.getNumberOfAccounts();
+                int transactionCostDiv100 = transactionCost/100;
+                transaction.setTransactionCost(transactionCostDiv100);
+            }
+
+            // this is an "offer" type
+            transaction.setTransactionType("watch");
+
+            // set the transactionEventType
+            transaction.setEventType(eventType);
+            saved = transactionRepository.save(transaction);
+
+//            // this is an "offer" type
+//            transaction.setTransactionType("watch");
+//            saved = transactionRepository.save(transaction);
+        }
+
+        if(saved!=null) {
+            model.addAttribute("successmessage", "Watch Event Saved Successfully!");
+            return "index.xhtml";
+        }
+        else {
+            model.addAttribute("errormessage", String.format("Watch Event Creation Failed for the following reasons: %s, Please try again", reasonForFailure));
+            model.addAttribute("transaction",transaction);
+            return "watchevent.xhtml";
+        }
+    }
+
+<<<<<<< Updated upstream
+    @RequestMapping("/offermovie")
+    public  String createMovieOffer(Model model)
+    {
+=======
     @RequestMapping("/displayevents")
     public String displayEvents(Model model){
         clearModelAttributes(model);
@@ -284,6 +482,63 @@ public class WebController {
         }
     }
 
+    @RequestMapping("/registration")
+    public  String registration(Model model) {
+>>>>>>> Stashed changes
+        clearModelAttributes(model);
+        Transaction transaction = new Transaction();
+        model.addAttribute("transaction",transaction);
+        return "offermovie.xhtml";
+    }
+
+    @PostMapping("/offermovie")
+    public String createMovieOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
+
+        // Most important thing for this is that we need to be validate that the movie itself exists before
+        // committing the transaction
+
+        Boolean isValid = true;
+        String reasonForFailure = "";
+        Event event = lookupEventByNameAndYear(transaction.getEventName(), transaction.getEventYear());
+
+        if (event == null){
+            isValid = false;
+            reasonForFailure += "Event not found";
+        } else if (event != null) {
+            String eventType = event.getEventType();
+            if (!(eventType.equalsIgnoreCase("movie"))) {
+                isValid = false;
+                reasonForFailure += "Event type is not movie";
+            }
+        }
+
+        Transaction saved = null;
+        if (isValid) {
+            System.out.println("Event passed validation steps");
+            // Get the studio from the event and then commit the transaction
+            String studioShortName = event.getStudioShortName();
+
+            transaction.setVendor(studioShortName);
+            transaction.setTransactionCost(event.getEventLicensingFee());
+            transaction.setEventType("movie");
+
+            // this is an "offer" type
+            transaction.setTransactionType("offer");
+
+            saved = transactionRepository.save(transaction);
+        }
+
+        if(saved!=null) {
+            model.addAttribute("successmessage", "Event Saved Successfully!");
+            return "index.xhtml";
+        }
+        else {
+            model.addAttribute("errormessage", String.format("Offering save Failed for the following reasons: %s, Please try again", reasonForFailure));
+            model.addAttribute("transaction",transaction);
+            return "offermovie.xhtml";
+        }
+    }
+
     @RequestMapping("/createevent")
     public  String createEvent(Model model)
     {
@@ -355,8 +610,11 @@ public class WebController {
         }
     }
 
+<<<<<<< Updated upstream
 
 
+=======
+>>>>>>> Stashed changes
     @RequestMapping("/createstream")
     public  String createStreamingService(Model model)
     {
@@ -574,6 +832,46 @@ public class WebController {
         return null;
     }
 
+<<<<<<< Updated upstream
+=======
+    @RequestMapping("/updatedemo")
+    public String updateDemo(Model model)
+    {
+        clearModelAttributes(model);
+        DemographicGroup demo = new DemographicGroup();
+        model.addAttribute("demo",demo);
+        return "updatedemo.xhtml";
+    }
+
+    @PostMapping("/updatedemo")
+    public String updateDemo(@ModelAttribute DemographicGroup group, Model model) {
+
+        //lookup demogroup
+        DemographicGroup demographicGroupLookup = null;
+        demographicGroupLookup = lookupDemographicGroupByShortName(group.getShortName());
+
+        if(demographicGroupLookup != null) {
+            clearModelAttributes(model);
+
+            // ONLY IF we've found the demoGroup (which we have since we're in this if block) update the number of accounts on the demogroup
+            demographicGroupLookup.setNumberOfAccounts(group.getNumberOfAccounts());
+            demographicRepository.save(demographicGroupLookup);
+
+            model.addAttribute("demo", demographicGroupLookup);
+            model.addAttribute("successmessage", "Demogroup number of accounts update succeeded");
+            System.out.println("Successfully updated the number of accounts");
+            return "updatedemo.xhtml";
+        } else {
+            clearModelAttributes(model);
+            DemographicGroup newDemoGroup = new DemographicGroup();
+            model.addAttribute("demo", newDemoGroup);
+            model.addAttribute("errormessage", "Demogroup lookup Failed, Please try again");
+            System.out.println("Couldn't find the demogroup to update the number of accounts");
+            return "updatedemo.xhtml";
+        }
+    }
+
+>>>>>>> Stashed changes
     private Event lookupEventByNameAndYear(String eventName, int eventYear){
         List<Event> eventList = this.eventRepository.findAll();
         Event eventSearchResult = null;
@@ -686,8 +984,13 @@ public class WebController {
         for (Transaction transaction: allTransactions){
             if (transaction.getBuyer().equalsIgnoreCase(demoGroupShortName)
                     && transaction.getVendor().equalsIgnoreCase(streamingServiceShortName)
+<<<<<<< Updated upstream
                         && transaction.getEventType().equalsIgnoreCase("movie")
                             && transaction.getTransactionType().equalsIgnoreCase("watch")){
+=======
+                    && transaction.getEventType().equalsIgnoreCase("movie")
+                    && transaction.getTransactionType().equalsIgnoreCase("watch")){
+>>>>>>> Stashed changes
                 transactionsIndicatingSubscription.add(transaction);
             }
         }

@@ -23,8 +23,10 @@ VALUES ('movie','Beauty and the Beast',1991,84,'disney',1000);
 INSERT INTO Event (eventType,name,year,duration,studioShortName,eventLicensingFee) 
 VALUES ('ppv','MMA Championship',2020,121,'espn',8800);
 
---create_stream,apv,Amazon Prime Video,12
---create_stream,net,Netflix,14
+-- Stream inserts
+
+--INSERT INTO Studio (shortName, longName, streamFee) VALUES ('apv','Amazon Prime Video',12);
+--INSERT INTO Studio (shortName, longName, streamFee) VALUES ('net','Netflix',14);
 
 --offer_movie,apv,Mulan,1998
 --offer_movie,apv,The Little Mermaid,1989

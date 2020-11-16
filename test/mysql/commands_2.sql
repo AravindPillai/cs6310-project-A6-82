@@ -1,3 +1,6 @@
+-- Set DB if needed
+USE db;
+
 -- Studio inserts
 
 INSERT INTO Studio (shortName, longName) VALUES ('warner','Warner Brothers');

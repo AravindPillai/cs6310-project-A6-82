@@ -1,3 +1,6 @@
+-- Set DB if needed
+USE db;
+
 -- Demo inserts
 
 INSERT INTO DemographicGroup (shortName, longName) VALUES ('age_40_50','Viewers between 40 and 50');

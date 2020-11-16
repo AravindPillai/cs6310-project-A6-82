@@ -1,4 +1,4 @@
-package com.gatech.streamingwars.maindb.model;
+package com.gatech.streamingwars.model.main;
 
 public class TransactionSummary {
 

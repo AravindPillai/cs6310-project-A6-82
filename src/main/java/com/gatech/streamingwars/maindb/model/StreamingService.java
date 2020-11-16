@@ -6,9 +6,9 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "studio", schema = "main")
+@Table(name = "streamingservice", schema = "main")
 @Data
-public class Studio extends AuditEntity implements Vendor{
+public class StreamingService extends AuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -16,8 +16,7 @@ public class Studio extends AuditEntity implements Vendor{
 
     private String shortName;
     private String longName;
-//    private List<Transaction> transactionList;
-
+    private int subscriptionPrice;
 
     public String getShortName() {
         return shortName;
@@ -33,5 +32,13 @@ public class Studio extends AuditEntity implements Vendor{
 
     public void setLongName(String longName) {
         this.longName = longName;
+    }
+
+    public int getSubscriptionPrice() {
+        return subscriptionPrice;
+    }
+
+    public void setSubscriptionPrice(int subscriptionPrice) {
+        this.subscriptionPrice = subscriptionPrice;
     }
 }

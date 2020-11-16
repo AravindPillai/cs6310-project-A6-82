@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"></meta>
     <link rel="icon" href="../static/favicon/favicon.ico"/>
-    <title>Streaming Wards</title>
+    <title>Streaming Wars</title>
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
     <link href="../static/css/streamingwars.css" rel="stylesheet" th:href="@{/css/streamingwars.css}"/>
@@ -52,6 +52,9 @@
             </form>
             <span th:text ="${studio.shortName}"></span>
             <span th:text ="${studio.longName}"></span>
+            <span th:text ="${transactionSummary.currentPeriod}"></span>
+            <span th:text ="${transactionSummary.previousPeriod}"></span>
+            <span th:text ="${transactionSummary.total}"></span>
         </div>
     </div>
  </div>

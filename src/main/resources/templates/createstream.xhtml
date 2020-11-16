@@ -40,23 +40,29 @@
 <div class="container-fluid page-content">
     <div class="card mx-auto my-xl-5" style="width: 28rem;">
         <div class="card-body">
-            <form action="#" th:action="@{/createstudio}" th:object="${studio}" method="post">
+            <form action="#" th:action="@{/createstream}" th:object="${streamingService}" method="post">
                 <div class="form-group">
                     <label for="shortname">Short Name:</label>
-                    <input type="text" class="form-control" id="shortname" aria-describedby="shortNameHelp" th:field="${studio.shortName}" th:value="${studio.shortName}" required="required"/>
-                    <small id="shortNameHelp" class="form-text text-muted">Enter Studio ShortName</small>
+                    <input type="text" class="form-control" id="shortname" aria-describedby="shortNameHelp" th:field="${streamingService.shortName}" th:value="${streamingService.shortName}" required="required"/>
+                    <small id="shortNameHelp" class="form-text text-muted">Enter Streaming Service ShortName</small>
                     <div class="invalid-feedback">Short Name Cannot be Empty</div>
                 </div>
                 <div class="form-group">
-                    <label for="shortname">Long Name:</label>
-                    <input type="text" class="form-control" id="longname" aria-describedby="longNameHelp" th:field="${studio.longName}" th:value="${studio.longName}" required="required"/>
-                    <small id="longNameHelp" class="form-text text-muted">Enter Studio Long Name</small>
+                    <label for="longname">Long Name:</label>
+                    <input type="text" class="form-control" id="longname" aria-describedby="longNameHelp" th:field="${streamingService.longName}" th:value="${streamingService.longName}" required="required"/>
+                    <small id="longNameHelp" class="form-text text-muted">Enter Streaming Service Long Name</small>
                     <div class="invalid-feedback">Long Name Cannot be Empty</div>
+                </div>
+                <div class="form-group">
+                    <label for="subscriptionPrice">Subscription Price:</label>
+                    <input type="text" class="form-control" id="subscriptionPrice" aria-describedby="longNameHelp" th:field="${streamingService.subscriptionPrice}" th:value="${streamingService.subscriptionPrice}" required="required"/>
+                    <small id="subscriptionPriceHelp" class="form-text text-muted">Enter Streaming Service Subscription Price</small>
+                    <div class="invalid-feedback">Subscription Price Cannot be Empty</div>
                 </div>
                 <div class="form-group">
                     <label for="datepicker">Creation Date:</label>
                     <div class="input-group">
-                        <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" th:field="${studio.currentMonthYear}" th:value="${studio.currentMonthYear}" required="required"/>
+                        <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" th:field="${group.currentMonthYear}" th:value="${group.currentMonthYear}" required="required"/>
                         <label class="input-group-btn" for="datepicker">
                             <span class="btn btn-default">
                             <span class="fa fa-calendar open-datetimepicker"></span>

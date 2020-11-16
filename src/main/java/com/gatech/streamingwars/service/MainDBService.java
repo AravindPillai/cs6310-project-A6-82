@@ -35,4 +35,8 @@ public class MainDBService {
         return demogrphicGroupGreaterThanCreatedDate;
     }
 
+    public DemographicRepository getDemographicRepository(){
+        return this.demographicRepository;
+    }
+
 }

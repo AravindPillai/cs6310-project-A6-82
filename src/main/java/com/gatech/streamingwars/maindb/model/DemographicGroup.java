@@ -17,14 +17,17 @@ public class DemographicGroup extends AuditEntity {
     private String longName;
     private String description;
     private boolean isArchived;
+    private int numberOfAccounts;
 
     public DemographicGroup() {
 
     }
 
-    public DemographicGroup(String shortName, String longName, int numberOfAccounts) {
+    public DemographicGroup(String shortName, String longName, String description, int numberOfAccounts) {
         this.shortName = shortName;
         this.longName = longName;
+        this.description = description;
+        this.numberOfAccounts = numberOfAccounts;
     }
 
     public String getShortName() {
@@ -59,4 +62,11 @@ public class DemographicGroup extends AuditEntity {
         isArchived = archived;
     }
 
+    public int getNumberOfAccounts() {
+        return numberOfAccounts;
+    }
+
+    public void setNumberOfAccounts(int numberOfAccounts) {
+        this.numberOfAccounts = numberOfAccounts;
+    }
 }

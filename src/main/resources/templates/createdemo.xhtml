@@ -66,6 +66,12 @@
                     <div class="invalid-feedback">Description cannot be Empty</div>
                 </div>
                 <div class="form-group">
+                    <label for="numberofaccounts">Number of Accounts:</label>
+                    <input type="text" class="form-control" id="numberofaccounts" aria-describedby="numberofaccountsHelp" th:field="${group.numberOfAccounts}" th:value="${group.numberOfAccounts}" required="required"/>
+                    <small id="numberofaccountsHelp" class="form-text text-muted">Enter Demographic Number of Accounts</small>
+                    <div class="invalid-feedback">Number of Accounts cannot be Empty</div>
+                </div>
+                <div class="form-group">
                     <label for="datepicker">Creation Date:</label>
                     <div class="input-group">
                        <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" th:field="${group.currentMonthYear}" th:value="${group.currentMonthYear}" required="required"/>

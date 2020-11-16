@@ -1,6 +1,6 @@
-package com.gatech.streamingwars.model.main;
+package com.gatech.streamingwars.maindb.model;
 
-import com.gatech.streamingwars.model.AuditEntity;
+import com.gatech.streamingwars.common.AuditEntity;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -20,9 +20,11 @@ public class Event extends AuditEntity {
     private String studioShortName;
     private Integer eventLicensingFee;
 
-    public Event() {    }
-    public Event(String eventType,String name,int year,int duration,String studioShortName,Integer eventLicensingFee)
-    {
+
+    public Event() {
+    }
+
+    public Event(String eventType, String name, int year, int duration, String studioShortName, Integer eventLicenseFees) {
         this.eventType = eventType;
         this.name = name;
         this.year = year;
@@ -63,11 +65,9 @@ public class Event extends AuditEntity {
         this.studioShortName = studioShortName;
     }
 
-
-    public String getEventType(){
+    public String getEventType() {
         return eventType;
     }
-
 
     public void setEventType(String eventType) {
         this.eventType = eventType;
@@ -76,6 +76,7 @@ public class Event extends AuditEntity {
     public Integer getEventLicensingFee() {
         return eventLicensingFee;
     }
+
     public void setEventLicensingFee(Integer eventLicensingFee) {
         this.eventLicensingFee = eventLicensingFee;
     }

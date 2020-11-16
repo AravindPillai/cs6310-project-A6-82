@@ -1,6 +1,8 @@
 html,
 body {
     height: 100%;
+    /*background: #007bff;*/
+    /*background: linear-gradient(to right, #0062E6, #33AEFF);*/
 }
 
 .white, .white a {
@@ -11,5 +13,8 @@ body {
     flex: 1 0 auto;
 }
 
+.submitButtonGroupCD{
+    margin-top: 20px;
+}
 
 

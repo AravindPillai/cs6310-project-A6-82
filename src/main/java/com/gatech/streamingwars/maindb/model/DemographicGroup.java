@@ -1,13 +1,9 @@
-package com.gatech.streamingwars.model.main;
+package com.gatech.streamingwars.maindb.model;
 
-import com.gatech.streamingwars.model.AuditEntity;
+import com.gatech.streamingwars.common.AuditEntity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "demographicgroup", schema = "main")
@@ -16,14 +12,14 @@ public class DemographicGroup extends AuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
-    @Column(unique=true)
+    @Column(unique = true)
     private String shortName;
     private String longName;
     private String description;
     private int numberOfAccounts;
+    private boolean isArchived;
 
-    public DemographicGroup()
-    {
+    public DemographicGroup() {
 
     }
 
@@ -65,4 +61,13 @@ public class DemographicGroup extends AuditEntity {
     public void setNumberOfAccounts(int numberOfAccounts) {
         this.numberOfAccounts = numberOfAccounts;
     }
+
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    public void setArchived(boolean archived) {
+        isArchived = archived;
+    }
+
 }

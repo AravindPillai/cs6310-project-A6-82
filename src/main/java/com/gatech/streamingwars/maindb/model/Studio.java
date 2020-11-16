@@ -1,10 +1,9 @@
-package com.gatech.streamingwars.model.main;
+package com.gatech.streamingwars.maindb.model;
 
-import com.gatech.streamingwars.model.AuditEntity;
+import com.gatech.streamingwars.common.AuditEntity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "studio", schema = "main")

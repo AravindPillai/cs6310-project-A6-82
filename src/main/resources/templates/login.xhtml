@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8"></meta>
     <link rel="icon" href="../static/favicon/favicon.ico"/>
-    <title>Title</title>
+    <title>Streaming Wars</title>
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
     <link href="../static/css/streamingwars.css" rel="stylesheet" th:href="@{/css/streamingwars.css}"/>
+    <link href="../static/css/login.css" rel="stylesheet" th:href="@{/css/login.css}"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"  crossorigin="anonymous"/>
 </head>
 <body class="d-flex flex-column">
@@ -14,35 +15,43 @@
 <!-- Static navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#"><i class="fab fa-jedi-order fa-2x"></i> <span style="padding-left: 8px;font-size: larger">StreamingWars</span></a>
+        <a class="navbar-brand" href="/"><i class="fab fa-jedi-order fa-2x"></i> <span style="padding-left: 8px;font-size: larger">StreamingWars</span></a>
         <ul class="nav navbar-nav navbar-right">
-            <li class="white"><a class="white" href="#"><span class="glyphicon glyphicon-user white"></span> Sign Up</a></li>
-            <li  style="padding-left: 15px;"><a class="white" href="#"><span class="glyphicon glyphicon-log-in white"></span> Login</a></li>
+            <li class="white"><a class="white" href="registration"><span class="glyphicon glyphicon-user white"></span> Sign Up</a></li>
+<!--            <li  style="padding-left: 15px;"><a class="white" href="#"><span class="glyphicon glyphicon-log-in white"></span> Login</a></li>-->
         </ul>
     </div>
 </nav>
 <div class="container-fluid page-content">
     <div class="alert alert-success mx-auto my-1" role="alert" th:if="${successmessage}">
-       <span th:text="${successmessage}"></span>
+        <span th:text="${successmessage}"></span>
     </div>
     <div class="alert alert-danger mx-auto my-1" role="alert" th:if="${errormessage}">
         <span th:text="${errormessage}"></span>
     </div>
-    <div class="card mx-auto my-xl-5" style="width: 28rem;">
-        <div class="card-body">
-            <div class="list-group">
-                <a href="#" class="list-group-item list-group-item-action active">
-                    <span style="font-size: larger">Select An Action:</span>
-                </a>
-                <a href="#" th:onclick="|window.location.href='/createdemo'|" class="list-group-item list-group-item-action"> <i class="fas fa-users fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 10px">Create Demo</span> </a>
-                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-video fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 10px">Create Studio</span></a>
-                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-calendar-alt fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 17px">Create Event</span></a>
-                <a href="#" class="list-group-item list-group-item-action"><i class="fas fa-film fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 13px">Create Stream</span></a>
-                <a href="#" class="list-group-item list-group-item-action"><i class="fas fa-tv fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 6px">Watch Event</span></a> <!-- disabled to the class will disable-->
-                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-users-cog fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 10px">Display Demo</span> </a>
-                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-ticket-alt fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 10px">Display Event</span></a>
-                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-file-video fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 17px">Display Studio</span></a>
-                <a href="#" class="list-group-item list-group-item-action"> <i class="fas fa-piggy-bank fa-2x" style=" margin-left: 25px;"></i> <span style="margin-left: 13px">Display Offers</span></a>
+    <div class="row">
+        <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+            <div class="card card-signin my-5 rounded shadow shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-center">Sign In</h3>
+                    <form class="form-signin" th:action="@{/login}" method="post" >
+                        <div class="form-label-group">
+                            <input type="text" id="user_name" class="form-control" name="user_name" placeholder="user_name" required="required" autofocus="autofocus"></input>
+                            <label for="user_name">Email address</label>
+                        </div>
+
+                        <div class="form-label-group">
+                            <input type="password" id="password" class="form-control"  name="password" placeholder="password" required="required"></input>
+                            <label for="password">Password</label>
+                        </div>
+
+                        <div class="custom-control custom-checkbox mb-3">
+                            <input type="checkbox" class="custom-control-input" id="customCheck1"></input>
+                            <label class="custom-control-label" for="customCheck1">Remember password</label>
+                        </div>
+                        <button class="btn btn-lg btn-primary btn-block text-uppercase"  value="Login" type="submit" th:text="Login">Sign in</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

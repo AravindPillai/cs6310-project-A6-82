@@ -1,6 +1,6 @@
-package com.gatech.streamingwars.maindb.repository;
+package com.gatech.streamingwars.repository;
 
-import com.gatech.streamingwars.maindb.model.Event;
+import com.gatech.streamingwars.model.main.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EventRepository extends JpaRepository<Event,Long> {

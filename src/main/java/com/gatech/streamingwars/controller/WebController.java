@@ -1,20 +1,9 @@
 package com.gatech.streamingwars.controller;
 
-
 import com.gatech.streamingwars.model.AuditEntity;
 import com.gatech.streamingwars.model.main.*;
 import com.gatech.streamingwars.repository.*;
-import com.gatech.streamingwars.maindb.model.DemographicGroup;
-import com.gatech.streamingwars.maindb.model.Event;
-import com.gatech.streamingwars.maindb.model.Studio;
-import com.gatech.streamingwars.maindb.model.User;
-import com.gatech.streamingwars.maindb.repository.AccountRepository;
-import com.gatech.streamingwars.maindb.repository.EventRepository;
-import com.gatech.streamingwars.maindb.repository.StudioRepository;
-import com.gatech.streamingwars.service.MainDBService;
-import com.gatech.streamingwars.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -22,8 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,10 +21,7 @@ public class WebController {
     AccountRepository repository;
 
     @Autowired
-    MainDBService mainDBService;
-
-    @Autowired
-    UserService userService;
+    DemographicRepository demographicRepository;
 
     @Autowired
     StudioRepository studioRepository;
@@ -52,29 +36,15 @@ public class WebController {
     TransactionRepository transactionRepository;
 
     @RequestMapping("/")
-    public  String none(Model model)
+    public  String index(Model model)
     {
-      return "login.xhtml";
+      return "index.xhtml";
     }
-
-    @RequestMapping("/index")
-    public  String index(Model model) { return "index.xhtml";}
 
     @RequestMapping("/login")
-    public  String login(Model model,@RequestParam(required = false) Boolean error) {
-        if(error!=null && error)
-        {
-            model.addAttribute("errormessage", "Login Failed. Check the Credentials and Try Again.");
-        }
-        return "login.xhtml";
-    }
-
-    @RequestMapping("/registration")
-    public  String registration(Model model) {
-        clearModelAttributes(model);
-        User user = new User();
-        model.addAttribute(user);
-        return "registration.xhtml";
+    public  String login(Model model)
+    {
+       return "index.xhtml";
     }
 
     @RequestMapping("/displayevents")
@@ -362,31 +332,10 @@ public class WebController {
         }
     }
 
-    @PostMapping("/registration")
-    public String registration(@ModelAttribute User user, Model model)
-    {
-        User userByUserName = userService.findUserByUserName(user.getName());
-        if(userByUserName!=null)
-        {
-            model.addAttribute("errormessage", "User Exists");
-            model.addAttribute("user",userByUserName);
-            return "registration.xhtml";
-        }
-        else {
-            User saveUser = userService.saveUser(user);
-            model.addAttribute("successmessage", "User Created Successfully!");
-            return "login.xhtml";
-        }
-    }
-
     @RequestMapping("/createdemo")
     public  String createDemo(Model model)
     {
         clearModelAttributes(model);
-        if(!userService.isAuthenticated())
-        {
-            return "/";
-        }
         DemographicGroup dGroup = new DemographicGroup();
         model.addAttribute("group",dGroup);
         return "createdemo.xhtml";
@@ -394,22 +343,8 @@ public class WebController {
 
     @PostMapping("/createdemo")
     public String createDemoSubmit(@ModelAttribute DemographicGroup group, Model model) {
-        List<DemographicGroup> saved = null;
-        try {
-             group.setArchived(false);
-             //group.setCreatedAt(getCreateDate(group.getCurrentMonthYear()));
-             List<DemographicGroup> groups = new ArrayList<DemographicGroup>();
-             groups.add(group);
-             saved =  mainDBService.saveDemographicGroup(groups);
-        }catch (SQLIntegrityConstraintViolationException|DataIntegrityViolationException exception)
-        {
-            exception.printStackTrace();
-            System.out.println("Exception Occured during Saving "+exception.getMessage());
-            model.addAttribute("errormessage", "Demographic Group Creation Failed,Entry With Same Name Possible Exist.Please Verify and try again");
-            model.addAttribute("group",group);
-            return "createdemo.xhtml";
-        }
-        if(saved!=null && saved.size()>0) {
+        DemographicGroup saved = demographicRepository.save(group);
+        if(saved!=null) {
             model.addAttribute("successmessage", "Demographic Group Saved Successfully!");
             return "index.xhtml";
         }
@@ -604,7 +539,7 @@ public class WebController {
 
     private DemographicGroup lookupDemographicGroupByShortName(String demographicGroupShortName){
         // looks up demographic group via the short name
-        List<DemographicGroup> demographicGroupList = mainDBService.findAllDemographicGroup();
+        List<DemographicGroup> demographicGroupList = this.demographicRepository.findAll();
         DemographicGroup demographicGroupToSearchFor = null;
         for (DemographicGroup demographicGroup: demographicGroupList){
             if (demographicGroup.getShortName().equalsIgnoreCase(demographicGroupShortName)){

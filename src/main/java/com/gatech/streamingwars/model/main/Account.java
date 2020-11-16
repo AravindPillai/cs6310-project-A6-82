@@ -1,9 +1,10 @@
-package com.gatech.streamingwars.maindb.model;
+package com.gatech.streamingwars.model.main;
 
-import com.gatech.streamingwars.common.AuditEntity;
+import com.gatech.streamingwars.model.AuditEntity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 @Entity
 @Table(name = "account", schema = "main")
@@ -14,7 +15,7 @@ public class Account extends AuditEntity {
     Long id;
     String name;
 
-    public Account() {
+    public Account(){
 
     }
 

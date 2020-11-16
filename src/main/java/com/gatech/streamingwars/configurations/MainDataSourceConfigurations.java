@@ -19,7 +19,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "com.gatech.streamingwars.maindb.repository",
+@EnableJpaRepositories(basePackages = "com.gatech.streamingwars",
         entityManagerFactoryRef = "mainEntityManagerFactory",
         transactionManagerRef= "mainTransactionManager"
 )
@@ -45,7 +45,7 @@ public class MainDataSourceConfigurations {
     @Bean(name = "mainEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory( EntityManagerFactoryBuilder builder, @Qualifier("mainDS") DataSource mainDS) {
         return builder.dataSource(mainDS)
-                .packages("com.gatech.streamingwars.maindb.model")
+                .packages("com.gatech.streamingwars.model.main")
                 .persistenceUnit("main")
                 .build();
     }

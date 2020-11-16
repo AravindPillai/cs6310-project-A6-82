@@ -74,9 +74,47 @@ VALUES ('ppv','EuroCup Football',2020,120,'espn',5000);
 
 -- Demo inserts
 
-INSERT INTO DemographicGroup (shortName, longName) VALUES ('age_40_50','Viewers between 40 and 50',800);
-INSERT INTO DemographicGroup (shortName, longName) VALUES ('age_20_heroes','Viewers of Marvel/DC under 20',10000);
-INSERT INTO DemographicGroup (shortName, longName) VALUES ('sci_fi','Viewers of Science Fiction',2000);
+INSERT INTO DemographicGroup (shortName, longName) VALUES ('age_40_50','Viewers between 40 and 50');
+
+-- Create accounts 10 for testing
+INSERT INTO Account (id, name) VALUES (1,'age_40_50');
+INSERT INTO Account (id, name) VALUES (2,'age_40_50');
+INSERT INTO Account (id, name) VALUES (3,'age_40_50');
+INSERT INTO Account (id, name) VALUES (4,'age_40_50');
+INSERT INTO Account (id, name) VALUES (5,'age_40_50');
+INSERT INTO Account (id, name) VALUES (6,'age_40_50');
+INSERT INTO Account (id, name) VALUES (7,'age_40_50');
+INSERT INTO Account (id, name) VALUES (8,'age_40_50');
+INSERT INTO Account (id, name) VALUES (9,'age_40_50');
+INSERT INTO Account (id, name) VALUES (10,'age_40_50');
+
+INSERT INTO DemographicGroup (shortName, longName) VALUES ('age_20_heroes','Viewers of Marvel/DC under 20');
+
+-- Create accounts 10 for testing
+INSERT INTO Account (id, name) VALUES (11,'age_20_heroes');
+INSERT INTO Account (id, name) VALUES (12,'age_20_heroes');
+INSERT INTO Account (id, name) VALUES (13,'age_20_heroes');
+INSERT INTO Account (id, name) VALUES (14,'age_20_heroes');
+INSERT INTO Account (id, name) VALUES (15,'age_20_heroes');
+INSERT INTO Account (id, name) VALUES (16,'age_20_heroes');
+INSERT INTO Account (id, name) VALUES (17,'age_20_heroes');
+INSERT INTO Account (id, name) VALUES (18,'age_20_heroes');
+INSERT INTO Account (id, name) VALUES (19,'age_20_heroes');
+INSERT INTO Account (id, name) VALUES (20,'age_20_heroes');
+
+INSERT INTO DemographicGroup (shortName, longName) VALUES ('sci_fi','Viewers of Science Fiction');
+
+-- Create accounts 10 for testing
+INSERT INTO Account (id, name) VALUES (21,'sci_fi');
+INSERT INTO Account (id, name) VALUES (22,'sci_fi');
+INSERT INTO Account (id, name) VALUES (23,'sci_fi');
+INSERT INTO Account (id, name) VALUES (24,'sci_fi');
+INSERT INTO Account (id, name) VALUES (25,'sci_fi');
+INSERT INTO Account (id, name) VALUES (26,'sci_fi');
+INSERT INTO Account (id, name) VALUES (27,'sci_fi');
+INSERT INTO Account (id, name) VALUES (28,'sci_fi');
+INSERT INTO Account (id, name) VALUES (29,'sci_fi');
+INSERT INTO Account (id, name) VALUES (30,'sci_fi');
 
 
 -- Watch event inserts

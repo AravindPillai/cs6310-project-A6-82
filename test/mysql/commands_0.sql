@@ -5,7 +5,7 @@ USE main;
 
 INSERT INTO demographicgroup (shortName, longName, numberofaccounts) VALUES ('age_40_50','Viewers between 40 and 50',10);
 
--- Create accounts 10 for testing
+-- Create accounts
 INSERT INTO account (id, name) VALUES (1,'age_40_50');
 INSERT INTO account (id, name) VALUES (2,'age_40_50');
 INSERT INTO account (id, name) VALUES (3,'age_40_50');
@@ -20,7 +20,7 @@ INSERT INTO account (id, name) VALUES (10,'age_40_50');
 
 INSERT INTO demographicgroup (shortName, longName, numberofaccounts) VALUES ('age_20_anime','Viewers under 20 who watch anime weekly',20);
 
--- Create accounts 10 for testing
+-- Create accounts
 INSERT INTO account (id, name) VALUES (11,'age_20_anime');
 INSERT INTO account (id, name) VALUES (12,'age_20_anime');
 INSERT INTO account (id, name) VALUES (13,'age_20_anime');

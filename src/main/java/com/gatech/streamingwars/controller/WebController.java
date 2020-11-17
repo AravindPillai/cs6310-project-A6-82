@@ -518,6 +518,68 @@ public class WebController {
         }
     }
 
+    @RequestMapping("/updateevent")
+    public String updateEvent(Model model)
+    {
+        clearModelAttributes(model);
+        Event event = new Event();
+        model.addAttribute("event",event);
+        return "updateevent.xhtml";
+    }
+
+    @PostMapping("/updateevent")
+    public String updateEvent(@ModelAttribute Event event, Model model) {
+
+
+        // Most important thing for this is that we need to be validate that the movie itself exists before
+        // committing the transaction
+
+        Boolean isValid = true;
+        String reasonForFailure = "";
+
+        Event eventLookup = null;
+        eventLookup = lookupEventByNameAndYear(event.getName(), event.getYear());
+
+        if (eventLookup == null){
+            isValid = false;
+            reasonForFailure += "Event not found";
+        } else if (event != null) {
+
+
+            String currentYearMonth = eventLookup.getCurrentMonthYear();
+            // if the event has already been viewed in that month, do not proceed with the transaction
+            Transaction watchedInThatMonth = checkToSeeIfEventHasBeenWatchedInTheGivenMonth(event.getName(), event.getYear(), eventLookup.getCurrentMonthYear());
+
+            if (watchedInThatMonth != null) {
+                isValid = false;
+                reasonForFailure += "Event has already been watched in the given month";
+            }
+        }
+
+        Event saved = null;
+        if (isValid) {
+            System.out.println("Event and dateCheck passed validation steps");
+            // Get the studio from the event and then commit the transaction
+            clearModelAttributes(model);
+
+            eventLookup.setDuration(event.getDuration());
+            eventLookup.setEventLicensingFee(event.getEventLicensingFee());
+
+            saved = eventRepository.save(eventLookup);
+        }
+
+        if(saved!=null) {
+            model.addAttribute("event", eventLookup);
+            model.addAttribute("successmessage", "Event Saved Successfully!");
+            return "index.xhtml";
+        }
+        else {
+            model.addAttribute("errormessage", String.format("Event save Failed for the following reasons: %s, Please try again", reasonForFailure));
+            model.addAttribute("event",event);
+            return "updateevent.xhtml";
+        }
+    }
+
     @RequestMapping("/displayevents")
     public String displayEvents(Model model){
         clearModelAttributes(model);
@@ -717,6 +779,20 @@ public class WebController {
         return listOfOffers;
     }
 
+    private List<Transaction> getAllWatches(){
+        List<Transaction> listOfAllTransactions = this.transactionRepository.findAll();
+
+        List<Transaction> listOfOffers = new ArrayList<>();
+
+        for (Transaction transaction: listOfAllTransactions){
+            if (transaction.getTransactionType().equalsIgnoreCase("watch")){
+                listOfOffers.add(transaction);
+            }
+        }
+
+        return listOfOffers;
+    }
+
     private Transaction checkToSeeIfStreamingIsOfferingEvent(String streamingServiceShortName, String eventName, int eventYear){
         List<Transaction> allOfferings = getAllOffers();
 
@@ -726,6 +802,20 @@ public class WebController {
                     && transaction.getEventYear() == eventYear){
                 foundOffering = transaction;
                 return foundOffering;
+            }
+        }
+        return null;
+    }
+
+    private Transaction checkToSeeIfEventHasBeenWatchedInTheGivenMonth(String eventName, int eventYear, String monthYear){
+        List<Transaction> allWatches = getAllWatches();
+
+        Transaction foundWatch = null;
+        for (Transaction transaction: allWatches){
+            if (transaction.getEventName().equalsIgnoreCase(eventName) && transaction.getCurrentMonthYear().equalsIgnoreCase(monthYear)
+                    && transaction.getEventYear() == eventYear){
+                foundWatch = transaction;
+                return foundWatch;
             }
         }
         return null;

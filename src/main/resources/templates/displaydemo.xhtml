@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"></meta>
     <link rel="icon" href="../static/favicon/favicon.ico"/>
-    <title>Streaming Wards</title>
+    <title>Streaming Wars</title>
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
     <link href="../static/css/streamingwars.css" rel="stylesheet" th:href="@{/css/streamingwars.css}"/>
@@ -63,6 +63,7 @@
             <form action="#" th:action="@{/displaydemo}" th:object="${demo}" method="get">
                 <span th:text ="${demo.shortName} ?: ''"></span>
                 <span th:text ="${demo.longName} ?: ''"></span>
+                <span th:text ="${demo.numberOfAccounts} ?: ''"></span>
             </form>
         </div>
     </div>

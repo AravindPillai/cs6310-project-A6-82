@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"></meta>
     <link rel="icon" href="../static/favicon/favicon.ico"/>
-    <title>Streaming Wards</title>
+    <title>Streaming Wars</title>
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
     <link href="../static/css/streamingwars.css" rel="stylesheet" th:href="@{/css/streamingwars.css}"/>
@@ -79,9 +79,15 @@
                     <div class="invalid-feedback">Duration cannot be Empty</div>
                 </div>
                 <div class="form-group">
+                    <label for="eventlicensingfee">Licensing Fee:</label>
+                    <input type="text" class="form-control" id="eventlicensingfee" aria-describedby="eventlicensingfeeHelp" th:field="${event.eventLicensingFee}" th:value="${event.eventLicensingFee}" required="required"/>
+                    <small id="eventlicensingfeeHelp" class="form-text text-muted">Enter Event Licensing Fee</small>
+                    <div class="invalid-feedback">Event Licensing Fee cannot be Empty</div>
+                </div>
+                <div class="form-group">
                     <label for="datepicker">Creation Date:</label>
                     <div class="input-group">
-                       <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" required="required"/>
+                        <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" th:field="${event.currentMonthYear}" th:value="${event.currentMonthYear}" required="required"/>
                         <label class="input-group-btn" for="datepicker">
                             <span class="btn btn-default">
                             <span class="fa fa-calendar open-datetimepicker"></span>

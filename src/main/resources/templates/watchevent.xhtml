@@ -38,25 +38,51 @@
     </div>
 </nav>
 <div class="container-fluid page-content">
+
+    <div class="alert alert-success mx-auto my-1" role="alert" th:if="${successmessage}">
+        <span th:text="${successmessage}"></span>
+    </div>
+    <div class="alert alert-danger mx-auto my-1" role="alert" th:if="${errormessage}">
+        <span th:text="${errormessage}"></span>
+    </div>
+
     <div class="card mx-auto my-xl-5" style="width: 28rem;">
         <div class="card-body">
-            <form action="#" th:action="@{/createstudio}" th:object="${studio}" method="post">
+            <form action="#" th:action="@{/watchevent}" th:object="${transaction}" method="post">
                 <div class="form-group">
-                    <label for="shortname">Short Name:</label>
-                    <input type="text" class="form-control" id="shortname" aria-describedby="shortNameHelp" th:field="${studio.shortName}" th:value="${studio.shortName}" required="required"/>
-                    <small id="shortNameHelp" class="form-text text-muted">Enter Studio ShortName</small>
-                    <div class="invalid-feedback">Short Name Cannot be Empty</div>
+                    <label for="demogroupname">Demogroup Name:</label>
+                    <input type="text" class="form-control" id="demogroupname" aria-describedby="demogroupnameHelp" th:field="${transaction.buyer}" th:value="${transaction.buyer}" required="required"/>
+                    <small id="demogroupnameHelp" class="form-text text-muted">Enter Demo Group Short Name</small>
+                    <div class="invalid-feedback">Demo Group Short Name Cannot be Empty</div>
                 </div>
                 <div class="form-group">
-                    <label for="shortname">Long Name:</label>
-                    <input type="text" class="form-control" id="longname" aria-describedby="longNameHelp" th:field="${studio.longName}" th:value="${studio.longName}" required="required"/>
-                    <small id="longNameHelp" class="form-text text-muted">Enter Studio Long Name</small>
-                    <div class="invalid-feedback">Long Name Cannot be Empty</div>
+                    <label for="demogrouppercentage">Demogroup Percentage:</label>
+                    <input type="text" class="form-control" id="demogrouppercentage" aria-describedby="demogrouppercentageHelp" th:field="${transaction.percentage}" th:value="${transaction.percentage}" required="required"/>
+                    <small id="demogroupnameHelp" class="form-text text-muted">Enter Demo Group Percentage</small>
+                    <div class="invalid-feedback">Demo Group Percentage Cannot be Empty</div>
+                </div>
+                <div class="form-group">
+                    <label for="streamname">Streaming Service Short Name:</label>
+                    <input type="text" class="form-control" id="streamname" aria-describedby="streamnameHelp" th:field="${transaction.vendor}" th:value="${transaction.vendor}" required="required"/>
+                    <small id="streamnameHelp" class="form-text text-muted">Enter Stream Short Name</small>
+                    <div class="invalid-feedback">Streaming Service Short Name Cannot be Empty</div>
+                </div>
+                <div class="form-group">
+                    <label for="eventname">Event Name:</label>
+                    <input type="text" class="form-control" id="eventname" aria-describedby="eventnameHelp" th:field="${transaction.eventName}" th:value="${transaction.eventName}" required="required"/>
+                    <small id="eventnameHelp" class="form-text text-muted">Enter Event Name</small>
+                    <div class="invalid-feedback">Event Name Cannot be Empty</div>
+                </div>
+                <div class="form-group">
+                    <label for="eventyear">Event Year:</label>
+                    <input type="text" class="form-control" id="eventyear" aria-describedby="eventyearHelp" th:field="${transaction.eventYear}" th:value="${transaction.eventYear}" required="required"/>
+                    <small id="eventyearHelp" class="form-text text-muted">Enter Event Year</small>
+                    <div class="invalid-feedback">Event Year Cannot be Empty</div>
                 </div>
                 <div class="form-group">
                     <label for="datepicker">Creation Date:</label>
                     <div class="input-group">
-                        <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" th:field="${studio.currentMonthYear}" th:value="${studio.currentMonthYear}" required="required"/>
+                        <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" th:field="${transaction.currentMonthYear}" th:value="${transaction.currentMonthYear}" required="required"/>
                         <label class="input-group-btn" for="datepicker">
                             <span class="btn btn-default">
                             <span class="fa fa-calendar open-datetimepicker"></span>
@@ -69,6 +95,13 @@
                 <button type="submit" th:onclick="|window.location.href='/'|" class="btn btn-outline-secondary">Cancel</button>
             </form>
         </div>
+<!--        <div class="card-body">-->
+<!--            <form action="#" th:action="@{/offermovie}" th:object="${transaction}" method="get">-->
+<!--                <span th:text ="${transaction.buyer} ?: ''"></span>-->
+<!--                <span th:text ="${transaction.eventName} ?: ''"></span>-->
+<!--                <span th:text ="${transaction.eventYear} ?: ''"></span>-->
+<!--            </form>-->
+<!--        </div>-->
     </div>
  </div>
 <footer id="sticky-footer" class="py-2 bg-secondary text-white-50">

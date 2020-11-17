@@ -1,32 +1,33 @@
-package com.gatech.streamingwars.model.archive;
+package com.gatech.streamingwars.maindb.model;
 
-import com.gatech.streamingwars.model.AuditEntity;
+import com.gatech.streamingwars.common.AuditEntity;
 import lombok.Data;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "archived_demographic_group", schema = "archive")
+@Table(name = "demographicgroup", schema = "main")
 @Data
-public class ArchivedDemographicGroup extends AuditEntity {
+public class DemographicGroup extends AuditEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
+    @Column(unique = true)
     private String shortName;
     private String longName;
     private String description;
-    private String currentMonthYear;
     private boolean isArchived;
+    private int numberOfAccounts;
 
-    public ArchivedDemographicGroup()
-    {
+    public DemographicGroup() {
 
     }
 
-    public ArchivedDemographicGroup(Long id,String shortName, String longName,String description) {
-        this.id = id;
+    public DemographicGroup(String shortName, String longName, String description, int numberOfAccounts) {
         this.shortName = shortName;
         this.longName = longName;
         this.description = description;
+        this.numberOfAccounts = numberOfAccounts;
     }
 
     public String getShortName() {
@@ -53,19 +54,19 @@ public class ArchivedDemographicGroup extends AuditEntity {
         this.description = description;
     }
 
-    public String getCurrentMonthYear() {
-        return currentMonthYear;
-    }
-
-    public void setCurrentMonthYear(String currentMonthYear) {
-        this.currentMonthYear = currentMonthYear;
-    }
-
     public boolean isArchived() {
         return isArchived;
     }
 
     public void setArchived(boolean archived) {
         isArchived = archived;
+    }
+
+    public int getNumberOfAccounts() {
+        return numberOfAccounts;
+    }
+
+    public void setNumberOfAccounts(int numberOfAccounts) {
+        this.numberOfAccounts = numberOfAccounts;
     }
 }

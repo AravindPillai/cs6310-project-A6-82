@@ -1,6 +1,6 @@
 package com.gatech.streamingwars.service;
 
-import com.gatech.streamingwars.model.main.User;
+import com.gatech.streamingwars.maindb.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -1,32 +1,42 @@
-package com.gatech.streamingwars.model.main;
+package com.gatech.streamingwars.archivedb.model;
 
-import com.gatech.streamingwars.model.AuditEntity;
+import com.gatech.streamingwars.common.AuditEntity;
+import com.gatech.streamingwars.maindb.model.DemographicGroup;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "demographicgroup", schema = "main")
+@Table(name = "archived_demographic_group", schema = "archive")
 @Data
-public class DemographicGroup extends AuditEntity {
+public class ArchivedDemographicGroup extends AuditEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
-    @Column(unique=true)
     private String shortName;
     private String longName;
     private String description;
     private boolean isArchived;
 
-    public DemographicGroup()
+    public ArchivedDemographicGroup()
     {
 
     }
 
-    public DemographicGroup(String shortName, String longName,int numberOfAccounts) {
+    public ArchivedDemographicGroup(DemographicGroup group)
+    {
+        this.id = group.getId();
+        this.shortName = group.getShortName();
+        this.longName = group.getLongName();
+        this.description = group.getDescription();
+        this.setCurrentMonthYear(group.getCurrentMonthYear());
+        this.isArchived = group.isArchived();
+    }
+
+    public ArchivedDemographicGroup(Long id,String shortName, String longName,String description) {
+        this.id = id;
         this.shortName = shortName;
         this.longName = longName;
+        this.description = description;
     }
 
     public String getShortName() {
@@ -60,5 +70,4 @@ public class DemographicGroup extends AuditEntity {
     public void setArchived(boolean archived) {
         isArchived = archived;
     }
-
 }

@@ -518,6 +518,66 @@ public class WebController {
         }
     }
 
+    @RequestMapping("/updatestream")
+    public String updateStream(Model model)
+    {
+        clearModelAttributes(model);
+        StreamingService streamingService = new StreamingService();
+        model.addAttribute("streamingservice",streamingService);
+        return "updatestream.xhtml";
+    }
+
+    @PostMapping("/updatestream")
+    public String updateEvent(@ModelAttribute StreamingService streamingService, Model model) {
+
+
+        // Most important thing for this is that we need to be validate that the movie itself exists before
+        // committing the transaction
+
+        Boolean isValid = true;
+        String reasonForFailure = "";
+
+        StreamingService streamLookup = null;
+        streamLookup = lookupStreamByShortName(streamingService.getShortName());
+
+        if (streamLookup == null){
+            isValid = false;
+            reasonForFailure += "Streaming Service not found";
+        } else if (streamLookup != null) {
+
+            String currentYearMonth = streamLookup.getCurrentMonthYear();
+            // if the event has already been viewed in that month, do not proceed with the transaction
+            Transaction subscribedToThatMonth = checkToSeeIfStreamHasBeenWatchedInTheGivenMonth(streamingService.getShortName(), streamLookup.getCurrentMonthYear());
+
+            if (subscribedToThatMonth != null) {
+                isValid = false;
+                reasonForFailure += "Stream has already been subscribed to in the given month";
+            }
+        }
+
+        StreamingService saved = null;
+        if (isValid) {
+            System.out.println("Streaming Service passed validation steps");
+            // Get the studio from the event and then commit the transaction
+            clearModelAttributes(model);
+
+            streamLookup.setSubscriptionPrice(streamingService.getSubscriptionPrice());
+
+            saved = streamingServiceRepository.save(streamLookup);
+        }
+
+        if(saved!=null) {
+            model.addAttribute("streamingservice", streamLookup);
+            model.addAttribute("successmessage", "Event Saved Successfully!");
+            return "index.xhtml";
+        }
+        else {
+            model.addAttribute("errormessage", String.format("Streaming Service Update Failed for the following reasons: %s, Please try again", reasonForFailure));
+            model.addAttribute("streamingservice",streamingService);
+            return "updatestream.xhtml";
+        }
+    }
+
     @RequestMapping("/updateevent")
     public String updateEvent(Model model)
     {
@@ -816,6 +876,19 @@ public class WebController {
                     && transaction.getEventYear() == eventYear){
                 foundWatch = transaction;
                 return foundWatch;
+            }
+        }
+        return null;
+    }
+
+    private Transaction checkToSeeIfStreamHasBeenWatchedInTheGivenMonth(String streamShortName, String monthYear){
+        List<Transaction> allWatches = getAllWatches();
+
+        Transaction foundStreamWatch = null;
+        for (Transaction transaction: allWatches){
+            if (transaction.getVendor().equalsIgnoreCase(streamShortName) && transaction.getCurrentMonthYear().equalsIgnoreCase(monthYear)){
+                foundStreamWatch = transaction;
+                return foundStreamWatch;
             }
         }
         return null;

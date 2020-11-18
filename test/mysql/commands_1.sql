@@ -15,8 +15,8 @@ INSERT INTO transaction (createdAt,currentMonthYear,buyer, percentage, eventtype
 VALUES ('2020-11-17 04:00:00','11-2020','age_20_heroes',30,'movie','Batman v Superman',2016,'offer',0,'hulu',0,1000);
 
 -- Demo inserts
-INSERT INTO demographicgroup (createdAt,shortname, longname,numberOfAccounts)
-VALUES ('2020-11-17 04:00:00','age_20_heroes','Viewers of Marvel/DC under 20',10);
+INSERT INTO demographicgroup (createdAt,shortname, longname,numberOfAccounts,isArchived)
+VALUES ('2020-11-17 04:00:00','age_20_heroes','Viewers of Marvel/DC under 20',10,0);
 
 -- Create accounts
 INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_20_heroes');

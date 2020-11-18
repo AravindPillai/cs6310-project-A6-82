@@ -68,8 +68,8 @@ VALUES ('2020-11-17 04:00:00','11-2020','age_40_50',80,'ppv','Justice League Liv
 
 
 -- Demo inserts
-INSERT INTO demographicgroup (createdAt,shortname, longname,numberOfAccounts)
-VALUES ('2020-11-17 04:00:00','age_40_50','Viewers between 40 and 50', 10);
+INSERT INTO demographicgroup (createdAt,shortname, longname,numberOfAccounts,isArchived)
+VALUES ('2020-11-17 04:00:00','age_40_50','Viewers between 40 and 50', 10,0);
 
 -- Create accounts
 INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_40_50');
@@ -83,8 +83,8 @@ INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_40_50');
 INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_40_50');
 INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_40_50');
 
-INSERT INTO demographicgroup (createdAt,shortname, longname,numberOfAccounts)
-VALUES ('2020-11-17 04:00:00','age_20_heroes','Viewers of Marvel/DC under 20',20);
+INSERT INTO demographicgroup (createdAt,shortname, longname,numberOfAccounts,isArchived)
+VALUES ('2020-11-17 04:00:00','age_20_heroes','Viewers of Marvel/DC under 20',20,0);
 
 -- Create accounts
 INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_20_heroes');
@@ -108,8 +108,8 @@ INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_20_heroe
 INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_20_heroes');
 INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_20_heroes');
 
-INSERT INTO demographicgroup (createdAt,shortname, longname,numberOfAccounts)
-VALUES ('2020-11-17 04:00:00','sci_fi','Viewers of Science Fiction',5);
+INSERT INTO demographicgroup (createdAt,shortname, longname,numberOfAccounts,isArchived)
+VALUES ('2020-11-17 04:00:00','sci_fi','Viewers of Science Fiction',5,0);
 
 -- Create accounts
 INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','sci_fi');

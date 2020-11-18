@@ -1,5 +1,5 @@
 -- Set DB if needed
-USE db;
+USE main;
 
 -- Demo inserts
 

@@ -52,8 +52,8 @@
 --     ,transactionCost INT NULL);
 
 -- Demo inserts
-INSERT INTO demographicgroup (createdAt,shortName, longName, numberofaccounts,isArchived)
-VALUES ('2020-11-17 04:00:00','age_40_50','Viewers between 40 and 50', 10,0);
+INSERT INTO demographicgroup (id,createdAt,shortName, longName, numberofaccounts,isArchived,description)
+VALUES (1,'2020-11-17 04:00:00','age_40_50','Viewers between 40 and 50', 10,0,'age_40_501');
 
 -- Create accounts
 INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_40_50');
@@ -67,8 +67,8 @@ INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_40_50');
 INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_40_50');
 INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_40_50');
 
-INSERT INTO demographicgroup (createdAt,shortname, longname,numberOfAccounts,isArchived)
-VALUES ('2020-11-17 04:00:00','age_20_anime','Viewers under 20 who watch anime weekly',20,0);
+INSERT INTO demographicgroup (id,createdAt,shortname, longname,numberOfAccounts,isArchived,description)
+VALUES (2,'2020-11-17 04:00:00','age_20_anime','Viewers under 20 who watch anime weekly',20,0,'age_20_anime1');
 
 -- Create accounts
 INSERT INTO account (createdAt,name) VALUES ('2020-11-17 04:00:00','age_20_anime');

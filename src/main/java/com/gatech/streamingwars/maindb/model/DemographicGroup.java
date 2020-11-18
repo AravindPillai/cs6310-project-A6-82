@@ -16,7 +16,7 @@ public class DemographicGroup extends AuditEntity {
     private String shortName;
     private String longName;
     private String description;
-    private boolean isArchived;
+    private boolean archived;
     private int numberOfAccounts;
 
     public DemographicGroup() {
@@ -55,11 +55,11 @@ public class DemographicGroup extends AuditEntity {
     }
 
     public boolean isArchived() {
-        return isArchived;
+        return archived;
     }
 
     public void setArchived(boolean archived) {
-        isArchived = archived;
+        this.archived = archived;
     }
 
     public int getNumberOfAccounts() {

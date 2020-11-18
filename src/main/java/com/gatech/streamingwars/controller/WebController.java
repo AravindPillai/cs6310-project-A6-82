@@ -656,6 +656,54 @@ public class WebController {
         return "displayoffers.xhtml";
     }
 
+    @RequestMapping("/retractmovie")
+    public  String retractMovieOffer(Model model)
+    {
+        clearModelAttributes(model);
+        Transaction transaction = new Transaction();
+        model.addAttribute("transaction",transaction);
+        return "retractmovie.xhtml";
+    }
+
+    @PostMapping("/retractmovie")
+    public String retractMovieOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
+
+
+        Boolean isValid = true;
+        String reasonForFailure = "";
+
+        // Most important thing for this is that we need to be validate that the movie itself is being offered before
+        // committing the transaction retraction
+
+        // validate that the streaming service is actually offering the event
+        Transaction offerLookup = null;
+        offerLookup = checkToSeeIfStreamingIsOfferingEvent(transaction.getBuyer(), transaction.getEventName(), transaction.getEventYear());
+        if (offerLookup == null){
+            isValid = false;
+            reasonForFailure += "Offering for streaming service and movie not found";
+        }
+
+        Transaction saved = null;
+        if (isValid) {
+            System.out.println("Found Valid Offering passed validation steps");
+            // Get the studio from the event and then commit the transaction
+
+            offerLookup.setEventType(offerLookup.getEventType() + "- retracted");
+
+            saved = transactionRepository.save(offerLookup);
+        }
+
+        if(saved!=null) {
+            model.addAttribute("successmessage", "Movie retracted Successfully!");
+            return "index.xhtml";
+        }
+        else {
+            model.addAttribute("errormessage", String.format("Retraction Failed for the following reasons: %s, Please try again", reasonForFailure));
+            model.addAttribute("transaction",transaction);
+            return "retractmovie.xhtml";
+        }
+    }
+
     @RequestMapping("/offermovie")
     public  String createMovieOffer(Model model)
     {
@@ -859,7 +907,12 @@ public class WebController {
         Transaction foundOffering = null;
         for (Transaction transaction: allOfferings){
             if (transaction.getBuyer().equalsIgnoreCase(streamingServiceShortName) && transaction.getEventName().equalsIgnoreCase(eventName)
-                    && transaction.getEventYear() == eventYear){
+                    && transaction.getEventYear() == eventYear
+
+                    // new functionality for the retractevent
+                    && (!(transaction.getEventType().contains("retracted")))
+
+                        ){
                 foundOffering = transaction;
                 return foundOffering;
             }

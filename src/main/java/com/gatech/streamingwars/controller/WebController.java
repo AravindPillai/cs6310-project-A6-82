@@ -429,20 +429,30 @@ public class WebController {
         clearModelAttributes(model);
         StreamingService stream = new StreamingService();
         model.addAttribute("stream", stream);
+
+        TransactionSummary transactionSummary = new TransactionSummary();
+        model.addAttribute("transactionSummary", transactionSummary);
+
         return "displaystream.xhtml";
     }
 
     @PostMapping("/displaystream")
-    public  String displayStream(@ModelAttribute StreamingService stream, Model model)
+    public  String displayStream(@ModelAttribute StreamingService stream, @ModelAttribute TransactionSummary transactionSummary, Model model)
     {
         // Lookup Stream
         StreamingService streamLookup = lookupStreamByShortName(stream.getShortName());
         if(streamLookup != null){
             model.addAttribute("stream", streamLookup);
+
+            // since the Stream was found, do a lookup on the transactionSummaryDetails
+            TransactionSummary transactionSummaryCalculated = calculateTransactionSummaryForStream(streamLookup, stream.getCurrentMonthYear());
+            model.addAttribute("transactionSummary", transactionSummaryCalculated);
+
             return "displaystream.xhtml";
         } else {
             stream = new StreamingService();
             model.addAttribute("stream", stream);
+            model.addAttribute("transactionSummary", transactionSummary);
             model.addAttribute("errormessage", "Streaming Service lookup Failed, Please try again");
             System.out.println("Couldn't find the stream");
             return "displaystream.xhtml";
@@ -820,8 +830,8 @@ public class WebController {
         return null;
     }
 
-    private List<Transaction> getSalesTransactions(Vendor vendor){
-        String vendorShortName = vendor.getShortName();
+    private List<Transaction> getSalesTransactions(String vendorShortName){
+//        String vendorShortName = vendor.getShortName();
 
         List<Transaction> vendorSalesTransactions = new ArrayList<>();
 
@@ -855,6 +865,64 @@ public class WebController {
         return buyerPurchaseTransactions;
     }
 
+    private TransactionSummary calculateTransactionSummaryForStream(StreamingService stream, String currentMonthYear){
+        // Display for a StreamingService
+        // Subscription fees for the current month
+        // Subscription fees for the previous motnh
+        // Subscription fees for all previous months except the current month
+
+        // first, get all the transactions where the StreamingService was the vendor
+        List<Transaction> allSalesTransactions = getSalesTransactions(stream.getShortName());
+
+        // convert currentMonthYear to LocalDate
+        String[] monthYear = currentMonthYear.split("-");
+        int month = Integer.parseInt(monthYear[0]); // subtract 1 because the months index starts at 0
+        int year = Integer.parseInt(monthYear[1]);
+        LocalDate baseDate = LocalDate.of(year, month, 01);
+
+        // now, calculate the current month
+        int currentMonthTotal = 0;
+        for (Transaction transaction: allSalesTransactions){
+            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
+                currentMonthTotal += transaction.getTransactionCost();
+            }
+        }
+
+        // calculate the previous month
+        int previousMonthTotal = 0;
+        for (Transaction transaction: allSalesTransactions){
+            if(baseDate.minusMonths(1).compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
+                previousMonthTotal += transaction.getTransactionCost();
+            }
+        }
+
+        // calculate all upto except current month
+        int cumulativeExceptCurrentTotal = 0;
+        for (Transaction transaction: allSalesTransactions){
+            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) > 0){
+                cumulativeExceptCurrentTotal += transaction.getTransactionCost();
+            }
+        }
+
+        TransactionSummary transactionSummary = new TransactionSummary();
+        transactionSummary.setCurrentPeriod(currentMonthTotal);
+        transactionSummary.setPreviousPeriod(previousMonthTotal);
+        transactionSummary.setTotal(cumulativeExceptCurrentTotal);
+
+        // Unique to StreamingServices
+        // Calculate the total Licensing fees
+
+        List<Transaction> allPurchases = getPurchaseTransactions(stream.getShortName());
+        int totalLicensingFees = 0;
+        for (Transaction transaction: allPurchases){
+            totalLicensingFees+=transaction.getTransactionCost();
+        }
+
+        transactionSummary.setLicensing(totalLicensingFees);
+
+        return transactionSummary;
+    }
+
     private TransactionSummary calculateTransactionSummaryForStudio(Studio studio, String currentMonthYear){
         // Display for a studio shows
         // Licensing fees for the current month
@@ -862,7 +930,7 @@ public class WebController {
         // Licensing fees for all previous months except the current month
 
         // first, get all the transactions where the studio was the vendor
-        List<Transaction> allTransactions = getSalesTransactions(studio);
+        List<Transaction> allTransactions = getSalesTransactions(studio.getShortName());
 
         // will need to change this to look at some global date, for now set current month == 11
 //        int current_month = 11;

@@ -165,6 +165,18 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="datepicker">Creation Date:</label>
+                    <div class="input-group">
+                        <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" th:field="${demo.currentMonthYear}" th:value="${demo.currentMonthYear}" required="required"/>
+                        <label class="input-group-btn" for="datepicker">
+                            <span class="btn btn-default">
+                            <span class="fa fa-calendar open-datetimepicker"></span>
+                             </span>
+                        </label>
+                    </div>
+                    <small id="creationDateHelp" class="form-text text-muted">Defaulted to Current Month</small>
+                </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>

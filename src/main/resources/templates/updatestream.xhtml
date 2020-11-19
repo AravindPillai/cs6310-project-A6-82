@@ -38,37 +38,38 @@
     </div>
 </nav>
 <div class="container-fluid page-content">
+
+    <div class="alert alert-success mx-auto my-1" role="alert" th:if="${successmessage}">
+        <span th:text="${successmessage}"></span>
+    </div>
+    <div class="alert alert-danger mx-auto my-1" role="alert" th:if="${errormessage}">
+        <span th:text="${errormessage}"></span>
+    </div>
+
     <div class="card mx-auto my-xl-5" style="width: 28rem;">
-        <div class="card-body" >
-            <form action="#" th:action="@{/displaystream}" th:object="${stream}" method="post">
+        <div class="card-body">
+            <form action="#" th:action="@{/updatestream}" th:object="${streamingservice}" method="post">
                 <div class="form-group">
-                    <label for="shortname">Short Name:</label>
-                    <input type="text" class="form-control" id="shortname" aria-describedby="shortNameHelp" th:field="${stream.shortName}" th:value="${stream.shortName}" required="required"/>
-                    <small id="shortNameHelp" class="form-text text-muted">Enter Stream ShortName</small>
-                    <div class="invalid-feedback">Short Name Cannot be Empty</div>
+                    <label for="streamname">Stream Short Name:</label>
+                    <input type="text" class="form-control" id="streamname" aria-describedby="streamnameHelp" th:field="${streamingservice.shortName}" th:value="${streamingservice.shortName}" required="required"/>
+                    <small id="streamnameHelp" class="form-text text-muted">Enter Streaming Service Short Name</small>
+                    <div class="invalid-feedback">Event Name Cannot be Empty</div>
                 </div>
                 <div class="form-group">
-                    <label for="datepicker">Creation Date:</label>
-                    <div class="input-group">
-                        <input type="text" id="datepicker" class="form-control" aria-describedby="datepicker" readonly="readonly" th:field="${stream.currentMonthYear}" th:value="${stream.currentMonthYear}" required="required"/>
-                        <label class="input-group-btn" for="datepicker">
-                            <span class="btn btn-default">
-                            <span class="fa fa-calendar open-datetimepicker"></span>
-                             </span>
-                        </label>
-                    </div>
-                    <small id="creationDateHelp" class="form-text text-muted">Defaulted to Current Month</small>
+                    <label for="streamsubscriptionprice">Stream Subscription Price:</label>
+                    <input type="text" class="form-control" id="streamsubscriptionprice" aria-describedby="streamsubscriptionpriceHelp" th:field="${streamingservice.subscriptionPrice}" th:value="${streamingservice.subscriptionPrice}" required="required"/>
+                    <small id="streamingservice.subscriptionPriceHelp" class="form-text text-muted">Enter new streaming service price</small>
+                    <div class="invalid-feedback">New streaming service price Cannot be Empty</div>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
                 <button type="submit" th:onclick="|window.location.href='/'|" class="btn btn-outline-secondary">Cancel</button>
             </form>
-            <span th:text ="${stream.shortName}"></span>
-            <span th:text ="${stream.longName}"></span>
-            <span th:text ="${stream.subscriptionPrice}"></span>
-            <span th:text ="${transactionSummary.currentPeriod}"></span>
-            <span th:text ="${transactionSummary.previousPeriod}"></span>
-            <span th:text ="${transactionSummary.total}"></span>
-            <span th:text ="${transactionSummary.licensing}"></span>
+        </div>
+        <div class="card-body">
+            <form action="#" th:action="@{/updatestream}" th:object="${streamingservice}" method="get">
+                <span th:text ="${streamingservice.shortName} ?: ''"></span>
+                <span th:text ="${streamingservice.subscriptionPrice} ?: ''"></span>
+            </form>
         </div>
     </div>
  </div>

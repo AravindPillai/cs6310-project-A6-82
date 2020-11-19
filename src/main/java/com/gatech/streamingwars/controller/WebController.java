@@ -421,7 +421,7 @@ public class WebController {
             model.addAttribute("studio", studioLookup);
 
             // since the studio was found, do a lookup on the transactionSummaryDetails
-            TransactionSummary transactionSummaryCalculated = calculateTransactionSummaryForStudio(studioLookup);
+            TransactionSummary transactionSummaryCalculated = calculateTransactionSummaryForStudio(studioLookup, studio.getCurrentMonthYear());
             model.addAttribute("transactionSummary", transactionSummaryCalculated);
 
             return "displaystudio.xhtml";
@@ -441,20 +441,30 @@ public class WebController {
         clearModelAttributes(model);
         StreamingService stream = new StreamingService();
         model.addAttribute("stream", stream);
+
+        TransactionSummary transactionSummary = new TransactionSummary();
+        model.addAttribute("transactionSummary", transactionSummary);
+
         return "displaystream.xhtml";
     }
 
     @PostMapping("/displaystream")
-    public  String displayStream(@ModelAttribute StreamingService stream, Model model)
+    public  String displayStream(@ModelAttribute StreamingService stream, @ModelAttribute TransactionSummary transactionSummary, Model model)
     {
         // Lookup Stream
         StreamingService streamLookup = lookupStreamByShortName(stream.getShortName());
         if(streamLookup != null){
             model.addAttribute("stream", streamLookup);
+
+            // since the Stream was found, do a lookup on the transactionSummaryDetails
+            TransactionSummary transactionSummaryCalculated = calculateTransactionSummaryForStream(streamLookup, stream.getCurrentMonthYear());
+            model.addAttribute("transactionSummary", transactionSummaryCalculated);
+
             return "displaystream.xhtml";
         } else {
             stream = new StreamingService();
             model.addAttribute("stream", stream);
+            model.addAttribute("transactionSummary", transactionSummary);
             model.addAttribute("errormessage", "Streaming Service lookup Failed, Please try again");
             System.out.println("Couldn't find the stream");
             return "displaystream.xhtml";
@@ -556,6 +566,128 @@ public class WebController {
         }
     }
 
+    @RequestMapping("/updatestream")
+    public String updateStream(Model model)
+    {
+        clearModelAttributes(model);
+        StreamingService streamingService = new StreamingService();
+        model.addAttribute("streamingservice",streamingService);
+        return "updatestream.xhtml";
+    }
+
+    @PostMapping("/updatestream")
+    public String updateEvent(@ModelAttribute StreamingService streamingService, Model model) {
+
+
+        // Most important thing for this is that we need to be validate that the movie itself exists before
+        // committing the transaction
+
+        Boolean isValid = true;
+        String reasonForFailure = "";
+
+        StreamingService streamLookup = null;
+        streamLookup = lookupStreamByShortName(streamingService.getShortName());
+
+        if (streamLookup == null){
+            isValid = false;
+            reasonForFailure += "Streaming Service not found";
+        } else if (streamLookup != null) {
+
+            String currentYearMonth = streamLookup.getCurrentMonthYear();
+            // if the event has already been viewed in that month, do not proceed with the transaction
+            Transaction subscribedToThatMonth = checkToSeeIfStreamHasBeenWatchedInTheGivenMonth(streamingService.getShortName(), streamLookup.getCurrentMonthYear());
+
+            if (subscribedToThatMonth != null) {
+                isValid = false;
+                reasonForFailure += "Stream has already been subscribed to in the given month";
+            }
+        }
+
+        StreamingService saved = null;
+        if (isValid) {
+            System.out.println("Streaming Service passed validation steps");
+            // Get the studio from the event and then commit the transaction
+            clearModelAttributes(model);
+
+            streamLookup.setSubscriptionPrice(streamingService.getSubscriptionPrice());
+
+            saved = streamingServiceRepository.save(streamLookup);
+        }
+
+        if(saved!=null) {
+            model.addAttribute("streamingservice", streamLookup);
+            model.addAttribute("successmessage", "Event Saved Successfully!");
+            return "index.xhtml";
+        }
+        else {
+            model.addAttribute("errormessage", String.format("Streaming Service Update Failed for the following reasons: %s, Please try again", reasonForFailure));
+            model.addAttribute("streamingservice",streamingService);
+            return "updatestream.xhtml";
+        }
+    }
+
+    @RequestMapping("/updateevent")
+    public String updateEvent(Model model)
+    {
+        clearModelAttributes(model);
+        Event event = new Event();
+        model.addAttribute("event",event);
+        return "updateevent.xhtml";
+    }
+
+    @PostMapping("/updateevent")
+    public String updateEvent(@ModelAttribute Event event, Model model) {
+
+
+        // Most important thing for this is that we need to be validate that the movie itself exists before
+        // committing the transaction
+
+        Boolean isValid = true;
+        String reasonForFailure = "";
+
+        Event eventLookup = null;
+        eventLookup = lookupEventByNameAndYear(event.getName(), event.getYear());
+
+        if (eventLookup == null){
+            isValid = false;
+            reasonForFailure += "Event not found";
+        } else if (event != null) {
+
+
+            String currentYearMonth = eventLookup.getCurrentMonthYear();
+            // if the event has already been viewed in that month, do not proceed with the transaction
+            Transaction watchedInThatMonth = checkToSeeIfEventHasBeenWatchedInTheGivenMonth(event.getName(), event.getYear(), eventLookup.getCurrentMonthYear());
+
+            if (watchedInThatMonth != null) {
+                isValid = false;
+                reasonForFailure += "Event has already been watched in the given month";
+            }
+        }
+
+        Event saved = null;
+        if (isValid) {
+            System.out.println("Event and dateCheck passed validation steps");
+            // Get the studio from the event and then commit the transaction
+            clearModelAttributes(model);
+
+            eventLookup.setDuration(event.getDuration());
+            eventLookup.setEventLicensingFee(event.getEventLicensingFee());
+
+            saved = eventRepository.save(eventLookup);
+        }
+
+        if(saved!=null) {
+            model.addAttribute("event", eventLookup);
+            model.addAttribute("successmessage", "Event Saved Successfully!");
+            return "index.xhtml";
+        }
+        else {
+            model.addAttribute("errormessage", String.format("Event save Failed for the following reasons: %s, Please try again", reasonForFailure));
+            model.addAttribute("event",event);
+            return "updateevent.xhtml";
+        }
+    }
+
     @RequestMapping("/displayevents")
     public String displayEvents(Model model){
         clearModelAttributes(model);
@@ -570,6 +702,54 @@ public class WebController {
         List<Transaction> listOfOffers = getAllOffers();
         model.addAttribute("transactions", listOfOffers);
         return "displayoffers.xhtml";
+    }
+
+    @RequestMapping("/retractmovie")
+    public  String retractMovieOffer(Model model)
+    {
+        clearModelAttributes(model);
+        Transaction transaction = new Transaction();
+        model.addAttribute("transaction",transaction);
+        return "retractmovie.xhtml";
+    }
+
+    @PostMapping("/retractmovie")
+    public String retractMovieOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
+
+
+        Boolean isValid = true;
+        String reasonForFailure = "";
+
+        // Most important thing for this is that we need to be validate that the movie itself is being offered before
+        // committing the transaction retraction
+
+        // validate that the streaming service is actually offering the event
+        Transaction offerLookup = null;
+        offerLookup = checkToSeeIfStreamingIsOfferingEvent(transaction.getBuyer(), transaction.getEventName(), transaction.getEventYear());
+        if (offerLookup == null){
+            isValid = false;
+            reasonForFailure += "Offering for streaming service and movie not found";
+        }
+
+        Transaction saved = null;
+        if (isValid) {
+            System.out.println("Found Valid Offering passed validation steps");
+            // Get the studio from the event and then commit the transaction
+
+            offerLookup.setEventType(offerLookup.getEventType() + "- retracted");
+
+            saved = transactionRepository.save(offerLookup);
+        }
+
+        if(saved!=null) {
+            model.addAttribute("successmessage", "Movie retracted Successfully!");
+            return "index.xhtml";
+        }
+        else {
+            model.addAttribute("errormessage", String.format("Retraction Failed for the following reasons: %s, Please try again", reasonForFailure));
+            model.addAttribute("transaction",transaction);
+            return "retractmovie.xhtml";
+        }
     }
 
     @RequestMapping("/offermovie")
@@ -678,8 +858,8 @@ public class WebController {
         return null;
     }
 
-    private List<Transaction> getSalesTransactions(Vendor vendor){
-        String vendorShortName = vendor.getShortName();
+    private List<Transaction> getSalesTransactions(String vendorShortName){
+//        String vendorShortName = vendor.getShortName();
 
         List<Transaction> vendorSalesTransactions = new ArrayList<>();
 
@@ -696,23 +876,104 @@ public class WebController {
         return vendorSalesTransactions;
     }
 
-    private TransactionSummary calculateTransactionSummaryForStudio(Studio studio){
+    private List<Transaction> getPurchaseTransactions(String buyerName){
+
+        List<Transaction> buyerPurchaseTransactions = new ArrayList<>();
+
+        List<Transaction> allTransactions = this.transactionRepository.findAll();
+
+        // Looks through all of the transactions where the vendor matches the "vendor" column
+        for (Transaction transaction: allTransactions){
+            if (transaction.getBuyer().equalsIgnoreCase(buyerName)){
+                buyerPurchaseTransactions.add(transaction);
+            }
+        }
+
+        // returns the list of all Buyer Transactions
+        return buyerPurchaseTransactions;
+    }
+
+    private TransactionSummary calculateTransactionSummaryForStream(StreamingService stream, String currentMonthYear){
+        // Display for a StreamingService
+        // Subscription fees for the current month
+        // Subscription fees for the previous motnh
+        // Subscription fees for all previous months except the current month
+
+        // first, get all the transactions where the StreamingService was the vendor
+        List<Transaction> allSalesTransactions = getSalesTransactions(stream.getShortName());
+
+        // convert currentMonthYear to LocalDate
+        String[] monthYear = currentMonthYear.split("-");
+        int month = Integer.parseInt(monthYear[0]); // subtract 1 because the months index starts at 0
+        int year = Integer.parseInt(monthYear[1]);
+        LocalDate baseDate = LocalDate.of(year, month, 01);
+
+        // now, calculate the current month
+        int currentMonthTotal = 0;
+        for (Transaction transaction: allSalesTransactions){
+            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
+                currentMonthTotal += transaction.getTransactionCost();
+            }
+        }
+
+        // calculate the previous month
+        int previousMonthTotal = 0;
+        for (Transaction transaction: allSalesTransactions){
+            if(baseDate.minusMonths(1).compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
+                previousMonthTotal += transaction.getTransactionCost();
+            }
+        }
+
+        // calculate all upto except current month
+        int cumulativeExceptCurrentTotal = 0;
+        for (Transaction transaction: allSalesTransactions){
+            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) > 0){
+                cumulativeExceptCurrentTotal += transaction.getTransactionCost();
+            }
+        }
+
+        TransactionSummary transactionSummary = new TransactionSummary();
+        transactionSummary.setCurrentPeriod(currentMonthTotal);
+        transactionSummary.setPreviousPeriod(previousMonthTotal);
+        transactionSummary.setTotal(cumulativeExceptCurrentTotal);
+
+        // Unique to StreamingServices
+        // Calculate the total Licensing fees
+
+        List<Transaction> allPurchases = getPurchaseTransactions(stream.getShortName());
+        int totalLicensingFees = 0;
+        for (Transaction transaction: allPurchases){
+            totalLicensingFees+=transaction.getTransactionCost();
+        }
+
+        transactionSummary.setLicensing(totalLicensingFees);
+
+        return transactionSummary;
+    }
+
+    private TransactionSummary calculateTransactionSummaryForStudio(Studio studio, String currentMonthYear){
         // Display for a studio shows
         // Licensing fees for the current month
         // Licensing fees for the previous motnh
         // Licensing fees for all previous months except the current month
 
         // first, get all the transactions where the studio was the vendor
-        List<Transaction> allTransactions = getSalesTransactions(studio);
+        List<Transaction> allTransactions = getSalesTransactions(studio.getShortName());
 
         // will need to change this to look at some global date, for now set current month == 11
-        int current_month = 11;
-        int current_year = 2020;
+//        int current_month = 11;
+//        int current_year = 2020;
+
+        // convert currentMonthYear to LocalDate
+        String[] monthYear = currentMonthYear.split("-");
+        int month = Integer.parseInt(monthYear[0]); // subtract 1 because the months index starts at 0
+        int year = Integer.parseInt(monthYear[1]);
+        LocalDate baseDate = LocalDate.of(year, month, 01);
 
         // now, calculate the current month
         int currentMonthTotal = 0;
         for (Transaction transaction: allTransactions){
-            if (transaction.getCreatedAt().getMonthValue() == current_month){
+            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
                 currentMonthTotal += transaction.getTransactionCost();
             }
         }
@@ -720,7 +981,7 @@ public class WebController {
         // calculate the previous month
         int previousMonthTotal = 0;
         for (Transaction transaction: allTransactions){
-            if (transaction.getCreatedAt().getMonthValue() == current_month-1){
+            if(baseDate.minusMonths(1).compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
                 previousMonthTotal += transaction.getTransactionCost();
             }
         }
@@ -728,7 +989,54 @@ public class WebController {
         // calculate all upto except current month
         int cumulativeExceptCurrentTotal = 0;
         for (Transaction transaction: allTransactions){
-            if (transaction.getCreatedAt().getMonthValue() <= current_month-1){
+            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) > 0){
+                cumulativeExceptCurrentTotal += transaction.getTransactionCost();
+            }
+        }
+
+        TransactionSummary transactionSummary = new TransactionSummary();
+        transactionSummary.setCurrentPeriod(currentMonthTotal);
+        transactionSummary.setPreviousPeriod(previousMonthTotal);
+        transactionSummary.setTotal(cumulativeExceptCurrentTotal);
+
+        return transactionSummary;
+    }
+
+    private TransactionSummary calculateTransactionSummaryForDemo(DemographicGroup demo, String currentMonthYear){
+        // Display for a studio shows
+        // Spending fees for the current month
+        // Spending fees for the previous motnh
+        // Spending fees for all previous months except the current month
+
+        // first, get all the transactions where the demo was the buyer
+        List<Transaction> allTransactions = getPurchaseTransactions(demo.getShortName());
+
+        // convert currentMonthYear to LocalDate
+        String[] monthYear = currentMonthYear.split("-");
+        int month = Integer.parseInt(monthYear[0]); // subtract 1 because the months index starts at 0
+        int year = Integer.parseInt(monthYear[1]);
+        LocalDate baseDate = LocalDate.of(year, month, 01);
+
+        // now, calculate the current month
+        int currentMonthTotal = 0;
+        for (Transaction transaction: allTransactions){
+            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
+                currentMonthTotal += transaction.getTransactionCost();
+            }
+        }
+
+        // calculate the previous month
+        int previousMonthTotal = 0;
+        for (Transaction transaction: allTransactions){
+            if(baseDate.minusMonths(1).compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
+                previousMonthTotal += transaction.getTransactionCost();
+            }
+        }
+
+        // calculate all upto except current month
+        int cumulativeExceptCurrentTotal = 0;
+        for (Transaction transaction: allTransactions){
+            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) > 0){
                 cumulativeExceptCurrentTotal += transaction.getTransactionCost();
             }
         }
@@ -755,15 +1063,61 @@ public class WebController {
         return listOfOffers;
     }
 
+    private List<Transaction> getAllWatches(){
+        List<Transaction> listOfAllTransactions = this.transactionRepository.findAll();
+
+        List<Transaction> listOfOffers = new ArrayList<>();
+
+        for (Transaction transaction: listOfAllTransactions){
+            if (transaction.getTransactionType().equalsIgnoreCase("watch")){
+                listOfOffers.add(transaction);
+            }
+        }
+
+        return listOfOffers;
+    }
+
     private Transaction checkToSeeIfStreamingIsOfferingEvent(String streamingServiceShortName, String eventName, int eventYear){
         List<Transaction> allOfferings = getAllOffers();
 
         Transaction foundOffering = null;
         for (Transaction transaction: allOfferings){
             if (transaction.getBuyer().equalsIgnoreCase(streamingServiceShortName) && transaction.getEventName().equalsIgnoreCase(eventName)
-                    && transaction.getEventYear() == eventYear){
+                    && transaction.getEventYear() == eventYear
+
+                    // new functionality for the retractevent
+                    && (!(transaction.getEventType().contains("retracted")))
+
+                        ){
                 foundOffering = transaction;
                 return foundOffering;
+            }
+        }
+        return null;
+    }
+
+    private Transaction checkToSeeIfEventHasBeenWatchedInTheGivenMonth(String eventName, int eventYear, String monthYear){
+        List<Transaction> allWatches = getAllWatches();
+
+        Transaction foundWatch = null;
+        for (Transaction transaction: allWatches){
+            if (transaction.getEventName().equalsIgnoreCase(eventName) && transaction.getCurrentMonthYear().equalsIgnoreCase(monthYear)
+                    && transaction.getEventYear() == eventYear){
+                foundWatch = transaction;
+                return foundWatch;
+            }
+        }
+        return null;
+    }
+
+    private Transaction checkToSeeIfStreamHasBeenWatchedInTheGivenMonth(String streamShortName, String monthYear){
+        List<Transaction> allWatches = getAllWatches();
+
+        Transaction foundStreamWatch = null;
+        for (Transaction transaction: allWatches){
+            if (transaction.getVendor().equalsIgnoreCase(streamShortName) && transaction.getCurrentMonthYear().equalsIgnoreCase(monthYear)){
+                foundStreamWatch = transaction;
+                return foundStreamWatch;
             }
         }
         return null;

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -408,7 +409,7 @@ public class WebController {
             model.addAttribute("studio", studioLookup);
 
             // since the studio was found, do a lookup on the transactionSummaryDetails
-            TransactionSummary transactionSummaryCalculated = calculateTransactionSummaryForStudio(studioLookup);
+            TransactionSummary transactionSummaryCalculated = calculateTransactionSummaryForStudio(studioLookup, studio.getCurrentMonthYear());
             model.addAttribute("transactionSummary", transactionSummaryCalculated);
 
             return "displaystudio.xhtml";
@@ -454,11 +455,14 @@ public class WebController {
         clearModelAttributes(model);
         DemographicGroup demo = new DemographicGroup();
         model.addAttribute("demo",demo);
+
+        TransactionSummary transactionSummary = new TransactionSummary();
+        model.addAttribute("transactionSummary", transactionSummary);
         return "displaydemo.xhtml";
     }
 
     @PostMapping("/displaydemo")
-    public String displayDemo(@ModelAttribute DemographicGroup group, Model model) {
+    public String displayDemo(@ModelAttribute DemographicGroup group, @ModelAttribute TransactionSummary transactionSummary, Model model) {
 
         //lookup demogroup
         DemographicGroup demographicGroupLookup = null;
@@ -470,12 +474,18 @@ public class WebController {
             model.addAttribute("demo", demographicGroupLookup);
             model.addAttribute("successmessage", "Demogroup lookup succeeded");
             System.out.println("Successfully found demogroup");
+
+            // since the studio was found, do a lookup on the transactionSummaryDetails
+            TransactionSummary transactionSummaryCalculated = calculateTransactionSummaryForDemo(demographicGroupLookup, group.getCurrentMonthYear());
+            model.addAttribute("transactionSummary", transactionSummaryCalculated);
+
             return "displaydemo.xhtml";
         } else {
             clearModelAttributes(model);
             DemographicGroup newDemoGroup = new DemographicGroup();
             model.addAttribute("demo", newDemoGroup);
             model.addAttribute("errormessage", "Demogroup lookup Failed, Please try again");
+            model.addAttribute("transactionSummary", transactionSummary);
             System.out.println("Couldn't find the demogroup");
             return "displaydemo.xhtml";
         }
@@ -828,7 +838,24 @@ public class WebController {
         return vendorSalesTransactions;
     }
 
-    private TransactionSummary calculateTransactionSummaryForStudio(Studio studio){
+    private List<Transaction> getPurchaseTransactions(String buyerName){
+
+        List<Transaction> buyerPurchaseTransactions = new ArrayList<>();
+
+        List<Transaction> allTransactions = this.transactionRepository.findAll();
+
+        // Looks through all of the transactions where the vendor matches the "vendor" column
+        for (Transaction transaction: allTransactions){
+            if (transaction.getBuyer().equalsIgnoreCase(buyerName)){
+                buyerPurchaseTransactions.add(transaction);
+            }
+        }
+
+        // returns the list of all Buyer Transactions
+        return buyerPurchaseTransactions;
+    }
+
+    private TransactionSummary calculateTransactionSummaryForStudio(Studio studio, String currentMonthYear){
         // Display for a studio shows
         // Licensing fees for the current month
         // Licensing fees for the previous motnh
@@ -838,13 +865,19 @@ public class WebController {
         List<Transaction> allTransactions = getSalesTransactions(studio);
 
         // will need to change this to look at some global date, for now set current month == 11
-        int current_month = 11;
-        int current_year = 2020;
+//        int current_month = 11;
+//        int current_year = 2020;
+
+        // convert currentMonthYear to LocalDate
+        String[] monthYear = currentMonthYear.split("-");
+        int month = Integer.parseInt(monthYear[0]); // subtract 1 because the months index starts at 0
+        int year = Integer.parseInt(monthYear[1]);
+        LocalDate baseDate = LocalDate.of(year, month, 01);
 
         // now, calculate the current month
         int currentMonthTotal = 0;
         for (Transaction transaction: allTransactions){
-            if (transaction.getCreatedAt().getMonthValue() == current_month){
+            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
                 currentMonthTotal += transaction.getTransactionCost();
             }
         }
@@ -852,7 +885,7 @@ public class WebController {
         // calculate the previous month
         int previousMonthTotal = 0;
         for (Transaction transaction: allTransactions){
-            if (transaction.getCreatedAt().getMonthValue() == current_month-1){
+            if(baseDate.minusMonths(1).compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
                 previousMonthTotal += transaction.getTransactionCost();
             }
         }
@@ -860,7 +893,54 @@ public class WebController {
         // calculate all upto except current month
         int cumulativeExceptCurrentTotal = 0;
         for (Transaction transaction: allTransactions){
-            if (transaction.getCreatedAt().getMonthValue() <= current_month-1){
+            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) > 0){
+                cumulativeExceptCurrentTotal += transaction.getTransactionCost();
+            }
+        }
+
+        TransactionSummary transactionSummary = new TransactionSummary();
+        transactionSummary.setCurrentPeriod(currentMonthTotal);
+        transactionSummary.setPreviousPeriod(previousMonthTotal);
+        transactionSummary.setTotal(cumulativeExceptCurrentTotal);
+
+        return transactionSummary;
+    }
+
+    private TransactionSummary calculateTransactionSummaryForDemo(DemographicGroup demo, String currentMonthYear){
+        // Display for a studio shows
+        // Spending fees for the current month
+        // Spending fees for the previous motnh
+        // Spending fees for all previous months except the current month
+
+        // first, get all the transactions where the demo was the buyer
+        List<Transaction> allTransactions = getPurchaseTransactions(demo.getShortName());
+
+        // convert currentMonthYear to LocalDate
+        String[] monthYear = currentMonthYear.split("-");
+        int month = Integer.parseInt(monthYear[0]); // subtract 1 because the months index starts at 0
+        int year = Integer.parseInt(monthYear[1]);
+        LocalDate baseDate = LocalDate.of(year, month, 01);
+
+        // now, calculate the current month
+        int currentMonthTotal = 0;
+        for (Transaction transaction: allTransactions){
+            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
+                currentMonthTotal += transaction.getTransactionCost();
+            }
+        }
+
+        // calculate the previous month
+        int previousMonthTotal = 0;
+        for (Transaction transaction: allTransactions){
+            if(baseDate.minusMonths(1).compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
+                previousMonthTotal += transaction.getTransactionCost();
+            }
+        }
+
+        // calculate all upto except current month
+        int cumulativeExceptCurrentTotal = 0;
+        for (Transaction transaction: allTransactions){
+            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) > 0){
                 cumulativeExceptCurrentTotal += transaction.getTransactionCost();
             }
         }

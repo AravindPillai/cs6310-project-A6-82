@@ -78,6 +78,8 @@ public class WebController {
     {
         clearModelAttributes(model);
         Event event = new Event();
+        List<Studio> studios= mainDBService.findAllStudios();
+        model.addAttribute("studios",studios);
         model.addAttribute("event",event);
         return "createevent.xhtml";
     }
@@ -232,6 +234,12 @@ public class WebController {
     {
         clearModelAttributes(model);
         Transaction transaction = new Transaction();
+        List<DemographicGroup> demographicGroupList = mainDBService.findAllDemographicGroup();
+        List<Event> allEvents = mainDBService.findAllEvents();
+        List<StreamingService> allServices = mainDBService.findAllServices();
+        model.addAttribute("groups",demographicGroupList);
+        model.addAttribute("events",allEvents);
+        model.addAttribute("services",allServices);
         model.addAttribute("transaction",transaction);
         return "watchevent.xhtml";
     }

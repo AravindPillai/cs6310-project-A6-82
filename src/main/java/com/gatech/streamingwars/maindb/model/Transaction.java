@@ -25,7 +25,9 @@ public class Transaction extends AuditEntity {
     private int ppvCost;
     private int percentage; //based on *100
 
-    public Transaction() {}
+    public Transaction() {
+        this.eventYear=2020;
+    }
     public Transaction(String transactionType, String buyer, String vendor, int transactionCost,
                        String eventName, String eventType, int eventDuration, int eventYear, int ppvCost, int percentage)
     {

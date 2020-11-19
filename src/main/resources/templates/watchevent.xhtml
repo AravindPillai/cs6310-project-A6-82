@@ -22,6 +22,14 @@
                 autoclose: true
             });
             $( "#datepicker" ).datepicker( "setDate", new Date());
+
+            $("#eventyear").datepicker({
+                format: "yyyy",
+                viewMode: "years",
+                minViewMode: "years",
+                setDate: new Date(),
+                autoclose: true
+            });
         });
     </script>
 </head>
@@ -51,9 +59,9 @@
             <form action="#" th:action="@{/watchevent}" th:object="${transaction}" method="post">
                 <div class="form-group">
                     <label for="demogroupname">Demogroup Name:</label>
-                    <input type="text" class="form-control" id="demogroupname" aria-describedby="demogroupnameHelp" th:field="${transaction.buyer}" th:value="${transaction.buyer}" required="required"/>
-                    <small id="demogroupnameHelp" class="form-text text-muted">Enter Demo Group Short Name</small>
-                    <div class="invalid-feedback">Demo Group Short Name Cannot be Empty</div>
+                    <select class="custom-select" id="demogroupname" name="demogroupname" th:field="${transaction.buyer}" th:value="${transaction.buyer}">
+                        <option th:each="group : ${groups}" th:value="${group.shortName}" th:utext="${group.shortName}"/>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="demogrouppercentage">Demogroup Percentage:</label>
@@ -63,15 +71,15 @@
                 </div>
                 <div class="form-group">
                     <label for="streamname">Streaming Service Short Name:</label>
-                    <input type="text" class="form-control" id="streamname" aria-describedby="streamnameHelp" th:field="${transaction.vendor}" th:value="${transaction.vendor}" required="required"/>
-                    <small id="streamnameHelp" class="form-text text-muted">Enter Stream Short Name</small>
-                    <div class="invalid-feedback">Streaming Service Short Name Cannot be Empty</div>
+                    <select class="custom-select" id="streamname" name="streamname" th:field="${transaction.vendor}" th:value="${transaction.vendor}">
+                        <option th:each="service : ${services}" th:value="${service.shortName}" th:utext="${service.shortName}"/>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="eventname">Event Name:</label>
-                    <input type="text" class="form-control" id="eventname" aria-describedby="eventnameHelp" th:field="${transaction.eventName}" th:value="${transaction.eventName}" required="required"/>
-                    <small id="eventnameHelp" class="form-text text-muted">Enter Event Name</small>
-                    <div class="invalid-feedback">Event Name Cannot be Empty</div>
+                    <select class="custom-select" id="eventname" name="eventname" th:field="${transaction.eventName}" th:value="${transaction.eventName}">
+                        <option th:each="event : ${events}" th:value="${event.name}" th:utext="${event.name}"/>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="eventyear">Event Year:</label>

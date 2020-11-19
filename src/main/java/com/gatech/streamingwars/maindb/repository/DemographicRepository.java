@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface DemographicRepository extends JpaRepository<DemographicGroup,Long> {
 
-    @Query("SELECT d FROM DemographicGroup d WHERE d.createdAt< :createddate and d.isArchived=false")
+    @Query("SELECT d FROM DemographicGroup d WHERE d.createdAt< :createddate and d.archived=false")
     public List<DemographicGroup> getDemogrphicGroupLessThanCreatedDate(@Param("createddate") LocalDateTime createdDate);
+
+    @Query("SELECT d FROM DemographicGroup d WHERE d.createdAt>=:startDate and d.createdAt< :endDate")
+    List<DemographicGroup> getDemographicGroupBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

@@ -4,6 +4,7 @@ import com.gatech.streamingwars.maindb.model.*;
 import com.gatech.streamingwars.maindb.repository.*;
 import com.gatech.streamingwars.service.MainDBService;
 import com.gatech.streamingwars.service.UserService;
+import com.gatech.streamingwars.ui.FormData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +78,8 @@ public class WebController {
     {
         clearModelAttributes(model);
         Event event = new Event();
+        List<Studio> studios= mainDBService.findAllStudios();
+        model.addAttribute("studios",studios);
         model.addAttribute("event",event);
         return "createevent.xhtml";
     }
@@ -228,6 +234,12 @@ public class WebController {
     {
         clearModelAttributes(model);
         Transaction transaction = new Transaction();
+        List<DemographicGroup> demographicGroupList = mainDBService.findAllDemographicGroup();
+        List<Event> allEvents = mainDBService.findAllEvents();
+        List<StreamingService> allServices = mainDBService.findAllServices();
+        model.addAttribute("groups",demographicGroupList);
+        model.addAttribute("events",allEvents);
+        model.addAttribute("services",allServices);
         model.addAttribute("transaction",transaction);
         return "watchevent.xhtml";
     }
@@ -460,45 +472,61 @@ public class WebController {
     }
 
     @RequestMapping("/displaydemo")
-    public String displayDemo(Model model)
+    public String displayDemo(Model model,@RequestParam(required = false) String Status,@RequestParam(required = false) String startDate,@RequestParam(required = false) String endDate)
     {
         clearModelAttributes(model);
-        DemographicGroup demo = new DemographicGroup();
-        model.addAttribute("demo",demo);
+        LocalDateTime startDate1 = null;
+        LocalDateTime endDate1 = null;
+        if(startDate!=null && startDate.length()>0 && endDate!=null && endDate.length()>0) {
+            startDate1 = getCreateDate(startDate);
+            endDate1 = getCreateDate(endDate);
+        }
+        else {
+            LocalTime time = LocalTime.of(00, 00);
+            LocalDate date = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1);
+            startDate1 = date.atTime(time);
+            endDate1 = startDate1.plusMonths(1);
+        }
+        List<DemographicGroup> allDemos = mainDBService.getAllDemos(startDate1, endDate1);
+        if(allDemos!=null && allDemos.size()>0) {
+            FormData data = new FormData();
+            data.setStartDate(startDate1.getMonth().getValue()+"-"+startDate1.getYear());
+            data.setEndDate(endDate1.getMonth().getValue()+"-"+endDate1.getYear());
+            model.addAttribute("editObject", data);
+            model.addAttribute("demos", allDemos);
+        }
+        else
+        {
+            model.addAttribute("nodata", true);
+        }
 
-        TransactionSummary transactionSummary = new TransactionSummary();
-        model.addAttribute("transactionSummary", transactionSummary);
+        if(Status!=null && Status.equals("SUCCESS"))
+        {
+            model.addAttribute("successmessage", "Demographic Update Successful!");
+        }
+        else if(Status!=null && Status.equals("ERROR"))
+        {
+            model.addAttribute("errormessage", "Demographic Update Failed for the Demographic Group,Please try again!");
+        }
+
         return "displaydemo.xhtml";
     }
 
     @PostMapping("/displaydemo")
-    public String displayDemo(@ModelAttribute DemographicGroup group, @ModelAttribute TransactionSummary transactionSummary, Model model) {
-
-        //lookup demogroup
-        DemographicGroup demographicGroupLookup = null;
-
-        demographicGroupLookup = lookupDemographicGroupByShortName(group.getShortName());
-
-        if(demographicGroupLookup != null) {
-            clearModelAttributes(model);
-            model.addAttribute("demo", demographicGroupLookup);
-            model.addAttribute("successmessage", "Demogroup lookup succeeded");
-            System.out.println("Successfully found demogroup");
-
-            // since the studio was found, do a lookup on the transactionSummaryDetails
-            TransactionSummary transactionSummaryCalculated = calculateTransactionSummaryForDemo(demographicGroupLookup, group.getCurrentMonthYear());
-            model.addAttribute("transactionSummary", transactionSummaryCalculated);
-
-            return "displaydemo.xhtml";
-        } else {
-            clearModelAttributes(model);
-            DemographicGroup newDemoGroup = new DemographicGroup();
-            model.addAttribute("demo", newDemoGroup);
-            model.addAttribute("errormessage", "Demogroup lookup Failed, Please try again");
-            model.addAttribute("transactionSummary", transactionSummary);
-            System.out.println("Couldn't find the demogroup");
-            return "displaydemo.xhtml";
+    public String displayDemo(Model model,@ModelAttribute FormData data) {
+        clearModelAttributes(model);
+        LocalDateTime startDateLDT = getCreateDate(data.getStartDate());
+        LocalDateTime endDateLDT = getCreateDate(data.getEndDate());
+        List<DemographicGroup> allDemos = mainDBService.getAllDemos(startDateLDT, endDateLDT);
+        if(allDemos!=null && allDemos.size()>0) {
+            model.addAttribute("demos", allDemos);
         }
+        else
+        {
+            model.addAttribute("nodata", true);
+        }
+        model.addAttribute("editObject",data);
+        return "displaydemo.xhtml";
     }
 
     @RequestMapping("/updatedemo")
@@ -1127,5 +1155,14 @@ public class WebController {
     {
         model.addAttribute("successmessage",null);
         model.addAttribute("errormessage",null);
+    }
+
+    private LocalDateTime getCreateDate(String currentMonthYear)
+    {
+        String[] split = currentMonthYear.split("-");
+        LocalTime time = LocalTime.of(00, 00);
+        LocalDate date = LocalDate.of(Integer.parseInt(split[1]), Month.of(Integer.parseInt(split[0])), 01);
+        LocalDateTime combined = date.atTime(time);
+        return combined;
     }
 }

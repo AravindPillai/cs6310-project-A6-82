@@ -2,7 +2,13 @@ package com.gatech.streamingwars.service;
 
 
 import com.gatech.streamingwars.maindb.model.DemographicGroup;
+import com.gatech.streamingwars.maindb.model.Event;
+import com.gatech.streamingwars.maindb.model.StreamingService;
+import com.gatech.streamingwars.maindb.model.Studio;
 import com.gatech.streamingwars.maindb.repository.DemographicRepository;
+import com.gatech.streamingwars.maindb.repository.EventRepository;
+import com.gatech.streamingwars.maindb.repository.StreamingServiceRepository;
+import com.gatech.streamingwars.maindb.repository.StudioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -10,12 +16,22 @@ import org.springframework.stereotype.Service;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MainDBService {
 
     @Autowired
     DemographicRepository demographicRepository;
+
+    @Autowired
+    StudioRepository studioRepository;
+
+    @Autowired
+    EventRepository eventRepository;
+
+    @Autowired
+    StreamingServiceRepository streamingServiceRepository;
 
     public List<DemographicGroup> saveDemographicGroup(List<DemographicGroup> group) throws DataIntegrityViolationException,SQLIntegrityConstraintViolationException
     {
@@ -39,4 +55,28 @@ public class MainDBService {
         return this.demographicRepository;
     }
 
+    public List<DemographicGroup>  getAllDemos(LocalDateTime startDate,LocalDateTime endDate)
+    {
+        List<DemographicGroup> demographicGroups = demographicRepository.getDemographicGroupBetweenDates(startDate,endDate);
+        return demographicGroups;
+    }
+
+    public Optional<DemographicGroup> findDemoGraphicGroupWithID(Long id) {
+        return demographicRepository.findById(id);
+    }
+
+    public List<Studio> findAllStudios() {
+        List<Studio> all = studioRepository.findAll();
+        return all;
+    }
+
+    public List<Event> findAllEvents() {
+        List<Event> eventRepositoryAll = eventRepository.findAll();
+        return  eventRepositoryAll;
+    }
+
+    public List<StreamingService> findAllServices() {
+        List<StreamingService> streamingServices = streamingServiceRepository.findAll();
+        return streamingServices;
+    }
 }

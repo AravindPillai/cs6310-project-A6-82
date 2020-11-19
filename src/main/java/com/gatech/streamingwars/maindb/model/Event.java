@@ -21,6 +21,7 @@ public class Event extends AuditEntity {
     private Integer eventLicensingFee;
 
     public Event() {
+        this.year = 2020;
     }
 
     public Event(String eventType, String name, int year, int duration, String studioShortName, Integer eventLicenseFees) {

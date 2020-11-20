@@ -116,16 +116,23 @@
     <div id="displayTable" class="card mx-auto my-xl-5 d-flex" style="width: 50rem;">
         <div class="card-header d-flex" style="font-weight: bold">Events</div>
         <div class="table table-sm table-bordered table-striped " style="margin: 1px">
-            <table border="1">
+            <table border="0">
                 <tr>
-                    <th  scope="col">ID</th>
-                    <th  scope="col">Event Type</th>
-                    <th  scope="col">Name</th>
-                    <th  scope="col">Year</th>
-                    <th  scope="col">Duration</th>
-                    <th  scope="col">Studio Short Name</th>
-                    <th  scope="col">Event Licensing Fee</th>
-                    <th  scope="col">Editable</th>
+                    <th class="col-1" scope="col">ID</th>
+                    <th class="col-1" scope="col">Event Type</th>
+                    <th class="col-1" scope="col">Name</th>
+                    <th class="col-1" scope="col">Year</th>
+                    <th class="col-1" scope="col">Duration</th>
+                    <th class="col-1" scope="col">Studio Short Name</th>
+                    <th class="col-1" scope="col">Event Licensing Fee</th>
+                    <th class="col-1" scope="col">Editable</th>
+                </tr>
+                <tr th:if="${nodata != null}" class="max-col-span">
+                    <td colspan="100%">
+                        <div class="alert alert-light d-flex justify-content-center" role="alert" >
+                            No Rows to Display for Selected Start and End Date
+                        </div>
+                    </td>
                 </tr>
                 <tr th:each="event :${events}">
                     <td th:text="${event.id}"> Event Type </td>

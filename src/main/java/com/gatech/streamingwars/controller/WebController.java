@@ -55,6 +55,11 @@ public class WebController {
         return "login.xhtml";
     }
 
+//    @RequestMapping("/error")
+//    public String error(Model model) {
+//        return "error.xhtml";
+//    }
+
     @RequestMapping("/index")
     public String index(Model model) {
         return "index.xhtml";
@@ -494,7 +499,13 @@ public class WebController {
 
         TransactionSummary transactionSummary = new TransactionSummary();
         model.addAttribute("transactionSummary", transactionSummary);
-        model.addAttribute("transactionSummaries",transactionSummaries);
+        if(transactionSummaries.size()==0)
+        {
+            model.addAttribute("nodata", true);
+        }
+        else {
+            model.addAttribute("transactionSummaries", transactionSummaries);
+        }
 
         if (Status != null && Status.equals("SUCCESS")) {
             model.addAttribute("successmessage", "Studio Service Update Successful!");
@@ -562,7 +573,14 @@ public class WebController {
         }
         StreamTransactionSummary transactionSummary = new StreamTransactionSummary();
         model.addAttribute("transactionSummary", transactionSummary);
-        model.addAttribute("transactionSummaries",transactionSummaries);
+        if(transactionSummaries.size()!=0) {
+            model.addAttribute("transactionSummaries", transactionSummaries);
+        }
+        else
+        {
+            model.addAttribute("nodata", true);
+        }
+
 
         if (Status != null && Status.equals("SUCCESS")) {
             model.addAttribute("successmessage", "Streaming Service Update Successful!");
@@ -620,12 +638,11 @@ public class WebController {
             boolean demographicEditable = mainDBService.isDemographicEditable(group.getShortName(), date.atTime(time).getMonth().getValue() + "-" + date.atTime(time).getYear());
             group.setEditable(demographicEditable);
         }
-
+        FormData data = new FormData();
+        model.addAttribute("editObject", data);
         if (allDemos != null && allDemos.size() > 0) {
-            FormData data = new FormData();
             data.setStartDate(startDate1.getMonth().getValue() + "-" + startDate1.getYear());
             data.setEndDate(endDate1.getMonth().getValue() + "-" + endDate1.getYear());
-            model.addAttribute("editObject", data);
             model.addAttribute("demos", allDemos);
         } else {
             model.addAttribute("nodata", true);
@@ -829,9 +846,16 @@ public class WebController {
                 event.setEditable(false);
             }
         }
+
         Event editObject = new Event();
         model.addAttribute("editObject", editObject);
-        model.addAttribute("events", listOfEvents);
+        if(listOfEvents.size()==0)
+        {
+            model.addAttribute("nodata", true);
+        }
+        else {
+            model.addAttribute("events", listOfEvents);
+        }
 
         if (Status != null && Status.equals("SUCCESS")) {
             model.addAttribute("successmessage", "Event Update Successful!");
@@ -845,7 +869,13 @@ public class WebController {
     public String displayOffers(Model model) {
         clearModelAttributes(model);
         List<Transaction> listOfOffers = mainDBService.getAllOffers();
-        model.addAttribute("transactions", listOfOffers);
+        if(listOfOffers.size()==0)
+        {
+            model.addAttribute("nodata", true);
+        }
+        else {
+            model.addAttribute("transactions", listOfOffers);
+        }
         return "displayoffers.xhtml";
     }
 

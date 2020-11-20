@@ -13,6 +13,7 @@ public class Transaction extends AuditEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
+    private String demographicName;
     private String transactionType;
     private String buyer;
     private String vendor;
@@ -129,5 +130,13 @@ public class Transaction extends AuditEntity {
 
     public void setEventDuration(int eventDuration) {
         this.eventDuration = eventDuration;
+    }
+
+    public String getDemographicName() {
+        return demographicName;
+    }
+
+    public void setDemographicName(String demographicName) {
+        this.demographicName = demographicName;
     }
 }

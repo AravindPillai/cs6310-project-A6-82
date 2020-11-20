@@ -150,7 +150,7 @@
     </div>
 
     <div class="card mx-auto my-xl-5" style="width: 28rem; margin-bottom: 0rem !important;">
-        <div class="card-header"><span style="font-weight: bold;">Display Demo (Select the Dates to View the Groups)</span></div>
+        <div class="card-header"><span style="font-weight: bold;">Display Demo (Select the Dates to filter the Groups)</span></div>
         <div class="card-body">
             <form action="#" th:action="@{/displaydemo}" th:object="${editObject}" method="post">
                 <div class="form-group">
@@ -166,6 +166,7 @@
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
+                <small id="datePickerHelp" class="form-text text-muted">Once Activated,make sure the dates are sufficient apart to show all groups.</small>
             </form>
         </div>
     </div>
@@ -203,7 +204,10 @@
                     <td  th:text="${demo.numberOfAccounts}" />
                     <td  th:text="${demo.archived}" />
                     <td th:text="${demo.createdAt}" />
-                    <td><a href="#" id="editButton" class="editButtonClass" th:attr="data-id=${demo.id},data-sName=${demo.shortName},data-lName=${demo.longName},data-description=${demo.description},data-numberOfAccounts=${demo.numberOfAccounts}"><i class="pen far fa-edit"></i></a></td>
+                    <td>
+                        <a th:if="${demo.editable}" href="#" id="editButton" class="editButtonClass" th:attr="data-id=${demo.id},data-sName=${demo.shortName},data-lName=${demo.longName},data-description=${demo.description},data-numberOfAccounts=${demo.numberOfAccounts}"><i class="pen far fa-edit"></i></a>
+                        <i th:if="!${demo.editable}" class="pen fas fa-ban editButtonClass"></i>
+                    </td>
                 </tr>
                 </tbody>
             </table>

@@ -4,7 +4,9 @@ import com.gatech.streamingwars.maindb.model.*;
 import com.gatech.streamingwars.maindb.repository.*;
 import com.gatech.streamingwars.service.MainDBService;
 import com.gatech.streamingwars.service.UserService;
+import com.gatech.streamingwars.ui.EventOfferData;
 import com.gatech.streamingwars.ui.FormData;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
@@ -48,25 +50,25 @@ public class WebController {
     TransactionRepository transactionRepository;
 
     @RequestMapping("/")
-    public  String none(Model model)
-    {
-      return "login.xhtml";
+    public String none(Model model) {
+        return "login.xhtml";
     }
 
     @RequestMapping("/index")
-    public  String index(Model model) { return "index.xhtml";}
+    public String index(Model model) {
+        return "index.xhtml";
+    }
 
     @RequestMapping("/login")
-    public  String login(Model model,@RequestParam(required = false) Boolean error) {
-        if(error!=null && error)
-        {
+    public String login(Model model, @RequestParam(required = false) Boolean error) {
+        if (error != null && error) {
             model.addAttribute("errormessage", "Login Failed. Check the Credentials and Try Again.");
         }
         return "login.xhtml";
     }
 
     @RequestMapping("/registration")
-    public  String registration(Model model) {
+    public String registration(Model model) {
         clearModelAttributes(model);
         User user = new User();
         model.addAttribute(user);
@@ -74,13 +76,12 @@ public class WebController {
     }
 
     @RequestMapping("/createevent")
-    public  String createEvent(Model model)
-    {
+    public String createEvent(Model model) {
         clearModelAttributes(model);
         Event event = new Event();
-        List<Studio> studios= mainDBService.findAllStudios();
-        model.addAttribute("studios",studios);
-        model.addAttribute("event",event);
+        List<Studio> studios = mainDBService.findAllStudios();
+        model.addAttribute("studios", studios);
+        model.addAttribute("event", event);
         return "createevent.xhtml";
     }
 
@@ -94,14 +95,14 @@ public class WebController {
 
         Boolean isValid = true;
         String reasonForFailure = "";
-        Studio studioLookup = lookupStudioByShortName(event.getStudioShortName());
-        if (studioLookup == null){
+        Studio studioLookup = mainDBService.lookupStudioByShortName(event.getStudioShortName());
+        if (studioLookup == null) {
             isValid = false;
             reasonForFailure += "Studio not found";
         }
 
         String eventType = event.getEventType();
-        if (!(eventType.equalsIgnoreCase("movie")||eventType.equalsIgnoreCase("ppv"))){
+        if (!(eventType.equalsIgnoreCase("movie") || eventType.equalsIgnoreCase("ppv"))) {
             isValid = false;
             reasonForFailure += "Event type is not movie or ppv";
         }
@@ -112,28 +113,24 @@ public class WebController {
             saved = eventRepository.save(event);
         }
 
-        if(saved!=null) {
+        if (saved != null) {
             model.addAttribute("successmessage", "Event Saved Successfully!");
             return "index.xhtml";
-        }
-        else {
+        } else {
             model.addAttribute("errormessage", String.format("Event save Failed for the following reasons: %s, Please try again", reasonForFailure));
-            model.addAttribute("event",event);
+            model.addAttribute("event", event);
             return "createevent.xhtml";
         }
     }
 
     @PostMapping("/registration")
-    public String registration(@ModelAttribute User user, Model model)
-    {
+    public String registration(@ModelAttribute User user, Model model) {
         User userByUserName = userService.findUserByUserName(user.getName());
-        if(userByUserName!=null)
-        {
+        if (userByUserName != null) {
             model.addAttribute("errormessage", "User Exists");
-            model.addAttribute("user",userByUserName);
+            model.addAttribute("user", userByUserName);
             return "registration.xhtml";
-        }
-        else {
+        } else {
             User saveUser = userService.saveUser(user);
             model.addAttribute("successmessage", "User Created Successfully!");
             return "login.xhtml";
@@ -141,15 +138,13 @@ public class WebController {
     }
 
     @RequestMapping("/createdemo")
-    public  String createDemo(Model model)
-    {
+    public String createDemo(Model model) {
         clearModelAttributes(model);
-        if(!userService.isAuthenticated())
-        {
+        if (!userService.isAuthenticated()) {
             return "/";
         }
         DemographicGroup dGroup = new DemographicGroup();
-        model.addAttribute("group",dGroup);
+        model.addAttribute("group", dGroup);
         return "createdemo.xhtml";
     }
 
@@ -157,36 +152,33 @@ public class WebController {
     public String creatingDemo(@ModelAttribute DemographicGroup group, Model model) {
         List<DemographicGroup> saved = null;
         try {
-             group.setArchived(false);
-             //group.setCreatedAt(getCreateDate(group.getCurrentMonthYear()));
-             List<DemographicGroup> groups = new ArrayList<DemographicGroup>();
-             groups.add(group);
-             saved =  mainDBService.saveDemographicGroup(groups);
-        }catch (SQLIntegrityConstraintViolationException|DataIntegrityViolationException exception)
-        {
+            group.setArchived(false);
+            //group.setCreatedAt(getCreateDate(group.getCurrentMonthYear()));
+            List<DemographicGroup> groups = new ArrayList<DemographicGroup>();
+            groups.add(group);
+            saved = mainDBService.saveDemographicGroup(groups);
+        } catch (SQLIntegrityConstraintViolationException | DataIntegrityViolationException exception) {
             exception.printStackTrace();
-            System.out.println("Exception Occured during Saving "+exception.getMessage());
+            System.out.println("Exception Occured during Saving " + exception.getMessage());
             model.addAttribute("errormessage", "Demographic Group Creation Failed,Entry With Same Name Possible Exist.Please Verify and try again");
-            model.addAttribute("group",group);
+            model.addAttribute("group", group);
             return "createdemo.xhtml";
         }
-        if(saved!=null && saved.size()>0) {
+        if (saved != null && saved.size() > 0) {
             model.addAttribute("successmessage", "Demographic Group Saved Successfully!");
             return "index.xhtml";
-        }
-        else {
+        } else {
             model.addAttribute("errormessage", "Demographic Group Failed, Please try again");
-            model.addAttribute("group",group);
+            model.addAttribute("group", group);
             return "createdemo.xhtml";
         }
     }
 
     @RequestMapping("/createstream")
-    public  String createStreamingService(Model model)
-    {
+    public String createStreamingService(Model model) {
         clearModelAttributes(model);
         StreamingService streamingService = new StreamingService();
-        model.addAttribute("streamingService",streamingService);
+        model.addAttribute("streamingService", streamingService);
         return "createstream.xhtml";
     }
 
@@ -194,23 +186,21 @@ public class WebController {
     public String createStreamingServiceSubmit(@ModelAttribute StreamingService streamingService, Model model) {
 
         StreamingService saved = streamingServiceRepository.save(streamingService);
-        if(saved!=null) {
+        if (saved != null) {
             model.addAttribute("successmessage", "Streaming Service Saved Successfully!");
             return "index.xhtml";
-        }
-        else {
+        } else {
             model.addAttribute("errormessage", "Streaming Service Saving Failed, Please try again");
-            model.addAttribute("streamingService",streamingService);
+            model.addAttribute("streamingService", streamingService);
             return "createstream.xhtml";
         }
     }
 
     @RequestMapping("/createstudio")
-    public  String createStudio(Model model)
-    {
+    public String createStudio(Model model) {
         clearModelAttributes(model);
         Studio studio = new Studio();
-        model.addAttribute("studio",studio);
+        model.addAttribute("studio", studio);
         return "createstudio.xhtml";
     }
 
@@ -218,29 +208,27 @@ public class WebController {
     public String studioSubmit(@ModelAttribute Studio studio, Model model) {
 
         Studio saved = studioRepository.save(studio);
-        if(saved!=null) {
+        if (saved != null) {
             model.addAttribute("successmessage", "Studio Saved Successfully!");
             return "index.xhtml";
-        }
-        else {
+        } else {
             model.addAttribute("errormessage", "Studio Saving Failed, Please try again");
-            model.addAttribute("studio",studio);
+            model.addAttribute("studio", studio);
             return "createstudio.xhtml";
         }
     }
 
     @RequestMapping("/watchevent")
-    public  String createWatchEvent(Model model)
-    {
+    public String createWatchEvent(Model model) {
         clearModelAttributes(model);
         Transaction transaction = new Transaction();
         List<DemographicGroup> demographicGroupList = mainDBService.findAllDemographicGroup();
         List<Event> allEvents = mainDBService.findAllEvents();
         List<StreamingService> allServices = mainDBService.findAllServices();
-        model.addAttribute("groups",demographicGroupList);
-        model.addAttribute("events",allEvents);
-        model.addAttribute("services",allServices);
-        model.addAttribute("transaction",transaction);
+        model.addAttribute("groups", demographicGroupList);
+        model.addAttribute("events", allEvents);
+        model.addAttribute("services", allServices);
+        model.addAttribute("transaction", transaction);
         return "watchevent.xhtml";
     }
 
@@ -252,33 +240,39 @@ public class WebController {
 
         //validate demo group
         DemographicGroup demographicGroupLookup = null;
-        demographicGroupLookup = lookupDemographicGroupByShortName(transaction.getBuyer());
-        if (demographicGroupLookup == null){
+        demographicGroupLookup = mainDBService.lookupDemographicGroupByShortName(transaction.getBuyer());
+        if (demographicGroupLookup == null) {
             isValid = false;
             reasonForFailure += "Demo Group Not not found";
         }
+        transaction.setDemographicName(transaction.getBuyer());
 
         // validate streaming service
         StreamingService streamingServiceLookup = null;
-        streamingServiceLookup = lookupStreamByShortName(transaction.getVendor());
-        if (streamingServiceLookup == null){
+        streamingServiceLookup = mainDBService.lookupStreamByShortName(transaction.getVendor());
+        if (streamingServiceLookup == null) {
             isValid = false;
             reasonForFailure += "Streaming Service not found";
         }
 
+        String eventNameYear = transaction.getEventName();
+        String[] split = eventNameYear.split("-");
+        transaction.setEventName(split[0]);
+        transaction.setEventYear(Integer.parseInt(split[1]));
+
         //validate eventname x year
-        Event eventLookup = lookupEventByNameAndYear(transaction.getEventName(), transaction.getEventYear());
-        if (eventLookup == null){
+        Event eventLookup = mainDBService.lookupEventByNameAndYear(transaction.getEventName(), transaction.getEventYear());
+        if (eventLookup == null) {
             isValid = false;
             reasonForFailure += "Event not found";
         }
 
         // validate that the streaming service is actually offering the event
         Transaction offerLookup = null;
-        offerLookup = checkToSeeIfStreamingIsOfferingEvent(transaction.getVendor(), transaction.getEventName(), transaction.getEventYear());
-        if (offerLookup == null){
+        offerLookup = mainDBService.checkToSeeIfStreamingIsOfferingEvent(transaction.getVendor(), transaction.getEventName(), transaction.getEventYear());
+        if (offerLookup == null) {
             isValid = false;
-            reasonForFailure += "Offering for streaming service and movie not found";
+            reasonForFailure += "Offering for streaming service and movie not found. Please make sure they are created and Valid for the month.";
         }
 
         Transaction saved = null;
@@ -288,32 +282,32 @@ public class WebController {
 
             String eventType = offerLookup.getEventType();
 
-            if (eventType.equalsIgnoreCase("ppv")){
+            if (eventType.equalsIgnoreCase("ppv")) {
                 System.out.println("proceeding with ppv transaction");
 
                 int sizeOfDemogroup = demographicGroupLookup.getNumberOfAccounts();
                 int ppvCost = offerLookup.getPpvCost();
                 int totalCostOfTransaction = sizeOfDemogroup * ppvCost * transaction.getPercentage();
-                int totalCostOfTransactionDiv100 = totalCostOfTransaction/100;
+                int totalCostOfTransactionDiv100 = totalCostOfTransaction / 100;
                 transaction.setTransactionCost(totalCostOfTransactionDiv100);
 
-            } else if (eventType.equalsIgnoreCase("movie")){
+            } else if (eventType.equalsIgnoreCase("movie")) {
 
                 //check to see if theres a subscription already
-                Transaction existingSubscriptionWithGreatestPercentage = returnSubscriptionBetweenStreamAndDemoWithLargestPercentage(streamingServiceLookup.getShortName(), demographicGroupLookup.getShortName());
+                Transaction existingSubscriptionWithGreatestPercentage = mainDBService.returnSubscriptionBetweenStreamAndDemoWithLargestPercentage(streamingServiceLookup.getShortName(), demographicGroupLookup.getShortName());
 
                 int percentageForTransaction = transaction.getPercentage();
 
-                if (existingSubscriptionWithGreatestPercentage != null){
+                if (existingSubscriptionWithGreatestPercentage != null) {
                     percentageForTransaction -= existingSubscriptionWithGreatestPercentage.getPercentage();
                 }
 
-                if (percentageForTransaction < 0){
+                if (percentageForTransaction < 0) {
                     percentageForTransaction = 0;
                 }
 
                 int transactionCost = percentageForTransaction * streamingServiceLookup.getSubscriptionPrice() * demographicGroupLookup.getNumberOfAccounts();
-                int transactionCostDiv100 = transactionCost/100;
+                int transactionCostDiv100 = transactionCost / 100;
                 transaction.setTransactionCost(transactionCostDiv100);
             }
 
@@ -329,46 +323,113 @@ public class WebController {
 //            saved = transactionRepository.save(transaction);
         }
 
-        if(saved!=null) {
+        if (saved != null) {
             model.addAttribute("successmessage", "Watch Event Saved Successfully!");
             return "index.xhtml";
-        }
-        else {
+        } else {
             model.addAttribute("errormessage", String.format("Watch Event Creation Failed for the following reasons: %s, Please try again", reasonForFailure));
-            model.addAttribute("transaction",transaction);
-            return "watchevent.xhtml";
+            model.addAttribute("transaction", transaction);
+            return "index.xhtml";
         }
     }
 
-    @RequestMapping("/offerppv")
-    public  String createPpvOffer(Model model)
-    {
+//    @RequestMapping("/offerppv")
+//    public  String createPpvOffer(Model model)
+//    {
+//        clearModelAttributes(model);
+//        Transaction transaction = new Transaction();
+//        List<StreamingService> allServices = mainDBService.findAllServices();
+//        List<Event> allEvents = mainDBService.findAllEvents();
+//        model.addAttribute("services",allServices);
+//        model.addAttribute("events",allEvents);
+//        model.addAttribute("transaction",transaction);
+//        return "offerppv.xhtml";
+//    }
+//
+//    @PostMapping("/offerppv")
+//    public String createPpvOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
+//
+//        // Most important thing for this is that we need to be validate that the ppv itself exists before
+//        // committing the transaction
+//
+//        Boolean isValid = true;
+//        String reasonForFailure = "";
+//        Event event = lookupEventByNameAndYear(transaction.getEventName(), transaction.getEventYear());
+//
+//        if (event == null){
+//            isValid = false;
+//            reasonForFailure += "Event not found";
+//        } else if (event != null) {
+//            String eventType = event.getEventType();
+//            if (!(eventType.equalsIgnoreCase("ppv"))) {
+//                isValid = false;
+//                reasonForFailure += "Event type is not ppv";
+//            }
+//        }
+//
+//        Transaction saved = null;
+//        if (isValid) {
+//            System.out.println("Event passed validation steps");
+//            // Get the studio from the event and then commit the transaction
+//            String studioShortName = event.getStudioShortName();
+//
+//            transaction.setVendor(studioShortName);
+//            transaction.setTransactionCost(event.getEventLicensingFee());
+//            transaction.setEventType("ppv");
+//
+//            //transaction ppv cost is passed in via the offerppv.xhtml post
+//
+//            // this is an "offer" type
+//            transaction.setTransactionType("offer");
+//
+//            saved = transactionRepository.save(transaction);
+//        }
+//
+//        if(saved!=null) {
+//            model.addAttribute("successmessage", "Event Saved Successfully!");
+//            return "index.xhtml";
+//        }
+//        else {
+//            model.addAttribute("errormessage", String.format("Offering save Failed for the following reasons: %s, Please try again", reasonForFailure));
+//            model.addAttribute("transaction",transaction);
+//            return "offerppv.xhtml";
+//        }
+//    }
+
+    @RequestMapping("/offermovie")
+    public String createMovieOffer(Model model) {
         clearModelAttributes(model);
         Transaction transaction = new Transaction();
-        model.addAttribute("transaction",transaction);
-        return "offerppv.xhtml";
+        List<StreamingService> allServices = mainDBService.findAllServices();
+        List<Event> allEvents = mainDBService.findAllEvents();
+        model.addAttribute("services", allServices);
+        model.addAttribute("events", allEvents);
+        model.addAttribute("transaction", transaction);
+        return "offermovie.xhtml";
     }
 
-    @PostMapping("/offerppv")
-    public String createPpvOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
+    @PostMapping("/offermovie")
+    public String createMovieOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
 
-        // Most important thing for this is that we need to be validate that the ppv itself exists before
+        // Most important thing for this is that we need to be validate that the movie itself exists before
         // committing the transaction
 
         Boolean isValid = true;
         String reasonForFailure = "";
-        Event event = lookupEventByNameAndYear(transaction.getEventName(), transaction.getEventYear());
 
-        if (event == null){
-            isValid = false;
-            reasonForFailure += "Event not found";
-        } else if (event != null) {
-            String eventType = event.getEventType();
-            if (!(eventType.equalsIgnoreCase("ppv"))) {
-                isValid = false;
-                reasonForFailure += "Event type is not ppv";
-            }
-        }
+        String eventNameYear = transaction.getEventName();
+        String[] split = eventNameYear.split("-");
+        transaction.setEventName(split[0]);
+        transaction.setEventYear(Integer.parseInt(split[1]));
+
+        Event event = mainDBService.lookupEventByNameAndYear(transaction.getEventName(), transaction.getEventYear());
+        StreamingService streamingService = mainDBService.findStreamingServiceByName(transaction.getBuyer());
+
+        EventOffer eventOffer = new EventOffer();
+        eventOffer.setEvent(event);
+        eventOffer.setService(streamingService);
+        eventOffer.setRetracted(false);
+        eventOffer.setCurrentMonthYear(transaction.getCurrentMonthYear());
 
         Transaction saved = null;
         if (isValid) {
@@ -377,31 +438,37 @@ public class WebController {
             String studioShortName = event.getStudioShortName();
 
             transaction.setVendor(studioShortName);
-            transaction.setTransactionCost(event.getEventLicensingFee());
-            transaction.setEventType("ppv");
-
-            //transaction ppv cost is passed in via the offerppv.xhtml post
-
+            transaction.setEventType(event.getEventType());
+            if (event.getEventType().equals("MOVIE")) {
+                transaction.setTransactionCost(event.getEventLicensingFee());
+            } else {
+                transaction.setTransactionCost(event.getEventLicensingFee());
+            }
             // this is an "offer" type
             transaction.setTransactionType("offer");
 
+            try {
+                mainDBService.saveEventOffer(eventOffer);
+            } catch (DataIntegrityViolationException | SQLIntegrityConstraintViolationException | ConstraintViolationException exception) {
+                exception.printStackTrace();
+                reasonForFailure = "Entity Offering Exists for Service and Event for the Month";
+            }
             saved = transactionRepository.save(transaction);
         }
 
-        if(saved!=null) {
+        if (saved != null) {
             model.addAttribute("successmessage", "Event Saved Successfully!");
             return "index.xhtml";
-        }
-        else {
+        } else {
             model.addAttribute("errormessage", String.format("Offering save Failed for the following reasons: %s, Please try again", reasonForFailure));
-            model.addAttribute("transaction",transaction);
-            return "offerppv.xhtml";
+            model.addAttribute("transaction", transaction);
+            return "index.xhtml";
         }
     }
 
+
     @RequestMapping("/displaystudio")
-    public  String displayStudio(Model model)
-    {
+    public String displayStudio(Model model) {
         clearModelAttributes(model);
         Studio studio = new Studio();
         model.addAttribute("studio", studio);
@@ -413,15 +480,14 @@ public class WebController {
     }
 
     @PostMapping("/displaystudio")
-    public  String displayStudio(@ModelAttribute Studio studio, @ModelAttribute TransactionSummary transactionSummary, Model model)
-    {
+    public String displayStudio(@ModelAttribute Studio studio, @ModelAttribute TransactionSummary transactionSummary, Model model) {
         // Lookup studio
-        Studio studioLookup = lookupStudioByShortName(studio.getShortName());
-        if(studioLookup != null){
+        Studio studioLookup = mainDBService.lookupStudioByShortName(studio.getShortName());
+        if (studioLookup != null) {
             model.addAttribute("studio", studioLookup);
 
             // since the studio was found, do a lookup on the transactionSummaryDetails
-            TransactionSummary transactionSummaryCalculated = calculateTransactionSummaryForStudio(studioLookup, studio.getCurrentMonthYear());
+            TransactionSummary transactionSummaryCalculated = mainDBService.calculateTransactionSummaryForStudio(studioLookup, studio.getCurrentMonthYear());
             model.addAttribute("transactionSummary", transactionSummaryCalculated);
 
             return "displaystudio.xhtml";
@@ -436,8 +502,7 @@ public class WebController {
     }
 
     @RequestMapping("/displaystream")
-    public  String displayStream(Model model)
-    {
+    public String displayStream(Model model) {
         clearModelAttributes(model);
         StreamingService stream = new StreamingService();
         model.addAttribute("stream", stream);
@@ -449,15 +514,14 @@ public class WebController {
     }
 
     @PostMapping("/displaystream")
-    public  String displayStream(@ModelAttribute StreamingService stream, @ModelAttribute TransactionSummary transactionSummary, Model model)
-    {
+    public String displayStream(@ModelAttribute StreamingService stream, @ModelAttribute TransactionSummary transactionSummary, Model model) {
         // Lookup Stream
-        StreamingService streamLookup = lookupStreamByShortName(stream.getShortName());
-        if(streamLookup != null){
+        StreamingService streamLookup = mainDBService.lookupStreamByShortName(stream.getShortName());
+        if (streamLookup != null) {
             model.addAttribute("stream", streamLookup);
 
             // since the Stream was found, do a lookup on the transactionSummaryDetails
-            TransactionSummary transactionSummaryCalculated = calculateTransactionSummaryForStream(streamLookup, stream.getCurrentMonthYear());
+            TransactionSummary transactionSummaryCalculated = mainDBService.calculateTransactionSummaryForStream(streamLookup, stream.getCurrentMonthYear());
             model.addAttribute("transactionSummary", transactionSummaryCalculated);
 
             return "displaystream.xhtml";
@@ -472,40 +536,44 @@ public class WebController {
     }
 
     @RequestMapping("/displaydemo")
-    public String displayDemo(Model model,@RequestParam(required = false) String Status,@RequestParam(required = false) String startDate,@RequestParam(required = false) String endDate)
-    {
+    public String displayDemo(Model model, @RequestParam(required = false) String Status, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
         clearModelAttributes(model);
+        List<DemographicGroup> allDemos = null;
         LocalDateTime startDate1 = null;
         LocalDateTime endDate1 = null;
-        if(startDate!=null && startDate.length()>0 && endDate!=null && endDate.length()>0) {
+        if (startDate != null && startDate.length() > 0 && endDate != null && endDate.length() > 0) {
             startDate1 = getCreateDate(startDate);
             endDate1 = getCreateDate(endDate);
-        }
-        else {
+            allDemos = mainDBService.getAllDemos(startDate1, endDate1);
+        } else {
             LocalTime time = LocalTime.of(00, 00);
             LocalDate date = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1);
             startDate1 = date.atTime(time);
-            endDate1 = startDate1.plusMonths(1);
+            startDate1 = startDate1.minusYears(10);
+            endDate1 = date.atTime(time).plusMonths(1);
+            allDemos = mainDBService.findAllDemographicGroup();
         }
-        List<DemographicGroup> allDemos = mainDBService.getAllDemos(startDate1, endDate1);
-        if(allDemos!=null && allDemos.size()>0) {
+
+        for (DemographicGroup group : allDemos) {
+            LocalTime time = LocalTime.of(00, 00);
+            LocalDate date = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1);
+            boolean demographicEditable = mainDBService.isDemographicEditable(group.getShortName(), date.atTime(time).getMonth().getValue() + "-" + date.atTime(time).getYear());
+            group.setEditable(demographicEditable);
+        }
+
+        if (allDemos != null && allDemos.size() > 0) {
             FormData data = new FormData();
-            data.setStartDate(startDate1.getMonth().getValue()+"-"+startDate1.getYear());
-            data.setEndDate(endDate1.getMonth().getValue()+"-"+endDate1.getYear());
+            data.setStartDate(startDate1.getMonth().getValue() + "-" + startDate1.getYear());
+            data.setEndDate(endDate1.getMonth().getValue() + "-" + endDate1.getYear());
             model.addAttribute("editObject", data);
             model.addAttribute("demos", allDemos);
-        }
-        else
-        {
+        } else {
             model.addAttribute("nodata", true);
         }
 
-        if(Status!=null && Status.equals("SUCCESS"))
-        {
+        if (Status != null && Status.equals("SUCCESS")) {
             model.addAttribute("successmessage", "Demographic Update Successful!");
-        }
-        else if(Status!=null && Status.equals("ERROR"))
-        {
+        } else if (Status != null && Status.equals("ERROR")) {
             model.addAttribute("errormessage", "Demographic Update Failed for the Demographic Group,Please try again!");
         }
 
@@ -513,28 +581,25 @@ public class WebController {
     }
 
     @PostMapping("/displaydemo")
-    public String displayDemo(Model model,@ModelAttribute FormData data) {
+    public String displayDemo(Model model, @ModelAttribute FormData data) {
         clearModelAttributes(model);
         LocalDateTime startDateLDT = getCreateDate(data.getStartDate());
         LocalDateTime endDateLDT = getCreateDate(data.getEndDate());
         List<DemographicGroup> allDemos = mainDBService.getAllDemos(startDateLDT, endDateLDT);
-        if(allDemos!=null && allDemos.size()>0) {
+        if (allDemos != null && allDemos.size() > 0) {
             model.addAttribute("demos", allDemos);
-        }
-        else
-        {
+        } else {
             model.addAttribute("nodata", true);
         }
-        model.addAttribute("editObject",data);
+        model.addAttribute("editObject", data);
         return "displaydemo.xhtml";
     }
 
     @RequestMapping("/updatedemo")
-    public String updateDemo(Model model)
-    {
+    public String updateDemo(Model model) {
         clearModelAttributes(model);
         DemographicGroup demo = new DemographicGroup();
-        model.addAttribute("demo",demo);
+        model.addAttribute("demo", demo);
         return "updatedemo.xhtml";
     }
 
@@ -543,9 +608,9 @@ public class WebController {
 
         //lookup demogroup
         DemographicGroup demographicGroupLookup = null;
-        demographicGroupLookup = lookupDemographicGroupByShortName(group.getShortName());
+        demographicGroupLookup = mainDBService.lookupDemographicGroupByShortName(group.getShortName());
 
-        if(demographicGroupLookup != null) {
+        if (demographicGroupLookup != null) {
             clearModelAttributes(model);
 
             // ONLY IF we've found the demoGroup (which we have since we're in this if block) update the number of accounts on the demogroup
@@ -567,11 +632,10 @@ public class WebController {
     }
 
     @RequestMapping("/updatestream")
-    public String updateStream(Model model)
-    {
+    public String updateStream(Model model) {
         clearModelAttributes(model);
         StreamingService streamingService = new StreamingService();
-        model.addAttribute("streamingservice",streamingService);
+        model.addAttribute("streamingservice", streamingService);
         return "updatestream.xhtml";
     }
 
@@ -586,16 +650,16 @@ public class WebController {
         String reasonForFailure = "";
 
         StreamingService streamLookup = null;
-        streamLookup = lookupStreamByShortName(streamingService.getShortName());
+        streamLookup = mainDBService.lookupStreamByShortName(streamingService.getShortName());
 
-        if (streamLookup == null){
+        if (streamLookup == null) {
             isValid = false;
             reasonForFailure += "Streaming Service not found";
         } else if (streamLookup != null) {
 
             String currentYearMonth = streamLookup.getCurrentMonthYear();
             // if the event has already been viewed in that month, do not proceed with the transaction
-            Transaction subscribedToThatMonth = checkToSeeIfStreamHasBeenWatchedInTheGivenMonth(streamingService.getShortName(), streamLookup.getCurrentMonthYear());
+            Transaction subscribedToThatMonth = mainDBService.checkToSeeIfStreamHasBeenWatchedInTheGivenMonth(streamingService.getShortName(), streamLookup.getCurrentMonthYear());
 
             if (subscribedToThatMonth != null) {
                 isValid = false;
@@ -614,24 +678,22 @@ public class WebController {
             saved = streamingServiceRepository.save(streamLookup);
         }
 
-        if(saved!=null) {
+        if (saved != null) {
             model.addAttribute("streamingservice", streamLookup);
             model.addAttribute("successmessage", "Event Saved Successfully!");
             return "index.xhtml";
-        }
-        else {
+        } else {
             model.addAttribute("errormessage", String.format("Streaming Service Update Failed for the following reasons: %s, Please try again", reasonForFailure));
-            model.addAttribute("streamingservice",streamingService);
+            model.addAttribute("streamingservice", streamingService);
             return "updatestream.xhtml";
         }
     }
 
     @RequestMapping("/updateevent")
-    public String updateEvent(Model model)
-    {
+    public String updateEvent(Model model) {
         clearModelAttributes(model);
         Event event = new Event();
-        model.addAttribute("event",event);
+        model.addAttribute("event", event);
         return "updateevent.xhtml";
     }
 
@@ -646,9 +708,9 @@ public class WebController {
         String reasonForFailure = "";
 
         Event eventLookup = null;
-        eventLookup = lookupEventByNameAndYear(event.getName(), event.getYear());
+        eventLookup = mainDBService.lookupEventByNameAndYear(event.getName(), event.getYear());
 
-        if (eventLookup == null){
+        if (eventLookup == null) {
             isValid = false;
             reasonForFailure += "Event not found";
         } else if (event != null) {
@@ -656,7 +718,7 @@ public class WebController {
 
             String currentYearMonth = eventLookup.getCurrentMonthYear();
             // if the event has already been viewed in that month, do not proceed with the transaction
-            Transaction watchedInThatMonth = checkToSeeIfEventHasBeenWatchedInTheGivenMonth(event.getName(), event.getYear(), eventLookup.getCurrentMonthYear());
+            Transaction watchedInThatMonth = mainDBService.checkToSeeIfEventHasBeenWatchedInTheGivenMonth(event.getName(), event.getYear(), eventLookup.getCurrentMonthYear());
 
             if (watchedInThatMonth != null) {
                 isValid = false;
@@ -676,20 +738,19 @@ public class WebController {
             saved = eventRepository.save(eventLookup);
         }
 
-        if(saved!=null) {
+        if (saved != null) {
             model.addAttribute("event", eventLookup);
             model.addAttribute("successmessage", "Event Saved Successfully!");
             return "index.xhtml";
-        }
-        else {
+        } else {
             model.addAttribute("errormessage", String.format("Event save Failed for the following reasons: %s, Please try again", reasonForFailure));
-            model.addAttribute("event",event);
+            model.addAttribute("event", event);
             return "updateevent.xhtml";
         }
     }
 
     @RequestMapping("/displayevents")
-    public String displayEvents(Model model){
+    public String displayEvents(Model model) {
         clearModelAttributes(model);
         List<Event> listOfEvents = this.eventRepository.findAll();
         model.addAttribute("events", listOfEvents);
@@ -697,459 +758,96 @@ public class WebController {
     }
 
     @RequestMapping("/displayoffers")
-    public String displayOffers(Model model){
+    public String displayOffers(Model model) {
         clearModelAttributes(model);
-        List<Transaction> listOfOffers = getAllOffers();
+        List<Transaction> listOfOffers = mainDBService.getAllOffers();
         model.addAttribute("transactions", listOfOffers);
         return "displayoffers.xhtml";
     }
 
     @RequestMapping("/retractmovie")
-    public  String retractMovieOffer(Model model)
-    {
+    public String retractMovieOffer(Model model) {
         clearModelAttributes(model);
         Transaction transaction = new Transaction();
-        model.addAttribute("transaction",transaction);
+        model.addAttribute("transaction", transaction);
+        List<EventOffer> allEventOffers = mainDBService.findAllEventOffers();
+        FormData data = new FormData();
+        for (EventOffer eventOffer : allEventOffers) {
+            EventOfferData eventData = new EventOfferData(eventOffer.getId(),eventOffer.getEvent().getId(),eventOffer.getEvent().getName(),eventOffer.getService().getId(),eventOffer.getService().getShortName(),eventOffer.getCreatedAt(),eventOffer.isRetracted());
+            data.getEventOffers().add(eventData);
+        }
+        model.addAttribute("eventdata", data);
         return "retractmovie.xhtml";
     }
 
     @PostMapping("/retractmovie")
-    public String retractMovieOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
-
-
-        Boolean isValid = true;
-        String reasonForFailure = "";
-
-        // Most important thing for this is that we need to be validate that the movie itself is being offered before
-        // committing the transaction retraction
-
-        // validate that the streaming service is actually offering the event
-        Transaction offerLookup = null;
-        offerLookup = checkToSeeIfStreamingIsOfferingEvent(transaction.getBuyer(), transaction.getEventName(), transaction.getEventYear());
-        if (offerLookup == null){
-            isValid = false;
-            reasonForFailure += "Offering for streaming service and movie not found";
-        }
-
-        Transaction saved = null;
-        if (isValid) {
-            System.out.println("Found Valid Offering passed validation steps");
-            // Get the studio from the event and then commit the transaction
-
-            offerLookup.setEventType(offerLookup.getEventType() + "- retracted");
-
-            saved = transactionRepository.save(offerLookup);
-        }
-
-        if(saved!=null) {
-            model.addAttribute("successmessage", "Movie retracted Successfully!");
-            return "index.xhtml";
-        }
-        else {
-            model.addAttribute("errormessage", String.format("Retraction Failed for the following reasons: %s, Please try again", reasonForFailure));
-            model.addAttribute("transaction",transaction);
-            return "retractmovie.xhtml";
-        }
-    }
-
-    @RequestMapping("/offermovie")
-    public  String createMovieOffer(Model model)
-    {
-        clearModelAttributes(model);
-        Transaction transaction = new Transaction();
-        model.addAttribute("transaction",transaction);
-        return "offermovie.xhtml";
-    }
-
-    @PostMapping("/offermovie")
-    public String createMovieOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
-
-        // Most important thing for this is that we need to be validate that the movie itself exists before
-        // committing the transaction
-
-        Boolean isValid = true;
-        String reasonForFailure = "";
-        Event event = lookupEventByNameAndYear(transaction.getEventName(), transaction.getEventYear());
-
-        if (event == null){
-            isValid = false;
-            reasonForFailure += "Event not found";
-        } else if (event != null) {
-            String eventType = event.getEventType();
-            if (!(eventType.equalsIgnoreCase("movie"))) {
-                isValid = false;
-                reasonForFailure += "Event type is not movie";
-            }
-        }
-
-        Transaction saved = null;
-        if (isValid) {
-            System.out.println("Event passed validation steps");
-            // Get the studio from the event and then commit the transaction
-            String studioShortName = event.getStudioShortName();
-
-            transaction.setVendor(studioShortName);
-            transaction.setTransactionCost(event.getEventLicensingFee());
-            transaction.setEventType("movie");
-
-            // this is an "offer" type
-            transaction.setTransactionType("offer");
-
-            saved = transactionRepository.save(transaction);
-        }
-
-        if(saved!=null) {
-            model.addAttribute("successmessage", "Event Saved Successfully!");
-            return "index.xhtml";
-        }
-        else {
-            model.addAttribute("errormessage", String.format("Offering save Failed for the following reasons: %s, Please try again", reasonForFailure));
-            model.addAttribute("transaction",transaction);
-            return "offermovie.xhtml";
-        }
-    }
-
-    private DemographicGroup lookupDemographicGroupByShortName(String demographicGroupShortName){
-        // looks up demographic group via the short name
-        List<DemographicGroup> demographicGroupList = mainDBService.findAllDemographicGroup();
-        DemographicGroup demographicGroupToSearchFor = null;
-        for (DemographicGroup demographicGroup: demographicGroupList){
-            if (demographicGroup.getShortName().equalsIgnoreCase(demographicGroupShortName)){
-                demographicGroupToSearchFor = demographicGroup;
-                return demographicGroupToSearchFor;
-            }
-        }
-        return null;
-    }
-
-    private Studio lookupStudioByShortName(String studioShortName){
-        List<Studio> studioList = this.studioRepository.findAll();
-        Studio studioSearchResult = null;
-        for (Studio studio: studioList){
-            if (studio.getShortName().equalsIgnoreCase(studioShortName)){
-                studioSearchResult = studio;
-                return studioSearchResult;
-            }
-        }
-        return null;
-    }
-
-    private StreamingService lookupStreamByShortName(String streamShortName){
-        List<StreamingService> streamList = this.streamingServiceRepository.findAll();
-        StreamingService streamSearchResult = null;
-        for (StreamingService stream: streamList){
-            if (stream.getShortName().equalsIgnoreCase(streamShortName)){
-                streamSearchResult = stream;
-                return streamSearchResult;
-            }
-        }
-        return null;
-    }
-
-    private Event lookupEventByNameAndYear(String eventName, int eventYear){
-        List<Event> eventList = this.eventRepository.findAll();
-        Event eventSearchResult = null;
-        for (Event event: eventList){
-            if (event.getName().equalsIgnoreCase(eventName) && event.getYear() == eventYear){
-                eventSearchResult = event;
-                return eventSearchResult;
-            }
-        }
-        return null;
-    }
-
-    private List<Transaction> getSalesTransactions(String vendorShortName){
-//        String vendorShortName = vendor.getShortName();
-
-        List<Transaction> vendorSalesTransactions = new ArrayList<>();
-
-        List<Transaction> allTransactions = this.transactionRepository.findAll();
-
-        // Looks through all of the transactions where the vendor matches the "vendor" column
-        for (Transaction transaction: allTransactions){
-            if (transaction.getVendor().equalsIgnoreCase(vendorShortName)){
-                vendorSalesTransactions.add(transaction);
-            }
-        }
-
-        // returns the list of all Vendor Transactions
-        return vendorSalesTransactions;
-    }
-
-    private List<Transaction> getPurchaseTransactions(String buyerName){
-
-        List<Transaction> buyerPurchaseTransactions = new ArrayList<>();
-
-        List<Transaction> allTransactions = this.transactionRepository.findAll();
-
-        // Looks through all of the transactions where the vendor matches the "vendor" column
-        for (Transaction transaction: allTransactions){
-            if (transaction.getBuyer().equalsIgnoreCase(buyerName)){
-                buyerPurchaseTransactions.add(transaction);
-            }
-        }
-
-        // returns the list of all Buyer Transactions
-        return buyerPurchaseTransactions;
-    }
-
-    private TransactionSummary calculateTransactionSummaryForStream(StreamingService stream, String currentMonthYear){
-        // Display for a StreamingService
-        // Subscription fees for the current month
-        // Subscription fees for the previous motnh
-        // Subscription fees for all previous months except the current month
-
-        // first, get all the transactions where the StreamingService was the vendor
-        List<Transaction> allSalesTransactions = getSalesTransactions(stream.getShortName());
-
-        // convert currentMonthYear to LocalDate
-        String[] monthYear = currentMonthYear.split("-");
-        int month = Integer.parseInt(monthYear[0]); // subtract 1 because the months index starts at 0
-        int year = Integer.parseInt(monthYear[1]);
-        LocalDate baseDate = LocalDate.of(year, month, 01);
-
-        // now, calculate the current month
-        int currentMonthTotal = 0;
-        for (Transaction transaction: allSalesTransactions){
-            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
-                currentMonthTotal += transaction.getTransactionCost();
-            }
-        }
-
-        // calculate the previous month
-        int previousMonthTotal = 0;
-        for (Transaction transaction: allSalesTransactions){
-            if(baseDate.minusMonths(1).compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
-                previousMonthTotal += transaction.getTransactionCost();
-            }
-        }
-
-        // calculate all upto except current month
-        int cumulativeExceptCurrentTotal = 0;
-        for (Transaction transaction: allSalesTransactions){
-            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) > 0){
-                cumulativeExceptCurrentTotal += transaction.getTransactionCost();
-            }
-        }
-
-        TransactionSummary transactionSummary = new TransactionSummary();
-        transactionSummary.setCurrentPeriod(currentMonthTotal);
-        transactionSummary.setPreviousPeriod(previousMonthTotal);
-        transactionSummary.setTotal(cumulativeExceptCurrentTotal);
-
-        // Unique to StreamingServices
-        // Calculate the total Licensing fees
-
-        List<Transaction> allPurchases = getPurchaseTransactions(stream.getShortName());
-        int totalLicensingFees = 0;
-        for (Transaction transaction: allPurchases){
-            totalLicensingFees+=transaction.getTransactionCost();
-        }
-
-        transactionSummary.setLicensing(totalLicensingFees);
-
-        return transactionSummary;
-    }
-
-    private TransactionSummary calculateTransactionSummaryForStudio(Studio studio, String currentMonthYear){
-        // Display for a studio shows
-        // Licensing fees for the current month
-        // Licensing fees for the previous motnh
-        // Licensing fees for all previous months except the current month
-
-        // first, get all the transactions where the studio was the vendor
-        List<Transaction> allTransactions = getSalesTransactions(studio.getShortName());
-
-        // will need to change this to look at some global date, for now set current month == 11
-//        int current_month = 11;
-//        int current_year = 2020;
-
-        // convert currentMonthYear to LocalDate
-        String[] monthYear = currentMonthYear.split("-");
-        int month = Integer.parseInt(monthYear[0]); // subtract 1 because the months index starts at 0
-        int year = Integer.parseInt(monthYear[1]);
-        LocalDate baseDate = LocalDate.of(year, month, 01);
-
-        // now, calculate the current month
-        int currentMonthTotal = 0;
-        for (Transaction transaction: allTransactions){
-            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
-                currentMonthTotal += transaction.getTransactionCost();
-            }
-        }
-
-        // calculate the previous month
-        int previousMonthTotal = 0;
-        for (Transaction transaction: allTransactions){
-            if(baseDate.minusMonths(1).compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
-                previousMonthTotal += transaction.getTransactionCost();
-            }
-        }
-
-        // calculate all upto except current month
-        int cumulativeExceptCurrentTotal = 0;
-        for (Transaction transaction: allTransactions){
-            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) > 0){
-                cumulativeExceptCurrentTotal += transaction.getTransactionCost();
-            }
-        }
-
-        TransactionSummary transactionSummary = new TransactionSummary();
-        transactionSummary.setCurrentPeriod(currentMonthTotal);
-        transactionSummary.setPreviousPeriod(previousMonthTotal);
-        transactionSummary.setTotal(cumulativeExceptCurrentTotal);
-
-        return transactionSummary;
-    }
-
-    private TransactionSummary calculateTransactionSummaryForDemo(DemographicGroup demo, String currentMonthYear){
-        // Display for a studio shows
-        // Spending fees for the current month
-        // Spending fees for the previous motnh
-        // Spending fees for all previous months except the current month
-
-        // first, get all the transactions where the demo was the buyer
-        List<Transaction> allTransactions = getPurchaseTransactions(demo.getShortName());
-
-        // convert currentMonthYear to LocalDate
-        String[] monthYear = currentMonthYear.split("-");
-        int month = Integer.parseInt(monthYear[0]); // subtract 1 because the months index starts at 0
-        int year = Integer.parseInt(monthYear[1]);
-        LocalDate baseDate = LocalDate.of(year, month, 01);
-
-        // now, calculate the current month
-        int currentMonthTotal = 0;
-        for (Transaction transaction: allTransactions){
-            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
-                currentMonthTotal += transaction.getTransactionCost();
-            }
-        }
-
-        // calculate the previous month
-        int previousMonthTotal = 0;
-        for (Transaction transaction: allTransactions){
-            if(baseDate.minusMonths(1).compareTo(LocalDate.from(transaction.getCreatedAt())) == 0){
-                previousMonthTotal += transaction.getTransactionCost();
-            }
-        }
-
-        // calculate all upto except current month
-        int cumulativeExceptCurrentTotal = 0;
-        for (Transaction transaction: allTransactions){
-            if (baseDate.compareTo(LocalDate.from(transaction.getCreatedAt())) > 0){
-                cumulativeExceptCurrentTotal += transaction.getTransactionCost();
-            }
-        }
-
-        TransactionSummary transactionSummary = new TransactionSummary();
-        transactionSummary.setCurrentPeriod(currentMonthTotal);
-        transactionSummary.setPreviousPeriod(previousMonthTotal);
-        transactionSummary.setTotal(cumulativeExceptCurrentTotal);
-
-        return transactionSummary;
-    }
-
-    private List<Transaction> getAllOffers(){
-        List<Transaction> listOfAllTransactions = this.transactionRepository.findAll();
-
-        List<Transaction> listOfOffers = new ArrayList<>();
-
-        for (Transaction transaction: listOfAllTransactions){
-            if (transaction.getTransactionType().equalsIgnoreCase("offer")){
-                listOfOffers.add(transaction);
-            }
-        }
-
-        return listOfOffers;
-    }
-
-    private List<Transaction> getAllWatches(){
-        List<Transaction> listOfAllTransactions = this.transactionRepository.findAll();
-
-        List<Transaction> listOfOffers = new ArrayList<>();
-
-        for (Transaction transaction: listOfAllTransactions){
-            if (transaction.getTransactionType().equalsIgnoreCase("watch")){
-                listOfOffers.add(transaction);
-            }
-        }
-
-        return listOfOffers;
-    }
-
-    private Transaction checkToSeeIfStreamingIsOfferingEvent(String streamingServiceShortName, String eventName, int eventYear){
-        List<Transaction> allOfferings = getAllOffers();
-
-        Transaction foundOffering = null;
-        for (Transaction transaction: allOfferings){
-            if (transaction.getBuyer().equalsIgnoreCase(streamingServiceShortName) && transaction.getEventName().equalsIgnoreCase(eventName)
-                    && transaction.getEventYear() == eventYear
-
-                    // new functionality for the retractevent
-                    && (!(transaction.getEventType().contains("retracted")))
-
-                        ){
-                foundOffering = transaction;
-                return foundOffering;
-            }
-        }
-        return null;
-    }
-
-    private Transaction checkToSeeIfEventHasBeenWatchedInTheGivenMonth(String eventName, int eventYear, String monthYear){
-        List<Transaction> allWatches = getAllWatches();
-
-        Transaction foundWatch = null;
-        for (Transaction transaction: allWatches){
-            if (transaction.getEventName().equalsIgnoreCase(eventName) && transaction.getCurrentMonthYear().equalsIgnoreCase(monthYear)
-                    && transaction.getEventYear() == eventYear){
-                foundWatch = transaction;
-                return foundWatch;
-            }
-        }
-        return null;
-    }
-
-    private Transaction checkToSeeIfStreamHasBeenWatchedInTheGivenMonth(String streamShortName, String monthYear){
-        List<Transaction> allWatches = getAllWatches();
-
-        Transaction foundStreamWatch = null;
-        for (Transaction transaction: allWatches){
-            if (transaction.getVendor().equalsIgnoreCase(streamShortName) && transaction.getCurrentMonthYear().equalsIgnoreCase(monthYear)){
-                foundStreamWatch = transaction;
-                return foundStreamWatch;
-            }
-        }
-        return null;
-    }
-
-    private Transaction returnSubscriptionBetweenStreamAndDemoWithLargestPercentage(String streamingServiceShortName, String demoGroupShortName){
-
-        List<Transaction> allTransactions = transactionRepository.findAll();
-
-        List<Transaction> transactionsIndicatingSubscription = new ArrayList<>();
-
-        for (Transaction transaction: allTransactions){
-            if (transaction.getBuyer().equalsIgnoreCase(demoGroupShortName)
-                    && transaction.getVendor().equalsIgnoreCase(streamingServiceShortName)
-                    && transaction.getEventType().equalsIgnoreCase("movie")
-                    && transaction.getTransactionType().equalsIgnoreCase("watch")){
-                transactionsIndicatingSubscription.add(transaction);
-            }
-        }
-
-        // for all the transactions, return the one with the largest percentage
-        Transaction transactionWithLargestPercentage = null;
-        if (transactionsIndicatingSubscription != null && transactionsIndicatingSubscription.size() > 0) {
-            for (Transaction transaction : transactionsIndicatingSubscription) {
-                if (transactionWithLargestPercentage == null || transactionWithLargestPercentage.getPercentage() < transaction.getPercentage()) {
-                    transactionWithLargestPercentage = transaction;
+    public String retractMovieOfferSubmit(@ModelAttribute FormData data, Model model) {
+        System.out.println(data);
+        List<EventOffer> allEventOffers = mainDBService.findAllEventOffers();
+        for(EventOfferData eventOfferData:data.getEventOffers())
+        {
+            for(EventOffer eventOffer : allEventOffers)
+            {
+                if(eventOffer.getId()==eventOfferData.getId())
+                {
+                    eventOffer.setRetracted(eventOfferData.isRetracted());
                 }
             }
         }
-
-        return transactionWithLargestPercentage;
+        List<EventOffer> eventOffers = mainDBService.saveAllEventOfferData(allEventOffers);
+        if(eventOffers.size()>0)
+        {
+            model.addAttribute("successmessage", "All Movie Retractions Saved Successfully!");
+            FormData formData = new FormData();
+            formData.setEventOffers(data.getEventOffers());
+            model.addAttribute("eventdata",formData );
+            return "retractmovie.xhtml";
+        }
+        else
+        {
+            model.addAttribute("successmessage", "Movie Retractions Save Failed!. Please Try Again");
+            return "index.xhtml";
+        }
     }
+
+//    @PostMapping("/retractmovie")
+//    public String retractMovieOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
+//
+//
+//        Boolean isValid = true;
+//        String reasonForFailure = "";
+//
+//        // Most important thing for this is that we need to be validate that the movie itself is being offered before
+//        // committing the transaction retraction
+//
+//        // validate that the streaming service is actually offering the event
+//        Transaction offerLookup = null;
+//        offerLookup = mainDBService.checkToSeeIfStreamingIsOfferingEvent(transaction.getBuyer(), transaction.getEventName(), transaction.getEventYear());
+//        if (offerLookup == null){
+//            isValid = false;
+//            reasonForFailure += "Offering for streaming service and movie not found";
+//        }
+//
+//        Transaction saved = null;
+//        if (isValid) {
+//            System.out.println("Found Valid Offering passed validation steps");
+//            // Get the studio from the event and then commit the transaction
+//
+//            offerLookup.setEventType(offerLookup.getEventType() + "- retracted");
+//
+//            saved = transactionRepository.save(offerLookup);
+//        }
+//
+//        if(saved!=null) {
+//            model.addAttribute("successmessage", "Movie retracted Successfully!");
+//            return "index.xhtml";
+//        }
+//        else {
+//            model.addAttribute("errormessage", String.format("Retraction Failed for the following reasons: %s, Please try again", reasonForFailure));
+//            model.addAttribute("transaction",transaction);
+//            return "retractmovie.xhtml";
+//        }
+//    }
 
     private void clearModelAttributes(Model model)
     {

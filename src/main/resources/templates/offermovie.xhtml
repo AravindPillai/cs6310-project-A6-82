@@ -22,6 +22,23 @@
                 autoclose: true
             });
             $( "#datepicker" ).datepicker( "setDate", new Date());
+
+            $('#eventname').change( function() {
+                $(this).find(":selected").each(function () {
+                    var val= $(this).val();
+                    var values = val.split("-");
+                    console.log(values,values[2]);
+                    if(values[2]=='PPV')
+                    {
+                        console.log("Show")
+                        $('#paid').removeClass('d-none');
+                    }
+                    else
+                    {
+                        $('#paid').addClass('d-none');
+                    }
+                });
+            });
         });
     </script>
 </head>
@@ -47,25 +64,21 @@
     </div>
 
     <div class="card mx-auto my-xl-5" style="width: 28rem;">
+        <div class="card-header"><span style="font-weight: bold;">Offer Event</span></div>
         <div class="card-body">
             <form action="#" th:action="@{/offermovie}" th:object="${transaction}" method="post">
                 <div class="form-group">
-                    <label for="stream">Streaming Service:</label>
-                    <input type="text" class="form-control" id="stream" aria-describedby="streamHelp" th:field="${transaction.buyer}" th:value="${transaction.buyer}" required="required"/>
-                    <small id="shortNameHelp" class="form-text text-muted">Enter Streaming Service Short Name</small>
-                    <div class="invalid-feedback">Short Name Cannot be Empty</div>
+                    <label for="streamname">Streaming Service Short Name:</label>
+                    <select class="custom-select" id="streamname" name="streamname" th:field="${transaction.buyer}" th:value="${transaction.buyer}" required="required">
+                        <option th:each="service : ${services}" th:value="${service.shortName}" th:utext="${service.shortName}"/>
+                    </select>
                 </div>
                 <div class="form-group">
-                    <label for="eventname">Event Name:</label>
-                    <input type="text" class="form-control" id="eventname" aria-describedby="eventnameHelp" th:field="${transaction.eventName}" th:value="${transaction.eventName}" required="required"/>
-                    <small id="eventnameHelp" class="form-text text-muted">Enter Event Name</small>
-                    <div class="invalid-feedback">Event Name Cannot be Empty</div>
-                </div>
-                <div class="form-group">
-                    <label for="eventyear">Event Year:</label>
-                    <input type="text" class="form-control" id="eventyear" aria-describedby="eventyearHelp" th:field="${transaction.eventYear}" th:value="${transaction.eventYear}" required="required"/>
-                    <small id="eventyearHelp" class="form-text text-muted">Enter Event Year</small>
-                    <div class="invalid-feedback">Event Year Cannot be Empty</div>
+                    <label for="eventname">Event Name:EventYear  <span id="paid" class="badge badge-danger d-none">PAID</span></label>
+                    <select class="custom-select" id="eventname" name="eventname" th:field="${transaction.eventName}" th:value="${transaction.eventName}">
+                        <option  th:each="event : ${events}" th:value="${event.name}+'-'+${event.year}+'-'+${event.eventType}" th:text="${event.name}+'-'+${event.year}"/>
+                    </select>
+
                 </div>
                 <div class="form-group">
                     <label for="datepicker">Creation Date:</label>
@@ -80,14 +93,7 @@
                     <small id="creationDateHelp" class="form-text text-muted">Defaulted to Current Month</small>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="submit" th:onclick="|window.location.href='/'|" class="btn btn-outline-secondary">Cancel</button>
-            </form>
-        </div>
-        <div class="card-body">
-            <form action="#" th:action="@{/offermovie}" th:object="${transaction}" method="get">
-                <span th:text ="${transaction.buyer} ?: ''"></span>
-                <span th:text ="${transaction.eventName} ?: ''"></span>
-                <span th:text ="${transaction.eventYear} ?: ''"></span>
+                <button type="button" th:onclick="|window.location.href='/index'|" class="btn btn-outline-secondary">Cancel</button>
             </form>
         </div>
     </div>

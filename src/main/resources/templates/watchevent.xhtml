@@ -7,9 +7,10 @@
     <!-- Bootstrap core CSS -->
     <link href="../static/css/bootstrap.css" rel="stylesheet" th:href="@{/css/bootstrap.css}"/>
     <link href="../static/css/streamingwars.css" rel="stylesheet" th:href="@{/css/streamingwars.css}"/>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
     <link href="../static/js/bootstrap.bundle.js" rel="script" th:href="@{/js/bootstrap.bundle.js}"/>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css"  crossorigin="anonymous"/>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
     <script>
@@ -30,6 +31,49 @@
                 setDate: new Date(),
                 autoclose: true
             });
+
+            var eventFetchURL = 'http://localhost:8080/api/getEvents/'
+            $('#streamname').change( function() {
+                $(this).find(":selected").each(function () {
+                    var val= $(this).val();
+                    $.ajax({
+                        type: "GET",
+                        url: eventFetchURL+val,
+                        contentType: "application/json",
+                        beforeSend: function() { },
+                        complete: function() {
+                            console.log("Success")
+                        },
+                        success: function(data) {
+                            jsonData = JSON.stringify(data);
+                            console.log( "Returned Success Response -->" +jsonData)
+                            if(jsonData.length<=2) //Blank Array has length 2 []
+                            {
+                                $('#eventname').empty();
+                                $('#eventname').prop('disabled', true);
+                                $('#submit').prop('disabled', true);
+                            }
+                            else {
+                                //$('#eventname').append($('<option></option>').val("Select Event").text("Select Event"));
+                                $('#eventname').empty();
+                                $.each(data, function (i, item) {
+                                    console.log(item);
+                                    $('#eventname').append($('<option></option>').val(item.event.name + "-" + item.event.year).text(item.event.name + "-" + item.event.year));
+                                });
+                                $('#eventname').prop('disabled', false);
+                                $('#submit').prop('disabled', false);
+                            }
+                        },
+                        error: function(data) {
+                            console.log( "Returned Error Response -->" +data)
+                            },
+                        dataType: 'json'
+                    });
+
+
+                });
+            });
+
         });
     </script>
 </head>
@@ -56,6 +100,7 @@
 
     <div class="card mx-auto my-xl-5" style="width: 28rem;">
         <div class="card-body">
+            <div class="card-header"><span style="font-weight: bold;">Watch Event</span></div>
             <form action="#" th:action="@{/watchevent}" th:object="${transaction}" method="post">
                 <div class="form-group">
                     <label for="demogroupname">Demogroup Name:</label>
@@ -72,21 +117,22 @@
                 <div class="form-group">
                     <label for="streamname">Streaming Service Short Name:</label>
                     <select class="custom-select" id="streamname" name="streamname" th:field="${transaction.vendor}" th:value="${transaction.vendor}">
+                        <option value="Select">Select Stream</option>
                         <option th:each="service : ${services}" th:value="${service.shortName}" th:utext="${service.shortName}"/>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="eventname">Event Name:</label>
-                    <select class="custom-select" id="eventname" name="eventname" th:field="${transaction.eventName}" th:value="${transaction.eventName}">
-                        <option th:each="event : ${events}" th:value="${event.name}" th:utext="${event.name}"/>
+                    <label for="eventname">Event Name:EventYear</label>
+                    <select class="custom-select" id="eventname" name="eventname" th:field="${transaction.eventName}" th:value="${transaction.eventName}" disabled="disabled">
+<!--                        <option th:each="event : ${events}" th:value="${event.name}+':'+${event.year}" th:utext="${event.name}+':'+${event.year}"/>-->
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="eventyear">Event Year:</label>
-                    <input type="text" class="form-control" id="eventyear" aria-describedby="eventyearHelp" th:field="${transaction.eventYear}" th:value="${transaction.eventYear}" required="required"/>
-                    <small id="eventyearHelp" class="form-text text-muted">Enter Event Year</small>
-                    <div class="invalid-feedback">Event Year Cannot be Empty</div>
-                </div>
+<!--                <div class="form-group">-->
+<!--                    <label for="eventyear">Event Year:</label>-->
+<!--                    <input type="text" class="form-control" id="eventyear" aria-describedby="eventyearHelp" th:field="${transaction.eventYear}" th:value="${transaction.eventYear}" required="required"/>-->
+<!--                    <small id="eventyearHelp" class="form-text text-muted">Enter Event Year</small>-->
+<!--                    <div class="invalid-feedback">Event Year Cannot be Empty</div>-->
+<!--                </div>-->
                 <div class="form-group">
                     <label for="datepicker">Creation Date:</label>
                     <div class="input-group">
@@ -99,7 +145,7 @@
                     </div>
                     <small id="creationDateHelp" class="form-text text-muted">Defaulted to Current Month</small>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" id="submit" class="btn btn-primary" disabled="disabled">Submit</button>
                 <button type="submit" th:onclick="|window.location.href='/'|" class="btn btn-outline-secondary">Cancel</button>
             </form>
         </div>

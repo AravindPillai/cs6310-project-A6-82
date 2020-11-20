@@ -18,6 +18,8 @@ public class DemographicGroup extends AuditEntity {
     private String description;
     private boolean archived;
     private int numberOfAccounts;
+    @Transient
+    private boolean editable;
 
     public DemographicGroup() {
 
@@ -68,5 +70,13 @@ public class DemographicGroup extends AuditEntity {
 
     public void setNumberOfAccounts(int numberOfAccounts) {
         this.numberOfAccounts = numberOfAccounts;
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 }

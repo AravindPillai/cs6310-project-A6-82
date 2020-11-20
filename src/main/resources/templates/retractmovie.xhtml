@@ -46,40 +46,65 @@
         <span th:text="${errormessage}"></span>
     </div>
 
-    <div class="card mx-auto my-xl-5" style="width: 28rem;">
-        <div class="card-body">
-            <form action="#" th:action="@{/retractmovie}" th:object="${transaction}" method="post">
-                <div class="form-group">
-                    <label for="stream">Streaming Service:</label>
-                    <input type="text" class="form-control" id="stream" aria-describedby="streamHelp" th:field="${transaction.buyer}" th:value="${transaction.buyer}" required="required"/>
-                    <small id="shortNameHelp" class="form-text text-muted">Enter Streaming Service Short Name</small>
-                    <div class="invalid-feedback">Short Name Cannot be Empty</div>
+    <div id="displayTable" class="card mx-auto my-xl-5 d-flex" style="width: 100rem;">
+        <div class="card-header d-flex" style="font-weight: bold">Retract Movie</div>
+        <div class="table-responsive " style="margin: 1px">
+            <form action="#" th:action="@{/retractmovie}" th:object="${eventdata}" method="post">
+                <table class="table table-sm table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th  scope="col"></th>
+                        <th  scope="col">Id1</th>
+                        <th scope="col">Stream</th>
+                        <th  scope="col">Stream Name</th>
+                        <th  scope="col">Event</th>
+                        <th  scope="col">Event Name</th>
+                        <th  scope="col">createdAt</th>
+                        <th  scope="col">Retract</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${nodata != null}" class="max-col-span">
+                        <td colspan="100%">
+                            <div class="alert alert-light d-flex justify-content-center" role="alert" >
+                                No Rows to Display for Selected Start and End Date
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${nodata == null}"  th:each="eventOffer,eventOfferStat: ${eventdata.eventOffers}">
+                        <td>
+                            <input type="hidden" th:name="${eventOffer.getId()}" th:field="*{eventOffers[__${eventOfferStat.index}__].id}" th:value="${eventOffer.getId()}"></input>
+                            <input type="hidden" th:name="${eventOffer.eventId}" th:field="*{eventOffers[__${eventOfferStat.index}__].eventId}" th:value="${eventOffer.eventId}"></input>
+                            <input type="hidden" th:name="${eventOffer.eventName}" th:field="*{eventOffers[__${eventOfferStat.index}__].eventName}" th:value="${eventOffer.eventName}"></input>
+                            <input type="hidden" th:name="${eventOffer.serviceId}" th:field="*{eventOffers[__${eventOfferStat.index}__].serviceId}" th:value="${eventOffer.serviceId}"></input>
+                            <input type="hidden" th:name="${eventOffer.serviceName}" th:field="*{eventOffers[__${eventOfferStat.index}__].serviceName}" th:value="${eventOffer.serviceName}"></input>
+                            <input type="hidden" th:name="${eventOffer.createdAt}" th:field="*{eventOffers[__${eventOfferStat.index}__].createdAt}" th:value="${eventOffer.createdAt}"></input>
+                        </td>
+                        <td  th:text="${eventOffer.id}" />
+                        <td  th:text="${eventOffer.eventId}" />
+                        <td  th:text="${eventOffer.eventName}" />
+                        <td  th:text="${eventOffer.serviceId}" />
+                        <td  th:text="${eventOffer.serviceName}" />
+                        <td th:text="${eventOffer.createdAt}" />
+                        <td>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="materialChecked2" th:field="*{eventOffers[__${eventOfferStat.index}__].retracted}" th:checked="${eventOffer.retracted}" th:value="${eventOffer.retracted}"></input>
+                                <label class="form-check-label" for="materialChecked2"></label>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div id="buttongroup" class="float-right mr-4" >
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" th:onclick="|window.location.href='/index'|" class="btn btn-outline-secondary">Cancel</button>
                 </div>
-                <div class="form-group">
-                    <label for="moviename">Movie Name:</label>
-                    <input type="text" class="form-control" id="moviename" aria-describedby="movienameHelp" th:field="${transaction.eventName}" th:value="${transaction.eventName}" required="required"/>
-                    <small id="movienameHelp" class="form-text text-muted">Enter Movie Name</small>
-                    <div class="invalid-feedback">Movie Name Cannot be Empty</div>
-                </div>
-                <div class="form-group">
-                    <label for="movieyear">Movie Year:</label>
-                    <input type="text" class="form-control" id="movieyear" aria-describedby="movieyearHelp" th:field="${transaction.eventYear}" th:value="${transaction.eventYear}" required="required"/>
-                    <small id="movieyearHelp" class="form-text text-muted">Enter Movie Year</small>
-                    <div class="invalid-feedback">Movie Year Cannot be Empty</div>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="submit" th:onclick="|window.location.href='/'|" class="btn btn-outline-secondary">Cancel</button>
-            </form>
-        </div>
-        <div class="card-body">
-            <form action="#" th:action="@{/retractmovie}" th:object="${transaction}" method="get">
-                <span th:text ="${transaction.buyer} ?: ''"></span>
-                <span th:text ="${transaction.eventName} ?: ''"></span>
-                <span th:text ="${transaction.eventYear} ?: ''"></span>
             </form>
         </div>
     </div>
- </div>
+
+
+</div>
 <footer id="sticky-footer" class="py-2 bg-secondary text-white-50">
     <div class="container text-center">
         <small>Copyright CS6310 Group A82 &copy; Streaming Wars. All rights reserved.</small>

@@ -47,6 +47,29 @@ public class StreamingWarController {
         }
 
     }
+    @PostMapping("/api/updateEvent")
+    public boolean updateDemographicGroup(@RequestBody Event event)
+    {
+        Optional<Event> eventByID = service.getEventByID(event.getId());
+        if(eventByID.isPresent())
+        {
+            Event fetchedEvent = eventByID.get();
+            fetchedEvent.setEventLicensingFee(event.getEventLicensingFee());
+            List<Event> events = new ArrayList<Event>();
+            events.add(fetchedEvent);
+            try {
+            List<Event> events1 = service.saveAllEvents(events);
+            } catch (SQLIntegrityConstraintViolationException exception) {
+                exception.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    }
 
     @GetMapping("/api/getEvents/{name}")
     public ResponseEntity<List<EventOffer>> getEventsForStreamingService(@PathVariable("name") String name)

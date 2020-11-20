@@ -462,4 +462,19 @@ public class MainDBService {
         List<EventOffer> eventOffers = eventOfferRepository.saveAll(allEventOffers);
         return eventOffers;
     }
+
+    public List<Event> getAllEvents() {
+        List<Event> all = eventRepository.findAll();
+        return all;
+    }
+
+    public Optional<Event> getEventByID(Long eventId) {
+        Optional<Event> byId = eventRepository.findById(eventId);
+        return byId;
+    }
+
+    public List<Event> saveAllEvents(List<Event> events) throws DataIntegrityViolationException,SQLIntegrityConstraintViolationException{
+        List<Event> events1 = eventRepository.saveAll(events);
+        return events1;
+    }
 }

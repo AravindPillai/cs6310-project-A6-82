@@ -750,10 +750,18 @@ public class WebController {
     }
 
     @RequestMapping("/displayevents")
-    public String displayEvents(Model model) {
+    public String displayEvents(Model model,@RequestParam(required = false) String Status) {
         clearModelAttributes(model);
-        List<Event> listOfEvents = this.eventRepository.findAll();
+        List<Event> listOfEvents = mainDBService.getAllEvents();
+        Event editObject = new Event();
+        model.addAttribute("editObject", editObject);
         model.addAttribute("events", listOfEvents);
+
+        if (Status != null && Status.equals("SUCCESS")) {
+            model.addAttribute("successmessage", "Event Update Successful!");
+        } else if (Status != null && Status.equals("ERROR")) {
+            model.addAttribute("errormessage", "Event Update Failed!,Please try again!");
+        }
         return "displayevents.xhtml";
     }
 

@@ -19,6 +19,8 @@ public class Event extends AuditEntity {
     private String eventType;
     private String studioShortName;
     private Integer eventLicensingFee;
+    @Transient
+    private boolean editable;
 
     public Event() {
         this.year = 2020;
@@ -79,5 +81,13 @@ public class Event extends AuditEntity {
 
     public void setEventLicensingFee(Integer eventLicensingFee) {
         this.eventLicensingFee = eventLicensingFee;
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 }

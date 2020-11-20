@@ -60,7 +60,7 @@
                     <small id="creationDateHelp" class="form-text text-muted">Defaulted to Current Month</small>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="submit" th:onclick="|window.location.href='./'|" class="btn btn-outline-secondary">Cancel</button>
+                <button type="button" th:onclick="|window.location.href='./index'|" class="btn btn-outline-secondary">Cancel</button>
             </form>
             <span th:text ="${studio.shortName}"></span>
             <span th:text ="${studio.longName}"></span>

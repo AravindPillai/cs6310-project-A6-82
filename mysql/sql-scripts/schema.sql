@@ -18,7 +18,7 @@ CREATE UNIQUE INDEX ix_auth_email on authorities (email,authority);
 	INSERT INTO users (name, email, password, enabled)
 	  values ('user',
 	    'user@email.com',
-	    'User123',
+	    '$2y$12$OP7N6nRxVQKZzoQ9yAL1Y.Va5fbLqbkmTXPXQjqF0vGA5J/T9U8J.',
 	    1);
 
 INSERT INTO authorities (email, authority)

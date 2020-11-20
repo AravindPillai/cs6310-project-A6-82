@@ -136,8 +136,8 @@
                     <td th:text="${event.studioShortName}"> Studio Short Name </td>
                     <td th:text="${event.eventLicensingFee}"> Event Licensing Fee </td>
                     <td>
-                        <a th:if="!${event.editable}" href="#" id="editButton" class="editButtonClass" th:attr="data-id=${event.id},data-sName=${event.name},data-year=${event.year},data-studioShortName=${event.studioShortName},data-eventLicensingFee=${event.eventLicensingFee}"><i class="pen far fa-edit"></i></a>
-                        <i th:if="${event.editable}" class="pen fas fa-ban editButtonClass"></i>
+                        <a th:if="${event.editable}" href="#" id="editButton" class="editButtonClass" th:attr="data-id=${event.id},data-sName=${event.name},data-year=${event.year},data-studioShortName=${event.studioShortName},data-eventLicensingFee=${event.eventLicensingFee}"><i class="pen far fa-edit"></i></a>
+                        <i th:if="!${event.editable}" class="pen fas fa-ban editButtonClass"></i>
                     </td>
                 </tr>
             </table>

@@ -140,8 +140,8 @@
                     <td th:text="${tsum.total}"> Event Licensing Fee </td>
                     <td th:text="${tsum.licensing}"> Event Licensing Fee </td>
                     <td>
-                        <a th:if="!${tsum.editable}" href="#" id="editButton" class="editButtonClass" th:attr="data-id=${tsum.id},data-sName=${tsum.shortName},data-lName=${tsum.longName},data-subscriptionPrice=${tsum.subscriptionPrice},data-licensing=${tsum.licensing}"><i class="pen far fa-edit"></i></a>
-                        <i th:if="${tsum.editable}" class="pen fas fa-ban editButtonClass"></i>
+                        <a th:if="${tsum.editable}" href="#" id="editButton" class="editButtonClass" th:attr="data-id=${tsum.id},data-sName=${tsum.shortName},data-lName=${tsum.longName},data-subscriptionPrice=${tsum.subscriptionPrice},data-licensing=${tsum.licensing}"><i class="pen far fa-edit"></i></a>
+                        <i th:if="!${tsum.editable}" class="pen fas fa-ban editButtonClass"></i>
                     </td>
                 </tr>
             </table>

@@ -549,6 +549,15 @@ public class WebController {
             summary.setSubscriptionPrice(service.getSubscriptionPrice());
             summary.setLicensing(transactionSummaryCalculated.getLicensing());
             summary.setTotal(transactionSummaryCalculated.getTotal());
+            Transaction transaction = mainDBService.checkToSeeIfStreamHasBeenWatchedInTheGivenMonth(service.getShortName(), currentMonthYear);
+            if(transaction!=null)
+            {
+                summary.setEditable(false);
+            }
+            else
+            {
+                summary.setEditable(true);
+            }
             transactionSummaries.add(summary);
         }
         StreamTransactionSummary transactionSummary = new StreamTransactionSummary();
@@ -803,7 +812,23 @@ public class WebController {
     @RequestMapping("/displayevents")
     public String displayEvents(Model model,@RequestParam(required = false) String Status) {
         clearModelAttributes(model);
+        LocalTime time = LocalTime.of(00, 00);
+        LocalDate date = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1);
+        LocalDateTime startDate1 = date.atTime(time);
+        String currentMonthYear = startDate1.getMonth().getValue()+"-"+startDate1.getYear();
         List<Event> listOfEvents = mainDBService.getAllEvents();
+        for(Event event:listOfEvents)
+        {
+            Transaction transaction = mainDBService.checkToSeeIfEventHasBeenWatchedInTheGivenMonth(event.getName(), event.getYear(),currentMonthYear);
+            if(transaction==null)
+            {
+                event.setEditable(true);
+            }
+            else
+            {
+                event.setEditable(false);
+            }
+        }
         Event editObject = new Event();
         model.addAttribute("editObject", editObject);
         model.addAttribute("events", listOfEvents);

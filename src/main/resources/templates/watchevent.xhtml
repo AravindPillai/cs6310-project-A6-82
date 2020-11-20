@@ -99,9 +99,9 @@
     </div>
 
     <div class="card mx-auto my-xl-5" style="width: 28rem;">
+        <div class="card-header"><span style="font-weight: bold;">Watch Event</span></div>
         <div class="card-body">
-            <div class="card-header"><span style="font-weight: bold;">Watch Event</span></div>
-            <form action="#" th:action="@{/watchevent}" th:object="${transaction}" method="post">
+           <form action="#" th:action="@{/watchevent}" th:object="${transaction}" method="post">
                 <div class="form-group">
                     <label for="demogroupname">Demogroup Name:</label>
                     <select class="custom-select" id="demogroupname" name="demogroupname" th:field="${transaction.buyer}" th:value="${transaction.buyer}">

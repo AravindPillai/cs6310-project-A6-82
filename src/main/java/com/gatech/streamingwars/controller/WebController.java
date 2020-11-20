@@ -6,6 +6,7 @@ import com.gatech.streamingwars.service.MainDBService;
 import com.gatech.streamingwars.service.UserService;
 import com.gatech.streamingwars.ui.EventOfferData;
 import com.gatech.streamingwars.ui.FormData;
+import com.gatech.streamingwars.ui.StreamTransactionSummary;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -468,14 +469,38 @@ public class WebController {
 
 
     @RequestMapping("/displaystudio")
-    public String displayStudio(Model model) {
+    public String displayStudio(Model model,@RequestParam(required = false) String Status) {
         clearModelAttributes(model);
-        Studio studio = new Studio();
-        model.addAttribute("studio", studio);
+        //Studio studio = new Studio();
+        //model.addAttribute("studio", studio);
+        List<Studio> allStudios = mainDBService.findAllStudios();
+        List<StreamTransactionSummary> transactionSummaries = new ArrayList<StreamTransactionSummary>();
+        LocalTime time = LocalTime.of(00, 00);
+        LocalDate date = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1);
+        LocalDateTime startDate1 = date.atTime(time);
+        String currentMonthYear = startDate1.getMonth().getValue()+"-"+startDate1.getYear();
+        for(Studio studio:allStudios)
+        {
+            TransactionSummary transactionSummaryCalculated = mainDBService.calculateTransactionSummaryForStudio(studio, currentMonthYear);
+            StreamTransactionSummary summary = new StreamTransactionSummary();
+            summary.setId(studio.getId());
+            summary.setShortName(studio.getShortName());
+            summary.setLongName(studio.getLongName());
+            summary.setCurrentPeriod(transactionSummaryCalculated.getCurrentPeriod());
+            summary.setPreviousPeriod(transactionSummaryCalculated.getPreviousPeriod());
+            summary.setTotal(transactionSummaryCalculated.getTotal());
+            transactionSummaries.add(summary);
+        }
 
         TransactionSummary transactionSummary = new TransactionSummary();
         model.addAttribute("transactionSummary", transactionSummary);
+        model.addAttribute("transactionSummaries",transactionSummaries);
 
+        if (Status != null && Status.equals("SUCCESS")) {
+            model.addAttribute("successmessage", "Studio Service Update Successful!");
+        } else if (Status != null && Status.equals("ERROR")) {
+            model.addAttribute("errormessage", "Studio Service Update Failed!,Please try again!");
+        }
         return "displaystudio.xhtml";
     }
 
@@ -502,13 +527,39 @@ public class WebController {
     }
 
     @RequestMapping("/displaystream")
-    public String displayStream(Model model) {
+    public String displayStream(Model model,@RequestParam(required = false) String Status) {
         clearModelAttributes(model);
         StreamingService stream = new StreamingService();
         model.addAttribute("stream", stream);
-
-        TransactionSummary transactionSummary = new TransactionSummary();
+        LocalTime time = LocalTime.of(00, 00);
+        LocalDate date = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1);
+        LocalDateTime startDate1 = date.atTime(time);
+        String currentMonthYear = startDate1.getMonth().getValue()+"-"+startDate1.getYear();
+        List<StreamingService> streamingServices = mainDBService.findAllServices();
+        List<StreamTransactionSummary> transactionSummaries = new ArrayList<StreamTransactionSummary>();
+        for(StreamingService service:streamingServices)
+        {
+            TransactionSummary transactionSummaryCalculated = mainDBService.calculateTransactionSummaryForStream(service,currentMonthYear);
+            StreamTransactionSummary summary = new StreamTransactionSummary();
+            summary.setId(service.getId());
+            summary.setShortName(service.getShortName());
+            summary.setLongName(service.getLongName());
+            summary.setCurrentPeriod(transactionSummaryCalculated.getCurrentPeriod());
+            summary.setPreviousPeriod(transactionSummaryCalculated.getPreviousPeriod());
+            summary.setSubscriptionPrice(service.getSubscriptionPrice());
+            summary.setLicensing(transactionSummaryCalculated.getLicensing());
+            summary.setTotal(transactionSummaryCalculated.getTotal());
+            transactionSummaries.add(summary);
+        }
+        StreamTransactionSummary transactionSummary = new StreamTransactionSummary();
         model.addAttribute("transactionSummary", transactionSummary);
+        model.addAttribute("transactionSummaries",transactionSummaries);
+
+        if (Status != null && Status.equals("SUCCESS")) {
+            model.addAttribute("successmessage", "Streaming Service Update Successful!");
+        } else if (Status != null && Status.equals("ERROR")) {
+            model.addAttribute("errormessage", "Streaming Service Update Failed!,Please try again!");
+        }
 
         return "displaystream.xhtml";
     }

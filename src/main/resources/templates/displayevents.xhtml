@@ -68,7 +68,14 @@
                         newLocation = newLocation.replace(removeString, '');
                     }
                     console.log(newLocation.indexOf("Status=SUCCESS"));
-                    window.location.href = newLocation + "?Status=SUCCESS";
+                    if(data!=false) {
+                        console.log(newLocation.indexOf("Status=SUCCESS"));
+                        window.location.href = newLocation + "?Status=SUCCESS";
+                    }
+                    else
+                    {
+                        window.location.href = newLocation + "?Status=ERROR";
+                    }
                 },
                 error: function(data) {
                     console.log( "Returned Error Response -->" +data)

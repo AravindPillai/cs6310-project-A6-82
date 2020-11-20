@@ -477,4 +477,9 @@ public class MainDBService {
         List<Event> events1 = eventRepository.saveAll(events);
         return events1;
     }
+
+    public StreamingService saveStreamingService(StreamingService streamingServiceByName) throws DataIntegrityViolationException,SQLIntegrityConstraintViolationException{
+        StreamingService save = streamingServiceRepository.save(streamingServiceByName);
+        return save;
+    }
 }

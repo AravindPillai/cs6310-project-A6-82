@@ -3,7 +3,9 @@ package com.gatech.streamingwars.controller;
 import com.gatech.streamingwars.maindb.model.DemographicGroup;
 import com.gatech.streamingwars.maindb.model.Event;
 import com.gatech.streamingwars.maindb.model.EventOffer;
+import com.gatech.streamingwars.maindb.model.StreamingService;
 import com.gatech.streamingwars.service.MainDBService;
+import com.gatech.streamingwars.ui.StreamTransactionSummary;
 import org.jboss.jandex.Main;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,6 +61,27 @@ public class StreamingWarController {
             events.add(fetchedEvent);
             try {
             List<Event> events1 = service.saveAllEvents(events);
+            } catch (SQLIntegrityConstraintViolationException exception) {
+                exception.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    }
+
+    @PostMapping("/api/updateStream")
+    public boolean updateDemographicGroup(@RequestBody StreamTransactionSummary summary)
+    {
+        StreamingService streamingServiceByName = service.findStreamingServiceByName(summary.getShortName());
+        if(streamingServiceByName!=null)
+        {
+            streamingServiceByName.setSubscriptionPrice(summary.getSubscriptionPrice());
+            try {
+                StreamingService streamingService = service.saveStreamingService(streamingServiceByName);
             } catch (SQLIntegrityConstraintViolationException exception) {
                 exception.printStackTrace();
                 return false;

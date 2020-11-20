@@ -482,4 +482,14 @@ public class MainDBService {
         StreamingService save = streamingServiceRepository.save(streamingServiceByName);
         return save;
     }
+
+    public  List<EventOffer> lookupEventStreamBasedOnCurrentMonth(String eventName,String streamName, String currentYearMonth)
+    {
+        Event eventByName = eventRepository.findEventByName(eventName);
+        StreamingService byShortName = streamingServiceRepository.findByShortName(streamName);
+
+        List<EventOffer> byServiceEventCurrentYear = eventOfferRepository.findByServiceEventCurrentYear(eventByName, byShortName, currentYearMonth);
+        return  byServiceEventCurrentYear;
+
+    }
 }

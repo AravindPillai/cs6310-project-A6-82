@@ -428,6 +428,13 @@ public class WebController {
         transaction.setEventName(split[0]);
         transaction.setEventYear(Integer.parseInt(split[1]));
 
+        List<EventOffer> eventOffers = mainDBService.lookupEventStreamBasedOnCurrentMonth(transaction.getEventName(), transaction.getBuyer(), transaction.getCurrentMonthYear());
+        if(eventOffers.size()>0)
+        {
+            model.addAttribute("errormessage", "Event Offering exists for the Streaming Service for the Selected Month. Please choose another Streaming Service");
+            return "index.xhtml";
+        }
+
         Event event = mainDBService.lookupEventByNameAndYear(transaction.getEventName(), transaction.getEventYear());
         StreamingService streamingService = mainDBService.findStreamingServiceByName(transaction.getBuyer());
 

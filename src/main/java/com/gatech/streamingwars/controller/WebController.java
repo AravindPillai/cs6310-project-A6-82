@@ -84,6 +84,14 @@ public class WebController {
         // Additionally, we'll need to create other validations around
         // the fields we enter-
 
+        Event eventByName = mainDBService.findEventByNameAndYear(event.getName(),event.getYear());
+        if(eventByName!=null)
+        {
+            model.addAttribute("errormessage", String.format("Event Allready Exists. Please create a new Event"));
+            model.addAttribute("event", event);
+            return "createevent.xhtml";
+        }
+
         Boolean isValid = true;
         String reasonForFailure = "";
         Studio studioLookup = mainDBService.lookupStudioByShortName(event.getStudioShortName());
@@ -417,7 +425,7 @@ public class WebController {
         transaction.setEventName(split[0]);
         transaction.setEventYear(Integer.parseInt(split[1]));
 
-        List<EventOffer> eventOffers = mainDBService.lookupEventStreamBasedOnCurrentMonth(transaction.getEventName(), transaction.getBuyer(), transaction.getCurrentMonthYear());
+        List<EventOffer> eventOffers = mainDBService.lookupEventStreamBasedOnCurrentMonth(transaction.getEventName(),transaction.getEventYear(), transaction.getBuyer(), transaction.getCurrentMonthYear());
         if(eventOffers.size()>0)
         {
             model.addAttribute("errormessage", "Event Offering exists for the Streaming Service for the Selected Month. Please choose another Streaming Service");
@@ -441,11 +449,12 @@ public class WebController {
 
             transaction.setVendor(studioShortName);
             transaction.setEventType(event.getEventType());
+            transaction.setEventDuration(event.getDuration());
             if (event.getEventType().equals("MOVIE")) {
                 transaction.setTransactionCost(event.getEventLicensingFee());
             } else {
                 transaction.setTransactionCost(event.getEventLicensingFee());
-                transaction.setPpvCost(event.getEventLicensingFee());
+                //transaction.setPpvCost(event.getEventLicensingFee());
             }
             // this is an "offer" type
             transaction.setTransactionType("offer");

@@ -483,9 +483,9 @@ public class MainDBService {
         return save;
     }
 
-    public  List<EventOffer> lookupEventStreamBasedOnCurrentMonth(String eventName,String streamName, String currentYearMonth)
+    public  List<EventOffer> lookupEventStreamBasedOnCurrentMonth(String eventName,int eventYear,String streamName, String currentYearMonth)
     {
-        Event eventByName = eventRepository.findEventByName(eventName);
+        Event eventByName = eventRepository.findByEventNameAndYear(eventName,eventYear);
         StreamingService byShortName = streamingServiceRepository.findByShortName(streamName);
 
         List<EventOffer> byServiceEventCurrentYear = eventOfferRepository.findByServiceEventCurrentYear(eventByName, byShortName, currentYearMonth);
@@ -504,5 +504,10 @@ public class MainDBService {
     public Studio saveStudio(Studio studio) {
         Studio save = studioRepository.save(studio);
         return save;
+    }
+
+    public Event findEventByNameAndYear(String name,int year) {
+        Event eventByName = eventRepository.findByEventNameAndYear(name,year);
+        return eventByName;
     }
 }

@@ -32,10 +32,12 @@
                     {
                         console.log("Show")
                         $('#paid').removeClass('d-none');
+                        $('#PPVEventCostGroup').removeClass('d-none');
                     }
                     else
                     {
                         $('#paid').addClass('d-none');
+                        $('#PPVEventCostGroup').addClass('d-none');
                     }
                 });
             });
@@ -79,6 +81,12 @@
                         <option  th:each="event : ${events}" th:value="${event.name}+'-'+${event.year}+'-'+${event.eventType}" th:text="${event.name}+'-'+${event.year}"/>
                     </select>
 
+                </div>
+                <div class="form-group d-none" id="PPVEventCostGroup">
+                    <label for="eventname">PPV Event Cost</label>
+                    <input type="text" class="form-control" id="eventPPVCost" aria-describedby="yearHelp" th:field="${transaction.ppvCost}" th:value="${transaction.ppvCost}" required="required"/>
+                    <small id="yearHelp" class="form-text text-muted">Enter Event PPV Cost</small>
+                    <div class="invalid-feedback">For PPV Events Offering Cost cannot be Empty</div>
                 </div>
                 <div class="form-group">
                     <label for="datepicker">Creation Date:</label>

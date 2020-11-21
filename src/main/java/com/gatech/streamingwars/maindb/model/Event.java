@@ -19,6 +19,7 @@ public class Event extends AuditEntity {
     private String eventType;
     private String studioShortName;
     private Integer eventLicensingFee;
+
     @Transient
     private boolean editable;
 
@@ -90,4 +91,5 @@ public class Event extends AuditEntity {
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
+
 }

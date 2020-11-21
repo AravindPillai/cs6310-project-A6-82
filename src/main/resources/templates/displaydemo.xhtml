@@ -33,7 +33,7 @@
                 setDate: new Date(),
                 autoclose: true
             });
-           // $( "#startDatePicker" ).datepicker( "setDate", new Date());
+            // $( "#startDatePicker" ).datepicker( "setDate", new Date());
         });
 
         $( document ).ready(function() {
@@ -45,7 +45,7 @@
                 autoclose: true
             });
             var now = new Date();
-           // $( "#endDatePicker" ).datepicker( "setDate", new Date(now.getFullYear(),now.getMonth() + 1, 1));
+            // $( "#endDatePicker" ).datepicker( "setDate", new Date(now.getFullYear(),now.getMonth() + 1, 1));
         });
 
         $(document).on('click', '#editButton', function(){
@@ -159,10 +159,10 @@
                             <label for="startDatePicker">Select Month &amp; Submit for Demographic details:</label>
                             <input type="text" class="form-control" placeholder="startDate" id="startDatePicker" th:field="${editObject.startDate}" th:value="${editObject.startDate}" name="startDate"/>
                         </div>
-<!--                        <div class="col">-->
-<!--                            <label for="endDatePicker">End Date:</label>-->
-<!--                            <input type="text" class="form-control" placeholder="endDate" id="endDatePicker" th:field="${editObject.endDate}" th:value="${editObject.endDate}" name="endDate"/>-->
-<!--                        </div>-->
+                        <!--                        <div class="col">-->
+                        <!--                            <label for="endDatePicker">End Date:</label>-->
+                        <!--                            <input type="text" class="form-control" placeholder="endDate" id="endDatePicker" th:field="${editObject.endDate}" th:value="${editObject.endDate}" name="endDate"/>-->
+                        <!--                        </div>-->
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -218,6 +218,9 @@
                 </tr>
                 </tbody>
             </table>
+        </div>
+        <div id="buttongroup" class="float-right mr-4" >
+            <button style="margin-bottom: 10px;margin-top: 5px" type="button" th:onclick="|window.location.href='/index'|" class="btn btn-outline-secondary float-right">Cancel</button>
         </div>
     </div>
 </div>

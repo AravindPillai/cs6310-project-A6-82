@@ -551,14 +551,20 @@ public class WebController {
     }
 
     @RequestMapping("/displaystream")
-    public String displayStream(Model model,@RequestParam(required = false) String Status) {
+    public String displayStream(Model model,@RequestParam(required = false) String Status, @RequestParam(required = false) String startDate) {
         clearModelAttributes(model);
         StreamingService stream = new StreamingService();
         model.addAttribute("stream", stream);
-        LocalTime time = LocalTime.of(00, 00);
-        LocalDate date = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1);
-        LocalDateTime startDate1 = date.atTime(time);
-        String currentMonthYear = startDate1.getMonth().getValue()+"-"+startDate1.getYear();
+        LocalDateTime startDate1 = null;
+        if (startDate != null && startDate.length() > 0) {
+            startDate1 = getCreateDate(startDate);
+        }
+        else {
+            LocalTime time = LocalTime.of(00, 00);
+            LocalDate date = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1);
+             startDate1 = date.atTime(time);
+        }
+        String currentMonthYear = startDate1.getMonth().getValue() + "-" + startDate1.getYear();
         List<StreamingService> streamingServices = mainDBService.findAllServices();
         List<StreamTransactionSummary> transactionSummaries = new ArrayList<StreamTransactionSummary>();
         for(StreamingService service:streamingServices)
@@ -585,9 +591,12 @@ public class WebController {
             transactionSummaries.add(summary);
         }
         StreamTransactionSummary transactionSummary = new StreamTransactionSummary();
-        model.addAttribute("transactionSummary", transactionSummary);
+        FormData data = new FormData();
+        data.setStartDate(startDate1.getMonth().getValue() + "-" + startDate1.getYear());
         if(transactionSummaries.size()!=0) {
             model.addAttribute("transactionSummaries", transactionSummaries);
+            model.addAttribute("transactionSummary", transactionSummary);
+            model.addAttribute("editObject", data);
         }
         else
         {
@@ -605,25 +614,44 @@ public class WebController {
     }
 
     @PostMapping("/displaystream")
-    public String displayStream(@ModelAttribute StreamingService stream, @ModelAttribute TransactionSummary transactionSummary, Model model) {
+    public String displayStream(@ModelAttribute StreamingService stream, @ModelAttribute TransactionSummary transactionSummary, Model model, @ModelAttribute FormData data) {
         // Lookup Stream
-        StreamingService streamLookup = mainDBService.lookupStreamByShortName(stream.getShortName());
-        if (streamLookup != null) {
-            model.addAttribute("stream", streamLookup);
-
-            // since the Stream was found, do a lookup on the transactionSummaryDetails
-            TransactionSummary transactionSummaryCalculated = mainDBService.calculateTransactionSummaryForStream(streamLookup, stream.getCurrentMonthYear());
-            model.addAttribute("transactionSummary", transactionSummaryCalculated);
-
-            return "displaystream.xhtml";
-        } else {
-            stream = new StreamingService();
-            model.addAttribute("stream", stream);
-            model.addAttribute("transactionSummary", transactionSummary);
-            model.addAttribute("errormessage", "Streaming Service lookup Failed, Please try again");
-            System.out.println("Couldn't find the stream");
-            return "displaystream.xhtml";
+        String currentMonthYear = data.getStartDate();
+        List<StreamingService> streamingServices = mainDBService.findAllServices();
+        List<StreamTransactionSummary> transactionSummaries = new ArrayList<StreamTransactionSummary>();
+        for(StreamingService service:streamingServices)
+        {
+            TransactionSummary transactionSummaryCalculated = mainDBService.calculateTransactionSummaryForStream(service,currentMonthYear);
+            StreamTransactionSummary summary = new StreamTransactionSummary();
+            summary.setId(service.getId());
+            summary.setShortName(service.getShortName());
+            summary.setLongName(service.getLongName());
+            summary.setCurrentPeriod(transactionSummaryCalculated.getCurrentPeriod());
+            summary.setPreviousPeriod(transactionSummaryCalculated.getPreviousPeriod());
+            summary.setSubscriptionPrice(service.getSubscriptionPrice());
+            summary.setLicensing(transactionSummaryCalculated.getLicensing());
+            summary.setTotal(transactionSummaryCalculated.getTotal());
+            Transaction transaction = mainDBService.checkToSeeIfStreamHasBeenWatchedInTheGivenMonth(service.getShortName(), currentMonthYear);
+            if(transaction!=null)
+            {
+                summary.setEditable(false);
+            }
+            else
+            {
+                summary.setEditable(true);
+            }
+            transactionSummaries.add(summary);
         }
+        if(transactionSummaries.size()!=0) {
+            model.addAttribute("transactionSummaries", transactionSummaries);
+            model.addAttribute("transactionSummary", transactionSummary);
+            model.addAttribute("editObject", data);
+        }
+        else
+        {
+            model.addAttribute("nodata", true);
+        }
+        return "displaystream.xhtml";
     }
 
     @RequestMapping("/displaydemo")
@@ -653,10 +681,10 @@ public class WebController {
             group.setEditable(demographicEditable);
         }
         FormData data = new FormData();
+        data.setStartDate(startDate1.getMonth().getValue() + "-" + startDate1.getYear());
+        data.setEndDate(endDate1.getMonth().getValue() + "-" + endDate1.getYear());
         model.addAttribute("editObject", data);
         if (allDemos != null && allDemos.size() > 0) {
-            data.setStartDate(startDate1.getMonth().getValue() + "-" + startDate1.getYear());
-            data.setEndDate(endDate1.getMonth().getValue() + "-" + endDate1.getYear());
             model.addAttribute("demos", allDemos);
             model.addAttribute("transactionSummaries",transactionSummaries);
         } else {

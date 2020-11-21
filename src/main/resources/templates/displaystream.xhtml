@@ -24,6 +24,15 @@
             });
             $( "#datepicker" ).datepicker( "setDate", new Date());
 
+            $("#startDatePicker").datepicker({
+                format: "mm-yyyy",
+                viewMode: "months",
+                minViewMode: "months",
+                setDate: new Date(),
+                autoclose: true
+            });
+            // $( "#startDatePicker" ).datepicker( "setDate", new Date());
+
             $(document).on('click', '#editButton', function(){
                 console.log("ara")
                 var $btn = $(this);
@@ -115,6 +124,24 @@
     <div class="alert alert-danger mx-auto my-1" role="alert" th:if="${errormessage}">
         <span id="errormessage" th:text="${errormessage}"></span>
     </div>
+
+    <div class="card mx-auto my-xl-5" style="width: 28rem; margin-bottom: 0rem !important;">
+        <div class="card-header"><span style="font-weight: bold;">Display or Update Streaming Services</span></div>
+        <div class="card-body">
+            <form action="#" th:action="@{/displaystream}" th:object="${editObject}" method="post">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <label for="startDatePicker">Select Month &amp; Submit for Streaming Service details:</label>
+                            <input type="text" class="form-control" placeholder="startDate" id="startDatePicker" th:field="${editObject.startDate}" th:value="${editObject.startDate}" name="startDate"/>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <small id="datePickerHelp" class="form-text text-muted">System shows only selected month details.</small>
+            </form>
+        </div>
+    </div>
     <div id="displayTable" class="card mx-auto my-xl-5 d-flex" style="width: 65rem;">
         <div class="card-header d-flex" style="font-weight: bold">Streaming Services</div>
         <div class="table table-sm table-bordered table-striped " style="margin: 1px">
@@ -152,6 +179,9 @@
                     </td>
                 </tr>
             </table>
+        </div>
+        <div id="buttongroup" class="float-right mr-4" >
+            <button style="margin-bottom: 10px;margin-top: 5px" type="button" th:onclick="|window.location.href='/index'|" class="btn btn-outline-secondary float-right">Cancel</button>
         </div>
     </div>
 

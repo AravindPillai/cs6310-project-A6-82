@@ -184,6 +184,9 @@
                     <th  scope="col">Description</th>
                     <th  scope="col">No: Acccounts</th>
                     <th  scope="col">Archived</th>
+                    <th  scope="col">CurrentPeriod</th>
+                    <th  scope="col">PreviousPeriod</th>
+                    <th  scope="col">Total</th>
                     <th  scope="col">createdAt</th>
                     <th  scope="col"></th>
                 </tr>
@@ -196,18 +199,22 @@
                         </div>
                     </td>
                 </tr>
-                <tr th:if="${nodata == null}"  th:each="demo: ${demos}">
+                <tr th:if="${nodata == null}"  th:each="demo,demostat: ${demos}">
                     <td  th:text="${demo.id}" />
                     <td  th:text="${demo.shortName}" />
                     <td  th:text="${demo.longName}" />
                     <td  th:text="${demo.description}" />
                     <td  th:text="${demo.numberOfAccounts}" />
                     <td  th:text="${demo.archived}" />
+                    <td th:text="*{transactionSummaries[__${demostat.index}__].currentPeriod}" ></td>
+                    <td th:text="*{transactionSummaries[__${demostat.index}__].previousPeriod}" ></td>
+                    <td th:text="*{transactionSummaries[__${demostat.index}__].total}" ></td>
                     <td th:text="${demo.createdAt}" />
                     <td>
                         <a th:if="${demo.editable}" href="#" id="editButton" class="editButtonClass" th:attr="data-id=${demo.id},data-sName=${demo.shortName},data-lName=${demo.longName},data-description=${demo.description},data-numberOfAccounts=${demo.numberOfAccounts}"><i class="pen far fa-edit"></i></a>
                         <i th:if="!${demo.editable}" class="pen fas fa-ban editButtonClass"></i>
                     </td>
+
                 </tr>
                 </tbody>
             </table>

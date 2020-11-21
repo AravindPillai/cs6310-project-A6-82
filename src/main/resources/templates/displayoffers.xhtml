@@ -48,8 +48,8 @@
                     <th class="col-1" scope="col">Year</th>
                     <th class="col-1" scope="col">Duration</th>
                     <th class="col-1" scope="col">Studio Short Name</th>
-                    <th class="col-1" scope="col">Event Licensing Fee</th>
-                    <th class="col-1" scope="col">Event PPV Cost</th>
+<!--                    <th class="col-1" scope="col">Event Licensing Fee</th>-->
+<!--                    <th class="col-1" scope="col">Event PPV Cost</th>-->
                 </tr>
                 <tr th:if="${nodata != null}" class="max-col-span">
                     <td colspan="100%">
@@ -65,8 +65,8 @@
                     <td th:text="${transaction.eventYear}"> Year </td>
                     <td th:text="${transaction.eventDuration}"> Duration </td>
                     <td th:text="${transaction.vendor}"> Studio Short Name </td>
-                    <td th:text="${transaction.transactionCost}"> Event Licensing Fee </td>
-                    <td th:text="${transaction.ppvCost==0} ? '':${transaction.ppvCost}"> Event PPV Cost </td>
+<!--                    <td th:text="${transaction.transactionCost}"> Event Licensing Fee </td>-->
+<!--                    <td th:text="${transaction.ppvCost==0} ? '':${transaction.ppvCost}"> Event PPV Cost </td>-->
                 </tr>
             </table>
         </div>

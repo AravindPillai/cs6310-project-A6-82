@@ -492,4 +492,17 @@ public class MainDBService {
         return  byServiceEventCurrentYear;
 
     }
+
+    public Event saveEvent(Event event) {
+        return eventRepository.save(event);
+    }
+
+    public Transaction saveTransaction(Transaction transaction) {
+        return transactionRepository.save(transaction);
+    }
+
+    public Studio saveStudio(Studio studio) {
+        Studio save = studioRepository.save(studio);
+        return save;
+    }
 }

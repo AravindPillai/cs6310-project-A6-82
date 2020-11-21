@@ -30,25 +30,10 @@ import java.util.List;
 public class WebController {
 
     @Autowired
-    AccountRepository repository;
-
-    @Autowired
     MainDBService mainDBService;
 
     @Autowired
     UserService userService;
-
-    @Autowired
-    StudioRepository studioRepository;
-
-    @Autowired
-    EventRepository eventRepository;
-
-    @Autowired
-    StreamingServiceRepository streamingServiceRepository;
-
-    @Autowired
-    TransactionRepository transactionRepository;
 
     @RequestMapping("/")
     public String none(Model model) {
@@ -116,7 +101,8 @@ public class WebController {
         Event saved = null;
         if (isValid) {
             System.out.println("passed validation steps");
-            saved = eventRepository.save(event);
+            saved = mainDBService.saveEvent(event);
+            //saved = eventRepository.save(event);
         }
 
         if (saved != null) {
@@ -191,7 +177,12 @@ public class WebController {
     @PostMapping("/createstream")
     public String createStreamingServiceSubmit(@ModelAttribute StreamingService streamingService, Model model) {
 
-        StreamingService saved = streamingServiceRepository.save(streamingService);
+        StreamingService saved = null;
+        try {
+            saved = mainDBService.saveStreamingService(streamingService);
+        } catch (SQLIntegrityConstraintViolationException exception) {
+            exception.printStackTrace();
+        }
         if (saved != null) {
             model.addAttribute("successmessage", "Streaming Service Saved Successfully!");
             return "index.xhtml";
@@ -212,8 +203,8 @@ public class WebController {
 
     @PostMapping("/createstudio")
     public String studioSubmit(@ModelAttribute Studio studio, Model model) {
-
-        Studio saved = studioRepository.save(studio);
+        Studio saved = mainDBService.saveStudio(studio);
+        //Studio saved = studioRepository.save(studio);
         if (saved != null) {
             model.addAttribute("successmessage", "Studio Saved Successfully!");
             return "index.xhtml";
@@ -322,7 +313,8 @@ public class WebController {
 
             // set the transactionEventType
             transaction.setEventType(eventType);
-            saved = transactionRepository.save(transaction);
+            saved = mainDBService.saveTransaction(transaction);
+            //saved = transactionRepository.save(transaction);
 
 //            // this is an "offer" type
 //            transaction.setTransactionType("watch");
@@ -417,9 +409,6 @@ public class WebController {
     @PostMapping("/offermovie")
     public String createMovieOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
 
-        // Most important thing for this is that we need to be validate that the movie itself exists before
-        // committing the transaction
-
         Boolean isValid = true;
         String reasonForFailure = "";
 
@@ -456,6 +445,7 @@ public class WebController {
                 transaction.setTransactionCost(event.getEventLicensingFee());
             } else {
                 transaction.setTransactionCost(event.getEventLicensingFee());
+                transaction.setPpvCost(event.getEventLicensingFee());
             }
             // this is an "offer" type
             transaction.setTransactionType("offer");
@@ -466,7 +456,7 @@ public class WebController {
                 exception.printStackTrace();
                 reasonForFailure = "Entity Offering Exists for Service and Event for the Month";
             }
-            saved = transactionRepository.save(transaction);
+            saved = mainDBService.saveTransaction(transaction);
         }
 
         if (saved != null) {
@@ -638,11 +628,13 @@ public class WebController {
             endDate1 = date.atTime(time).plusMonths(1);
             allDemos = mainDBService.findAllDemographicGroup();
         }
-
+        List<TransactionSummary> transactionSummaries = new ArrayList<TransactionSummary>();
         for (DemographicGroup group : allDemos) {
             LocalTime time = LocalTime.of(00, 00);
             LocalDate date = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1);
             boolean demographicEditable = mainDBService.isDemographicEditable(group.getShortName(), date.atTime(time).getMonth().getValue() + "-" + date.atTime(time).getYear());
+            TransactionSummary transactionSummary = mainDBService.calculateTransactionSummaryForDemo(group, group.getCurrentMonthYear());
+            transactionSummaries.add(transactionSummary);
             group.setEditable(demographicEditable);
         }
         FormData data = new FormData();
@@ -651,6 +643,7 @@ public class WebController {
             data.setStartDate(startDate1.getMonth().getValue() + "-" + startDate1.getYear());
             data.setEndDate(endDate1.getMonth().getValue() + "-" + endDate1.getYear());
             model.addAttribute("demos", allDemos);
+            model.addAttribute("transactionSummaries",transactionSummaries);
         } else {
             model.addAttribute("nodata", true);
         }
@@ -758,8 +751,12 @@ public class WebController {
             clearModelAttributes(model);
 
             streamLookup.setSubscriptionPrice(streamingService.getSubscriptionPrice());
-
-            saved = streamingServiceRepository.save(streamLookup);
+            try {
+                saved = mainDBService.saveStreamingService(streamLookup);
+            } catch (SQLIntegrityConstraintViolationException exception) {
+                exception.printStackTrace();
+            }
+            //saved = streamingServiceRepository.save(streamLookup);
         }
 
         if (saved != null) {
@@ -819,7 +816,7 @@ public class WebController {
             eventLookup.setDuration(event.getDuration());
             eventLookup.setEventLicensingFee(event.getEventLicensingFee());
 
-            saved = eventRepository.save(eventLookup);
+            saved = mainDBService.saveEvent(eventLookup);
         }
 
         if (saved != null) {
@@ -930,45 +927,6 @@ public class WebController {
             return "index.xhtml";
         }
     }
-
-//    @PostMapping("/retractmovie")
-//    public String retractMovieOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
-//
-//
-//        Boolean isValid = true;
-//        String reasonForFailure = "";
-//
-//        // Most important thing for this is that we need to be validate that the movie itself is being offered before
-//        // committing the transaction retraction
-//
-//        // validate that the streaming service is actually offering the event
-//        Transaction offerLookup = null;
-//        offerLookup = mainDBService.checkToSeeIfStreamingIsOfferingEvent(transaction.getBuyer(), transaction.getEventName(), transaction.getEventYear());
-//        if (offerLookup == null){
-//            isValid = false;
-//            reasonForFailure += "Offering for streaming service and movie not found";
-//        }
-//
-//        Transaction saved = null;
-//        if (isValid) {
-//            System.out.println("Found Valid Offering passed validation steps");
-//            // Get the studio from the event and then commit the transaction
-//
-//            offerLookup.setEventType(offerLookup.getEventType() + "- retracted");
-//
-//            saved = transactionRepository.save(offerLookup);
-//        }
-//
-//        if(saved!=null) {
-//            model.addAttribute("successmessage", "Movie retracted Successfully!");
-//            return "index.xhtml";
-//        }
-//        else {
-//            model.addAttribute("errormessage", String.format("Retraction Failed for the following reasons: %s, Please try again", reasonForFailure));
-//            model.addAttribute("transaction",transaction);
-//            return "retractmovie.xhtml";
-//        }
-//    }
 
     private void clearModelAttributes(Model model)
     {

@@ -22,6 +22,15 @@
                 autoclose: true
             });
             $( "#datepicker" ).datepicker( "setDate", new Date());
+
+            $("#startDatePicker").datepicker({
+                format: "mm-yyyy",
+                viewMode: "months",
+                minViewMode: "months",
+                setDate: new Date(),
+                autoclose: true
+            });
+            // $( "#startDatePicker" ).datepicker( "setDate", new Date());
         });
     </script>
 </head>
@@ -37,6 +46,25 @@
     </div>
 </nav>
 <div class="container-fluid page-content">
+
+    <div class="card mx-auto my-xl-5" style="width: 28rem; margin-bottom: 0rem !important;">
+        <div class="card-header"><span style="font-weight: bold;">Display or Edit Demographic Groups</span></div>
+        <div class="card-body">
+            <form action="#" th:action="@{/displaystudio}" th:object="${editObject}" method="post">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <label for="startDatePicker">Select Month &amp; Submit for Demographic details:</label>
+                            <input type="text" class="form-control" placeholder="startDate" id="startDatePicker" th:field="${editObject.startDate}" th:value="${editObject.startDate}" name="startDate"/>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <small id="datePickerHelp" class="form-text text-muted">System shows only selected month details.</small>
+            </form>
+        </div>
+    </div>
+
     <div id="displayTable" class="card mx-auto my-xl-5 d-flex" style="width: 100rem;">
         <div class="card-header d-flex" style="font-weight: bold">Studios</div>
         <div class="table-responsive " style="margin: 1px">

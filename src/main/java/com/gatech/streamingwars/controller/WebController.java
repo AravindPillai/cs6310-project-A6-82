@@ -480,7 +480,7 @@ public class WebController {
 
 
     @RequestMapping("/displaystudio")
-    public String displayStudio(Model model,@RequestParam(required = false) String Status) {
+    public String displayStudio(Model model,@RequestParam(required = false) String Status,@RequestParam(required = false) String startDate) {
         clearModelAttributes(model);
         //Studio studio = new Studio();
         //model.addAttribute("studio", studio);
@@ -505,11 +505,14 @@ public class WebController {
 
         TransactionSummary transactionSummary = new TransactionSummary();
         model.addAttribute("transactionSummary", transactionSummary);
+        FormData data = new FormData();
+        model.addAttribute("editObject", data);
         if(transactionSummaries.size()==0)
         {
             model.addAttribute("nodata", true);
         }
         else {
+            data.setStartDate(startDate1.getMonth().getValue() + "-" + startDate1.getYear());
             model.addAttribute("transactionSummaries", transactionSummaries);
         }
 
@@ -522,25 +525,29 @@ public class WebController {
     }
 
     @PostMapping("/displaystudio")
-    public String displayStudio(@ModelAttribute Studio studio, @ModelAttribute TransactionSummary transactionSummary, Model model) {
-        // Lookup studio
-        Studio studioLookup = mainDBService.lookupStudioByShortName(studio.getShortName());
-        if (studioLookup != null) {
-            model.addAttribute("studio", studioLookup);
-
-            // since the studio was found, do a lookup on the transactionSummaryDetails
-            TransactionSummary transactionSummaryCalculated = mainDBService.calculateTransactionSummaryForStudio(studioLookup, studio.getCurrentMonthYear());
-            model.addAttribute("transactionSummary", transactionSummaryCalculated);
-
-            return "displaystudio.xhtml";
+    public String displayStudio(@ModelAttribute TransactionSummary transactionSummary, Model model,@ModelAttribute FormData data) {
+        List<StreamTransactionSummary> transactionSummaries = new ArrayList<StreamTransactionSummary>();
+        List<Studio> allStudios = mainDBService.findAllStudios();
+        String currentMonthYear = data.getStartDate();
+        if (allStudios != null) {
+            for(Studio studio:allStudios) {
+                TransactionSummary transactionSummaryCalculated = mainDBService.calculateTransactionSummaryForStudio(studio, currentMonthYear);
+                StreamTransactionSummary summary = new StreamTransactionSummary();
+                summary.setId(studio.getId());
+                summary.setShortName(studio.getShortName());
+                summary.setLongName(studio.getLongName());
+                summary.setCurrentPeriod(transactionSummaryCalculated.getCurrentPeriod());
+                summary.setPreviousPeriod(transactionSummaryCalculated.getPreviousPeriod());
+                summary.setTotal(transactionSummaryCalculated.getTotal());
+                transactionSummaries.add(summary);
+            }
+            model.addAttribute("transactionSummaries", transactionSummaries);
         } else {
-            studio = new Studio();
-            model.addAttribute("studio", studio);
-            model.addAttribute("transactionSummary", transactionSummary);
-            model.addAttribute("errormessage", "Studio lookup Failed, Please try again");
-            System.out.println("Couldn't find the studio");
-            return "displaystudio.xhtml";
+            model.addAttribute("nodata", true);
         }
+        model.addAttribute("transactionSummary", transactionSummary);
+        model.addAttribute("editObject", data);
+        return "displaystudio.xhtml";
     }
 
     @RequestMapping("/displaystream")
@@ -869,13 +876,16 @@ public class WebController {
         }
 
         Event editObject = new Event();
-        model.addAttribute("editObject", editObject);
-        if(listOfEvents.size()==0)
+        FormData data = new FormData();
+
+       if(listOfEvents.size()==0)
         {
             model.addAttribute("nodata", true);
         }
         else {
-            model.addAttribute("events", listOfEvents);
+           data.setStartDate(startDate1.getMonth().getValue() + "-" + startDate1.getYear());
+           model.addAttribute("editObject", data);
+           model.addAttribute("events", listOfEvents);
         }
 
         if (Status != null && Status.equals("SUCCESS")) {
@@ -887,7 +897,7 @@ public class WebController {
     }
 
     @RequestMapping("/displayoffers")
-    public String displayOffers(Model model) {
+    public String displayOffers(Model model,@ModelAttribute FormData data) {
         clearModelAttributes(model);
         List<Transaction> listOfOffers = mainDBService.getAllOffers();
         if(listOfOffers.size()==0)

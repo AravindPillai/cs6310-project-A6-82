@@ -14,7 +14,7 @@ To deploy and use the system, please follow these steps.
 1. Unzip the provided source code into a new folder.
 1. Open a command prompt and navigate to the folder unzipped in the previous step.
 1. Execute the following command at the prompt:
-    docker-compose up --build
+        docker-compose up --build
 1. Wait for the system to come up. The following steps will happen, and a scrolling log will show on the terminal window:
     1. The build container will be created with Alpine Linux and JDK 15. 
     1. The source code will be copied to this build container and compiled to produce JAR files.

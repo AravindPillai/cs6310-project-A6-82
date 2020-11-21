@@ -620,20 +620,19 @@ public class WebController {
     }
 
     @RequestMapping("/displaydemo")
-    public String displayDemo(Model model, @RequestParam(required = false) String Status, @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate) {
+    public String displayDemo(Model model, @RequestParam(required = false) String Status, @RequestParam(required = false) String startDate) {
         clearModelAttributes(model);
         List<DemographicGroup> allDemos = null;
         LocalDateTime startDate1 = null;
         LocalDateTime endDate1 = null;
-        if (startDate != null && startDate.length() > 0 && endDate != null && endDate.length() > 0) {
+        if (startDate != null && startDate.length() > 0) {
             startDate1 = getCreateDate(startDate);
-            endDate1 = getCreateDate(endDate);
-            allDemos = mainDBService.getAllDemos(startDate1, endDate1);
+            endDate1 = startDate1.plusMonths(1);
+            allDemos = mainDBService.findAllDemographicGroup();
         } else {
             LocalTime time = LocalTime.of(00, 00);
             LocalDate date = LocalDate.now().minusDays(LocalDate.now().getDayOfMonth() - 1);
             startDate1 = date.atTime(time);
-            startDate1 = startDate1.minusYears(10);
             endDate1 = date.atTime(time).plusMonths(1);
             allDemos = mainDBService.findAllDemographicGroup();
         }
@@ -670,10 +669,19 @@ public class WebController {
     public String displayDemo(Model model, @ModelAttribute FormData data) {
         clearModelAttributes(model);
         LocalDateTime startDateLDT = getCreateDate(data.getStartDate());
-        LocalDateTime endDateLDT = getCreateDate(data.getEndDate());
-        List<DemographicGroup> allDemos = mainDBService.getAllDemos(startDateLDT, endDateLDT);
+        LocalDateTime endDateLDT = startDateLDT.plusMonths(1);
+        List<DemographicGroup> allDemos = mainDBService.findAllDemographicGroup();
+        List<TransactionSummary> transactionSummaries = new ArrayList<TransactionSummary>();
+        String currentMonthYear = startDateLDT.getMonth().getValue() + "-" + startDateLDT.getYear();
         if (allDemos != null && allDemos.size() > 0) {
+            for (DemographicGroup group : allDemos) {
+                boolean demographicEditable = mainDBService.isDemographicEditable(group.getShortName(), currentMonthYear);
+                TransactionSummary transactionSummary = mainDBService.calculateTransactionSummaryForDemo(group,currentMonthYear);
+                transactionSummaries.add(transactionSummary);
+                group.setEditable(demographicEditable);
+            }
             model.addAttribute("demos", allDemos);
+            model.addAttribute("transactionSummaries",transactionSummaries);
         } else {
             model.addAttribute("nodata", true);
         }

@@ -150,23 +150,23 @@
     </div>
 
     <div class="card mx-auto my-xl-5" style="width: 28rem; margin-bottom: 0rem !important;">
-        <div class="card-header"><span style="font-weight: bold;">Display Demo (Select the Dates to filter the Groups)</span></div>
+        <div class="card-header"><span style="font-weight: bold;">Display or Edit Demographic Groups</span></div>
         <div class="card-body">
             <form action="#" th:action="@{/displaydemo}" th:object="${editObject}" method="post">
                 <div class="form-group">
                     <div class="row">
                         <div class="col">
-                            <label for="startDatePicker">Start Date:</label>
+                            <label for="startDatePicker">Select Month &amp; Submit for Demographic details:</label>
                             <input type="text" class="form-control" placeholder="startDate" id="startDatePicker" th:field="${editObject.startDate}" th:value="${editObject.startDate}" name="startDate"/>
                         </div>
-                        <div class="col">
-                            <label for="endDatePicker">End Date:</label>
-                            <input type="text" class="form-control" placeholder="endDate" id="endDatePicker" th:field="${editObject.endDate}" th:value="${editObject.endDate}" name="endDate"/>
-                        </div>
+<!--                        <div class="col">-->
+<!--                            <label for="endDatePicker">End Date:</label>-->
+<!--                            <input type="text" class="form-control" placeholder="endDate" id="endDatePicker" th:field="${editObject.endDate}" th:value="${editObject.endDate}" name="endDate"/>-->
+<!--                        </div>-->
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
-                <small id="datePickerHelp" class="form-text text-muted">Once Activated,make sure the dates are sufficient apart to show all groups.</small>
+                <small id="datePickerHelp" class="form-text text-muted">System shows only selected month details.</small>
             </form>
         </div>
     </div>

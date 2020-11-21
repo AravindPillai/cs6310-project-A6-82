@@ -33,7 +33,6 @@
                 setDate: new Date(),
                 autoclose: true
             });
-            // $( "#startDatePicker" ).datepicker( "setDate", new Date());
         });
 
         $( document ).ready(function() {
@@ -45,7 +44,6 @@
                 autoclose: true
             });
             var now = new Date();
-            // $( "#endDatePicker" ).datepicker( "setDate", new Date(now.getFullYear(),now.getMonth() + 1, 1));
         });
 
         $(document).on('click', '#editButton', function(){
@@ -96,14 +94,6 @@
                     var startDate = $("#startDatePicker").val()
                     console.log(newLocation.indexOf("Status=SUCCESS"));
                     window.location.href = newLocation + "?Status=SUCCESS"+"&startDate="+startDate+"&endDate="+endDate;
-                    // else
-                    // {
-                    //     console.log(newLocation.indexOf("Status=SUCCESS"));
-                    //     //replaceString = newLocation.substring(newLocation.indexOf("Status=SUCCESS"),newLocation.length);
-                    //     /*Replace the parameters to attach new ones*/
-                    //     //newLocation= newLocation.replace(replaceString,'');
-                    //     window.location.href = newLocation+"?Status=SUCCESS"+"&startDate="+startDate+"&endDate="+endDate;
-                    // }
                 },
                 error: function(data) {
                     console.log( "Returned Error Response -->" +data)
@@ -115,12 +105,6 @@
                     }
                     console.log("Modified New Location -->"+newLocation)
                     window.location.href = newLocation+ "?Status=ERROR"+"&startDate="+startDate+"&endDate="+endDate;
-                    // else
-                    // {
-                    //     console.log(newLocation.indexOf("Status=SUCCESS"));
-                    //     replaceString = newLocation.substring(newLocation.indexOf("Status=SUCCESS"),newLocation.length);
-                    //     window.location.href = newLocation;
-                    // }
                 },
                 dataType: 'json'
             });
@@ -159,10 +143,6 @@
                             <label for="startDatePicker">Select Month &amp; Submit for Demographic details:</label>
                             <input type="text" class="form-control" placeholder="startDate" id="startDatePicker" th:field="${editObject.startDate}" th:value="${editObject.startDate}" name="startDate"/>
                         </div>
-                        <!--                        <div class="col">-->
-                        <!--                            <label for="endDatePicker">End Date:</label>-->
-                        <!--                            <input type="text" class="form-control" placeholder="endDate" id="endDatePicker" th:field="${editObject.endDate}" th:value="${editObject.endDate}" name="endDate"/>-->
-                        <!--                        </div>-->
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>

@@ -1,14 +1,11 @@
 # CS6310-A6-82 Group Project Implementation.
 
-# Prerequisites:
+## Prerequisites:
 - A computer running Docker 
 - Internet connectivity. 
 - The ability to run commands at a command prompt.
 - Firefox web browser.
 Broadly speaking, a system and user capable of handling the work done for Assignment 4 will be able to deploy our application submission for Assignment 6.
-
-# Usage Instructions
-To deploy and use the system, please follow these steps.
 
 ## Step by Step Installation
 1. Unzip the provided source code into a new folder.

@@ -1,28 +1,4 @@
-# CS6310-A682-SW
-# Steps to Run the App
--  Browse to the Parent folder where docker-compose file is there
--  Type in docker-compose up --build
--  This will build and start the jar and Mysql Structure
-
-
-#Once App starts 
-    docker ps 
-This will list all the running docker containers. Select the id for mysql
-
-    docker exec -it 171c7246132c /bin/bash
-
-
-#if MySql Fails to start
-
-docker system prune --volumes
-
-# Default Password
-
-Username : user
-Password: User123
-
-# Usage Instructions
-To deploy and use the system, please follow these steps.
+# CS6310-A6-82 Group Project Implementation.
 
 # Prerequisites:
 - A computer running Docker 
@@ -31,7 +7,10 @@ To deploy and use the system, please follow these steps.
 - Firefox web browser.
 Broadly speaking, a system and user capable of handling the work done for Assignment 4 will be able to deploy our application submission for Assignment 6.
 
-# Step by Step Installation
+# Usage Instructions
+To deploy and use the system, please follow these steps.
+
+## Step by Step Installation
 1. Unzip the provided source code into a new folder.
 1. Open a command prompt and navigate to the folder unzipped in the previous step.
 1. Execute the following command at the prompt:
@@ -45,11 +24,11 @@ Broadly speaking, a system and user capable of handling the work done for Assign
     1. The database container will be run, exposing the default MySQL port of :3306.
     1. The web application container will be run, exposing port :8080 for HTTP connections.
 
-# Using the StreamingWars Application
+## Using the StreamingWars Application
 1. Start the Firefox browser on your computer. 
 1. Browse to http://localhost:8080 using Firefox.
 
-# Shutdown and uninstall
+## Shutdown and uninstall
 1. Logout from the application and close the browser.
 1. Press Ctrl-C in the terminal window to terminate the docker containers.
 1. Run the following command to delete the containers recently created:

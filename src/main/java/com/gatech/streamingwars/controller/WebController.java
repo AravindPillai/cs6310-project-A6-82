@@ -40,11 +40,6 @@ public class WebController {
         return "login.xhtml";
     }
 
-//    @RequestMapping("/error")
-//    public String error(Model model) {
-//        return "error.xhtml";
-//    }
-
     @RequestMapping("/index")
     public String index(Model model) {
         return "index.xhtml";
@@ -322,11 +317,6 @@ public class WebController {
             // set the transactionEventType
             transaction.setEventType(eventType);
             saved = mainDBService.saveTransaction(transaction);
-            //saved = transactionRepository.save(transaction);
-
-//            // this is an "offer" type
-//            transaction.setTransactionType("watch");
-//            saved = transactionRepository.save(transaction);
         }
 
         if (saved != null) {
@@ -338,69 +328,6 @@ public class WebController {
             return "index.xhtml";
         }
     }
-
-//    @RequestMapping("/offerppv")
-//    public  String createPpvOffer(Model model)
-//    {
-//        clearModelAttributes(model);
-//        Transaction transaction = new Transaction();
-//        List<StreamingService> allServices = mainDBService.findAllServices();
-//        List<Event> allEvents = mainDBService.findAllEvents();
-//        model.addAttribute("services",allServices);
-//        model.addAttribute("events",allEvents);
-//        model.addAttribute("transaction",transaction);
-//        return "offerppv.xhtml";
-//    }
-//
-//    @PostMapping("/offerppv")
-//    public String createPpvOfferSubmit(@ModelAttribute Transaction transaction, Model model) {
-//
-//        // Most important thing for this is that we need to be validate that the ppv itself exists before
-//        // committing the transaction
-//
-//        Boolean isValid = true;
-//        String reasonForFailure = "";
-//        Event event = lookupEventByNameAndYear(transaction.getEventName(), transaction.getEventYear());
-//
-//        if (event == null){
-//            isValid = false;
-//            reasonForFailure += "Event not found";
-//        } else if (event != null) {
-//            String eventType = event.getEventType();
-//            if (!(eventType.equalsIgnoreCase("ppv"))) {
-//                isValid = false;
-//                reasonForFailure += "Event type is not ppv";
-//            }
-//        }
-//
-//        Transaction saved = null;
-//        if (isValid) {
-//            System.out.println("Event passed validation steps");
-//            // Get the studio from the event and then commit the transaction
-//            String studioShortName = event.getStudioShortName();
-//
-//            transaction.setVendor(studioShortName);
-//            transaction.setTransactionCost(event.getEventLicensingFee());
-//            transaction.setEventType("ppv");
-//
-//            //transaction ppv cost is passed in via the offerppv.xhtml post
-//
-//            // this is an "offer" type
-//            transaction.setTransactionType("offer");
-//
-//            saved = transactionRepository.save(transaction);
-//        }
-//
-//        if(saved!=null) {
-//            model.addAttribute("successmessage", "Event Saved Successfully!");
-//            return "index.xhtml";
-//        }
-//        else {
-//            model.addAttribute("errormessage", String.format("Offering save Failed for the following reasons: %s, Please try again", reasonForFailure));
-//            model.addAttribute("transaction",transaction);
-//            return "offerppv.xhtml";
-//        }
-//    }
 
     @RequestMapping("/offermovie")
     public String createMovieOffer(Model model) {
@@ -454,7 +381,6 @@ public class WebController {
                 transaction.setTransactionCost(event.getEventLicensingFee());
             } else {
                 transaction.setTransactionCost(event.getEventLicensingFee());
-                //transaction.setPpvCost(event.getEventLicensingFee());
             }
             // this is an "offer" type
             transaction.setTransactionType("offer");
@@ -482,8 +408,6 @@ public class WebController {
     @RequestMapping("/displaystudio")
     public String displayStudio(Model model,@RequestParam(required = false) String Status,@RequestParam(required = false) String startDate) {
         clearModelAttributes(model);
-        //Studio studio = new Studio();
-        //model.addAttribute("studio", studio);
         List<Studio> allStudios = mainDBService.findAllStudios();
         List<StreamTransactionSummary> transactionSummaries = new ArrayList<StreamTransactionSummary>();
         LocalTime time = LocalTime.of(00, 00);
@@ -770,8 +694,6 @@ public class WebController {
 
     @PostMapping("/updatestream")
     public String updateEvent(@ModelAttribute StreamingService streamingService, Model model) {
-
-
         // Most important thing for this is that we need to be validate that the movie itself exists before
         // committing the transaction
 
@@ -946,7 +868,7 @@ public class WebController {
         List<EventOffer> allEventOffers = mainDBService.findAllEventOffers();
         FormData data = new FormData();
         for (EventOffer eventOffer : allEventOffers) {
-            EventOfferData eventData = new EventOfferData(eventOffer.getId(),eventOffer.getEvent().getId(),eventOffer.getEvent().getName(),eventOffer.getService().getId(),eventOffer.getService().getShortName(),eventOffer.getCreatedAt(),eventOffer.isRetracted());
+            EventOfferData eventData = new EventOfferData(eventOffer.getId(),eventOffer.getEvent().getId(),eventOffer.getEvent().getName(),eventOffer.getService().getId(),eventOffer.getService().getShortName(),eventOffer.getCreatedAt(),eventOffer.isRetracted(),eventOffer.getEvent().getYear());
             data.getEventOffers().add(eventData);
         }
         model.addAttribute("eventdata", data);

@@ -10,6 +10,7 @@ public class EventOfferData {
    private Long id;
    private Long eventId;
    private String eventName;
+   private int eventYear;
    private Long serviceId;
    private String serviceName;
    private LocalDateTime createdAt;
@@ -19,7 +20,7 @@ public class EventOfferData {
    {
 
    }
-   public EventOfferData(Long id, Long eventId, String name, Long id2, String shortName, LocalDateTime createdAt,boolean retracted) {
+   public EventOfferData(Long id, Long eventId, String name, Long id2, String shortName, LocalDateTime createdAt,boolean retracted,int eventYear) {
       this.id =id;
       this.eventId = eventId;
       this.eventName = name;
@@ -27,7 +28,7 @@ public class EventOfferData {
       this.serviceName = shortName;
       this.createdAt = createdAt;
       this.retracted = retracted;
-
+      this.eventYear = eventYear;
    }
 
    public Long getId() {
@@ -84,5 +85,13 @@ public class EventOfferData {
 
    public void setRetracted(boolean retracted) {
       this.retracted = retracted;
+   }
+
+   public int getEventYear() {
+      return eventYear;
+   }
+
+   public void setEventYear(int eventYear) {
+      this.eventYear = eventYear;
    }
 }

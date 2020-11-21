@@ -58,6 +58,7 @@
                         <th  scope="col">Stream Name</th>
                         <th  scope="col">Event</th>
                         <th  scope="col">Event Name</th>
+                        <th  scope="col">Event Year</th>
                         <th  scope="col">createdAt</th>
                         <th  scope="col">Retract</th>
                     </tr>
@@ -75,15 +76,17 @@
                             <input type="hidden" th:name="${eventOffer.getId()}" th:field="*{eventOffers[__${eventOfferStat.index}__].id}" th:value="${eventOffer.getId()}"></input>
                             <input type="hidden" th:name="${eventOffer.eventId}" th:field="*{eventOffers[__${eventOfferStat.index}__].eventId}" th:value="${eventOffer.eventId}"></input>
                             <input type="hidden" th:name="${eventOffer.eventName}" th:field="*{eventOffers[__${eventOfferStat.index}__].eventName}" th:value="${eventOffer.eventName}"></input>
+                            <input type="hidden" th:name="${eventOffer.eventYear}" th:field="*{eventOffers[__${eventOfferStat.index}__].eventYear}" th:value="${eventOffer.eventYear}"></input>
                             <input type="hidden" th:name="${eventOffer.serviceId}" th:field="*{eventOffers[__${eventOfferStat.index}__].serviceId}" th:value="${eventOffer.serviceId}"></input>
                             <input type="hidden" th:name="${eventOffer.serviceName}" th:field="*{eventOffers[__${eventOfferStat.index}__].serviceName}" th:value="${eventOffer.serviceName}"></input>
                             <input type="hidden" th:name="${eventOffer.createdAt}" th:field="*{eventOffers[__${eventOfferStat.index}__].createdAt}" th:value="${eventOffer.createdAt}"></input>
                         </td>
                         <td  th:text="${eventOffer.id}" />
-                        <td  th:text="${eventOffer.eventId}" />
-                        <td  th:text="${eventOffer.eventName}" />
                         <td  th:text="${eventOffer.serviceId}" />
                         <td  th:text="${eventOffer.serviceName}" />
+                        <td  th:text="${eventOffer.eventId}" />
+                        <td  th:text="${eventOffer.eventName}" />
+                        <td  th:text="${eventOffer.eventYear}" />
                         <td th:text="${eventOffer.createdAt}" />
                         <td>
                             <div class="form-check">

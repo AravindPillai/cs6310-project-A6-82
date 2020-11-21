@@ -31,5 +31,6 @@ Broadly speaking, a system and user capable of handling the work done for Assign
 1. Logout from the application and close the browser.
 1. Press Ctrl-C in the terminal window to terminate the docker containers.
 1. Run the following command to delete the containers recently created:
-    docker system prune --volumes
+
+            docker system prune --volumes
 1. Delete the folder with the application and the zip file.

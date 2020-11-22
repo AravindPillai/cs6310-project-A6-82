@@ -34,7 +34,6 @@ Broadly speaking, a system and user capable of handling the work done for Assign
 
             docker system prune --volumes
 (The above command can also help to prune all volumes in case you face issues with the DB server starting up.)
-
 1. Delete the folder with the application and the zip file.
 
 # Default Password

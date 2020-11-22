@@ -33,7 +33,8 @@ Broadly speaking, a system and user capable of handling the work done for Assign
 1. Run the following command to delete the containers recently created:
 
             docker system prune --volumes
-   ## Any trouble with DB starting up. Please use the above command to prune all volumes.
+(The above command can also help to prune all volumes in case you face issues with the DB server starting up.)
+
 1. Delete the folder with the application and the zip file.
 
 # Default Password

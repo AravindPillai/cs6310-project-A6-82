@@ -64,16 +64,16 @@
         </div>
     </div>
 
-    <div id="displayTable" class="card mx-auto my-xl-5 d-flex" style="width: 100rem;">
+    <div id="displayTable" class="card mx-auto my-xl-5 d-flex">
         <div class="card-header d-flex" style="font-weight: bold">Studios</div>
-        <div class="table-responsive " style="margin: 1px">
+        <div class="table-responsive " style="margin: 0px">
             <table class="table table-sm table-bordered table-striped">
                 <tr>
-                    <th class="col-1" scope="col">Studio Short Name</th>
-                    <th class="col-1" scope="col">Studio Long Name</th>
-                    <th class="col-1" scope="col">Current Period</th>
-                    <th class="col-1" scope="col">Previous Period</th>
-                    <th class="col-1" scope="col">Total</th>
+                    <th  scope="col">Studio Short Name</th>
+                    <th  scope="col">Studio Long Name</th>
+                    <th scope="col">Current Period</th>
+                    <th scope="col">Previous Period</th>
+                    <th  scope="col">Total</th>
                 </tr>
                 <tr th:if="${nodata != null}" class="max-col-span">
                     <td colspan="100%">

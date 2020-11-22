@@ -140,20 +140,20 @@
             </form>
         </div>
     </div>
-    <div id="displayTable" class="card mx-auto my-xl-5 d-flex" style="width: 65rem;">
+    <div id="displayTable" class="card mx-auto my-xl-5 d-flex">
         <div class="card-header d-flex" style="font-weight: bold">Streaming Services</div>
-        <div class="table table-sm table-bordered table-striped " style="margin: 1px">
-            <table border="0">
+        <div class="table" style="margin: 0px">
+            <table border="0" class="table table-bordered table-striped " >
                 <tr>
-                    <th class="col-1" scope="col">ID</th>
-                    <th class="col-1" scope="col">Short Name</th>
-                    <th class="col-1" scope="col">Long Name</th>
-                    <th class="col-1" scope="col">Subscription Price</th>
-                    <th class="col-1" scope="col">Current Period</th>
-                    <th class="col-1" scope="col">Previous Period</th>
-                    <th class="col-1" scope="col">Total</th>
-                    <th class="col-1" scope="col">Licensing</th>
-                    <th class="col-1" scope="col"></th>
+                    <th  scope="col">ID</th>
+                    <th  scope="col">Short Name</th>
+                    <th  scope="col">Long Name</th>
+                    <th  scope="col">Subscription Price</th>
+                    <th  scope="col">Current Period</th>
+                    <th  scope="col">Previous Period</th>
+                    <th  scope="col">Total</th>
+                    <th  scope="col">Licensing</th>
+                    <th  scope="col"></th>
                 </tr>
                 <tr th:if="${nodata != null}" class="max-col-span">
                     <td colspan="100%">

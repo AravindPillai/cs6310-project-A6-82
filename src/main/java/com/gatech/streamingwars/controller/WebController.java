@@ -516,11 +516,12 @@ public class WebController {
         }
         StreamTransactionSummary transactionSummary = new StreamTransactionSummary();
         FormData data = new FormData();
+        model.addAttribute("editObject", data);
         data.setStartDate(startDate1.getMonth().getValue() + "-" + startDate1.getYear());
         if(transactionSummaries.size()!=0) {
             model.addAttribute("transactionSummaries", transactionSummaries);
             model.addAttribute("transactionSummary", transactionSummary);
-            model.addAttribute("editObject", data);
+
         }
         else
         {

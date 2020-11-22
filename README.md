@@ -30,7 +30,7 @@ Broadly speaking, a system and user capable of handling the work done for Assign
 ## Shutdown and uninstall
 1. Logout from the application and close the browser.
 1. Press Ctrl-C in the terminal window to terminate the docker containers.
-1. Run the following command to delete the containers recently created (this command can also help to prune all volumes in case you face issues with the DB server starting up.)
+1. Run the following command to delete the containers recently created (this command can also help to prune all volumes in case you face issues with the DB server starting up).
 
             docker system prune --volumes
 1. Delete the folder with the application and the zip file.
